@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Punto Activo | Centro de Entrenamiento</title>
+    <meta name="description"
+        content="Sistema de gestión para Punto Activo Centro de Entrenamiento. Administrá actividades, turnos, socios y pagos.">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0891b2">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="Img/Punto Activo.jpeg">
+
+    <link rel="stylesheet" href="index.css">
+    <link rel="icon" type="image/jpeg" href="Img/Punto Activo.jpeg">
+
+    <!-- Firebase v9 Compat (no requiere bundler) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- PDF Generation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+</head>
+
+<body>
+    <!-- AUTH SCREEN -->
+    <div id="auth-container" class="hidden">
+        <!-- Login inyectado por JS -->
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="app" class="hidden">
+
+        <!-- SIDEBAR -->
+        <div id="sidebar-overlay" class="hidden"></div>
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div style="display:flex;align-items:center;gap:12px">
+                    <img src="Img/Punto Activo.jpeg" alt="Logo Punto Activo" class="sidebar-logo">
+                    <div class="sidebar-brand">
+                        <h1>PUNTO ACTIVO</h1>
+                        <p>Centro de Entrenamiento</p>
+                    </div>
+                </div>
+                <button id="sidebar-close-btn" class="mobile-only" aria-label="Cerrar menú">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+
+            <nav>
+                <div id="nav-items-container"></div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <button id="logout-btn" aria-label="Cerrar sesión">
+                    <i data-lucide="log-out"></i>
+                    <span>Cerrar Sesión</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- HEADER -->
+        <header class="header">
+            <div style="display:flex;align-items:center;gap:12px">
+                <button id="mobile-menu-btn" aria-label="Abrir menú">
+                    <i data-lucide="menu"></i>
+                </button>
+                <div id="page-title">Panel de Control</div>
+            </div>
+
+            <div class="user-profile">
+                <div id="user-avatar">U</div>
+                <div>
+                    <div id="user-name">Cargando...</div>
+                    <div id="user-role">...</div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENIDO PRINCIPAL -->
+        <main class="main" id="main-content">
+            <div class="loader-wrapper" style="height:100%">
+                <i data-lucide="loader-2" class="spin-icon"></i>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODAL -->
+    <div id="modal-container" class="hidden">
+        <div id="modal-content"></div>
+    </div>
+
+    <!-- SCRIPTS (el orden importa) -->
+    <script src="firebase-config.js"></script> <!-- 1. Firebase init -->
+    <script src="db.js"></script> <!-- 2. Capa de datos Firestore -->
+    <script src="utils.js"></script> <!-- 3. UI helpers -->
+    <script src="app.js"></script> <!-- 4. App principal -->
+    <script>
+        window.refreshIcons = () => { lucide.createIcons(); };
+    </script>
+    <!-- PWA Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('SW Registered', reg))
+                    .catch(err => console.log('SW Error', err));
+            });
+        }
+    </script>
+</body>
+
+</html>
