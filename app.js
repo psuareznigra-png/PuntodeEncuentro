@@ -1,13 +1,14 @@
 /**
  * Punto Activo "Centro de Entrenamiento"
- * Aplicación principal — v3.0 Firebase
+ * AplicaciÃ³n principal â€” v3.0 Firebase
  */
 
 const State = {
     user: null,
     currentView: 'dashboard',
     family: [], // Familiares vinculados
-    activeProfileId: null // ID del perfil que estamos viendo (null = el titular)
+    activeProfileId: null, // ID del perfil que estamos viendo (null = el titular)
+    onboardingRequired: false // Bloqueo de navegaciÃ³n para ficha obligatoria
 };
 
 const Views = {
@@ -20,21 +21,21 @@ const Views = {
     payments_admin: { title: 'Pagos Pendientes', icon: 'credit-card', role: 'profesor' },
     payments_history: { title: 'Registro de Cobranzas', icon: 'history', role: 'profesor' },
     morosidades: { title: 'Morosidades', icon: 'alert-circle', role: 'profesor' },
-    occupancy: { title: 'Ocupación', icon: 'calendar', role: 'profesor' },
-    announcements_admin: { title: 'Tablón de Anuncios', icon: 'megaphone', role: 'admin' },
+    occupancy: { title: 'OcupaciÃ³n', icon: 'calendar', role: 'profesor' },
+    announcements_admin: { title: 'TablÃ³n de Anuncios', icon: 'megaphone', role: 'admin' },
     inscripciones: { title: 'Mis Actividades', icon: 'plus-circle', role: 'alumno' },
     pagos_socio: { title: 'Mis Pagos', icon: 'wallet', role: 'alumno' },
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   INIT — Firebase Auth state listener
-═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   INIT â€” Firebase Auth state listener
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function initApp() {
-    console.log("🚀 PUNTO ACTIVO APP - v4.1 - CARGADA CORRECTAMENTE");
+    console.log("ðŸš€ PUNTO ACTIVO APP - v4.1 - CARGADA CORRECTAMENTE");
     try {
         if (typeof firebase === 'undefined' || !auth) {
-            throw new Error('Firebase no se pudo cargar correctamente. Verificá tu conexión a internet y el archivo firebase-config.js.');
+            throw new Error('Firebase no se pudo cargar correctamente. VerificÃ¡ tu conexiÃ³n a internet y el archivo firebase-config.js.');
         }
 
         auth.onAuthStateChanged(async (firebaseUser) => {
@@ -44,7 +45,7 @@ function initApp() {
                     const profile = await DB.getUserProfile(firebaseUser.uid);
 
                     if (!profile) {
-                        UI.notify('El usuario no tiene un perfil configurado en Firestore. Verificá el "Paso 5" de la guía.', 'error');
+                        UI.notify('El usuario no tiene un perfil configurado en Firestore. VerificÃ¡ el "Paso 5" de la guÃ­a.', 'error');
                         console.error('UID sin perfil en Firestore:', firebaseUser.uid);
                         await auth.signOut();
                         return;
@@ -52,11 +53,23 @@ function initApp() {
 
                     State.user = { ...profile, id: firebaseUser.uid };
 
-                    // Chequeo automático de morosidad en cada login del alumno
+                    // Chequeo automÃ¡tico de morosidad y perfil en cada login del alumno
                     if (State.user.role === 'alumno' || State.user.role === 'socio') {
                         await DB.checkAndUpdateMorosidad(State.user.id);
                         // Cargar familiares
                         State.family = await DB.getFamilyMembers(State.user.id);
+                        
+                        // Verificar si debe completar la ficha obligatoria
+                        // Solo exigimos onboarding a Alumnos/Socios
+                        const isAlumno = State.user.role === 'alumno' || State.user.role === 'socio';
+                        if (isAlumno && !State.user.profile_completed) {
+                            State.onboardingRequired = true;
+                        } else {
+                            State.onboardingRequired = false;
+                        }
+                    } else {
+                        // Admin o Profesor no requieren onboarding
+                        State.onboardingRequired = false;
                     }
 
                     document.getElementById('app').classList.remove('hidden');
@@ -67,6 +80,9 @@ function initApp() {
                     navigateTo(State.currentView);
                     window.refreshIcons();
 
+                    // Inicializar Notificaciones Push
+                    initNotifications();
+
                 } catch (err) {
                     console.error('Error al cargar perfil:', err);
                     UI.notify('Error al obtener datos del servidor: ' + err.message, 'error');
@@ -74,6 +90,7 @@ function initApp() {
                 }
             } else {
                 State.user = null;
+                State.onboardingRequired = false;
                 State.currentView = 'dashboard';
                 document.getElementById('app').classList.add('hidden');
                 showLogin();
@@ -84,9 +101,9 @@ function initApp() {
         console.error('Initialization error:', err);
         document.body.innerHTML = `
             <div style="height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:sans-serif;padding:20px;text-align:center">
-                <div style="color:var(--overdue);font-size:40px;margin-bottom:20px">⚠️</div>
-                <h2 style="margin-bottom:10px">Error de Configuración</h2>
-                <p style="color:#64748b;max-width:400px;line-height:1.5">${err.message}</p>
+                <div style="color:var(--overdue);font-size:40px;margin-bottom:20px">âšï¸</div>
+                <h2 style="margin-bottom:10px">Error de ConfiguraciÃ³n</h2>
+                <p style="color:#64748b;max-width:400px;line-height:1.5">\${err.message}</p>
                 <button onclick="location.reload()" style="margin-top:20px;padding:12px 24px;background:#2563eb;color:white;border:none;border-radius:10px;cursor:pointer;font-weight:600">Reintentar</button>
             </div>
         `;
@@ -120,9 +137,9 @@ function updateUserInfo() {
     document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    NAVIGATION
-═══════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function navigateTo(viewId) {
     if (!State.user) return;
@@ -130,12 +147,12 @@ function navigateTo(viewId) {
     const userRole = (State.user.role === 'socio' || State.user.role === 'alumno') ? 'alumno' : State.user.role;
     const viewRole = Views[viewId]?.role;
 
-    // Lógica de acceso por roles:
+    // LÃ³gica de acceso por roles:
     if (userRole === 'admin') {
         // El admin tiene acceso a vistas de admin y profesor, pero NO de alumno.
         if (viewRole === 'alumno') viewId = 'dashboard';
     } else if (userRole === 'profesor') {
-        // El profesor tiene acceso a sus vistas y a actividades/turnos (filtrados por lógica de vista)
+        // El profesor tiene acceso a sus vistas y a actividades/turnos (filtrados por lÃ³gica de vista)
         if (viewRole && viewRole !== 'profesor' && !['activities', 'turnos', 'payments_admin', 'payments_history', 'morosidades', 'bajas_admin'].includes(viewId)) {
             viewId = 'dashboard';
         }
@@ -162,32 +179,50 @@ function renderNav() {
     Object.entries(Views).forEach(([id, view]) => {
         const userRole = State.user.role === 'socio' ? 'alumno' : State.user.role;
 
-        // Filtrar navegación por rol:
+        // Filtrar navegaciÃ³n por rol:
         if (userRole === 'admin') {
             // Admin ve admin y profesor, pero no alumno
             if (view.role === 'alumno') return;
         } else if (userRole === 'profesor') {
-            // Profesor ve lo suyo (y admin podría permitir actividades/turnos si se desea en nav)
+            // Profesor ve lo suyo (y admin podrÃ­a permitir actividades/turnos si se desea en nav)
             if (view.role && view.role !== 'profesor') return;
         } else {
             // Alumno solo ve alumno
             if (view.role && view.role !== 'alumno') return;
         }
         const btn = document.createElement('button');
-        btn.className = `nav-item ${State.currentView === id ? 'active' : ''}`;
+        btn.className = `nav-item \${State.currentView === id ? 'active' : ''}`;
         btn.dataset.view = id;
-        btn.innerHTML = `<i data-lucide="${view.icon}"></i><span>${view.title}</span>`;
+        btn.innerHTML = `<i data-lucide="\${view.icon}"></i><span>\${view.title}</span>`;
         btn.onclick = () => navigateTo(id);
         container.appendChild(btn);
     });
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    VIEW ROUTER
-═══════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderView(viewId) {
     const content = document.getElementById('main-content');
+    const app = document.getElementById('app');
+    const sidebar = document.querySelector('.sidebar');
+    const header = document.querySelector('.header');
+
+    // Bloqueo de onboarding
+    if (State.onboardingRequired) {
+        sidebar?.classList.add('hidden');
+        header?.classList.add('hidden');
+        if (app) app.style.gridTemplateColumns = '1fr';
+        await renderOnboarding(content);
+        return;
+    }
+
+    // Restaurar layout
+    sidebar?.classList.remove('hidden');
+    header?.classList.remove('hidden');
+    if (app) app.style.gridTemplateColumns = '';
+
     content.innerHTML = `<div class="loader-wrapper"><i data-lucide="loader-2" class="spin-icon"></i></div>`;
     window.refreshIcons();
 
@@ -207,7 +242,7 @@ async function renderView(viewId) {
             case 'inscripciones': await renderInscripcionesAlumno(content); break;
             case 'pagos_socio': await renderPagosAlumno(content); break;
             default:
-                content.innerHTML = `<div class="empty-state">Próximamente...</div>`;
+                content.innerHTML = `<div class="empty-state">PrÃ³ximamente...</div>`;
         }
     } catch (err) {
         console.error('Error en vista:', err);
@@ -215,17 +250,17 @@ async function renderView(viewId) {
             <div class="empty-state">
                 <i data-lucide="wifi-off" style="width:48px;height:48px;color:var(--text-muted);margin-bottom:16px"></i>
                 <p style="font-weight:700;margin-bottom:8px">Error al cargar datos</p>
-                <p style="font-size:13px;color:var(--text-muted)">${err.message}</p>
-                <button class="btn btn-primary mt-4" onclick="renderView('${viewId}')">Reintentar</button>
+                <p style="font-size:13px;color:var(--text-muted)">\${err.message}</p>
+                <button class="btn btn-primary mt-4" onclick="renderView('\${viewId}')">Reintentar</button>
             </div>`;
     }
     window.refreshIcons();
 }
 
 
-/* ═══════════════════════════════════════════════════════════════
-   OCCUPANCY GRID — Admin/Profesor
-═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   OCCUPANCY GRID â€” Admin/Profesor
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderOccupancy(container) {
     const [activities, turnos, countMap] = await Promise.all([
@@ -234,10 +269,10 @@ async function renderOccupancy(container) {
         DB.getInscripcionesCountMap(),
     ]);
 
-    const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const days = ['Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado', 'Domingo'];
     
     // Preparar slots individuales para la grilla
-    const allSlots = [];
+    let allSlots = [];
     turnos.forEach(t => {
         const act = activities.find(a => a.id === t.activity_id);
         if (!act) return;
@@ -251,22 +286,35 @@ async function renderOccupancy(container) {
         }
     });
 
+    // Filtro para Profesores: Solo ven sus propias clases
+    if (State.user.role === 'profesor') {
+        const profName = State.user.name.toLowerCase();
+        allSlots = allSlots.filter(s => {
+            const idMatch = s.activity.profesor_id === State.user.id;
+            const nameMatch = s.activity.teacher && (
+                s.activity.teacher.toLowerCase().includes(profName) || 
+                profName.includes(s.activity.teacher.toLowerCase())
+            );
+            return idMatch || nameMatch;
+        });
+    }
+
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">Ocupación Semanal</h2>
-            <div class="badge badge-active">Vista de Gestión</div>
+            <h2 class="view-title">OcupaciÃ³n Semanal</h2>
+            <div class="badge badge-active">Vista de GestiÃ³n</div>
         </div>
         
         <div class="occupancy-grid">
-            ${days.map(day => {
+            \${days.map(day => {
                 const daySlots = allSlots.filter(s => s.day === day);
                 // Ordenar por hora de inicio
                 daySlots.sort((a, b) => a.start.localeCompare(b.start));
 
                 return `
                 <div class="occupancy-day-col">
-                    <div class="day-header">${day}</div>
-                    ${daySlots.length === 0 ? '<div class="empty-inline" style="text-align:center">Sin turnos</div>' : 
+                    <div class="day-header">\${day}</div>
+                    \${daySlots.length === 0 ? '<div class="empty-inline" style="text-align:center">Sin turnos</div>' : 
                         daySlots.map(s => {
                             const used = countMap[s.turno.id] || 0;
                             const pct = Math.round((used / s.turno.max_cupo) * 100);
@@ -275,18 +323,18 @@ async function renderOccupancy(container) {
                             if (pct > 85) statusClass = 'occ-high';
 
                             return `
-                            <div class="shift-grid-card ${statusClass}" onclick="window.showTurnoModal('${s.turno.id}')">
-                                <div class="shift-time">${s.start} - ${s.end}</div>
-                                <div class="shift-act">${s.activity.name}</div>
-                                <div class="shift-teacher">${s.activity.teacher}</div>
+                            <div class="shift-grid-card \${statusClass}" onclick="window.showTurnoModal('\${s.turno.id}')">
+                                <div class="shift-time">\${s.start} - \${s.end}</div>
+                                <div class="shift-act">\${s.activity.name}</div>
+                                <div class="shift-teacher">\${s.activity.teacher}</div>
                                 <div class="shift-occ-bar">
-                                    <div class="shift-occ-fill" style="width:${Math.min(100, pct)}%"></div>
+                                    <div class="shift-occ-fill" style="width:\${Math.min(100, pct)}%"></div>
                                 </div>
                                 <div class="shift-occ-text">
-                                    <span>${used}/${s.turno.max_cupo}</span>
-                                    <span>${pct}%</span>
+                                    <span>\${used}/\${s.turno.max_cupo}</span>
+                                    <span>\${pct}%</span>
                                 </div>
-                                <button class="btn-asistencia" onclick="event.stopPropagation(); window.showAttendanceModal('${s.turno.id}')">
+                                <button class="btn-asistencia" onclick="event.stopPropagation(); window.showAttendanceModal('\${s.turno.id}')">
                                     <i data-lucide="check-square"></i> Pasar Lista
                                 </button>
                             </div>`;
@@ -299,16 +347,153 @@ async function renderOccupancy(container) {
     window.refreshIcons();
 }
 
-/* ═══════════════════════════════════════════════════════════════
+/* â”€â”€â”€ ONBOARDING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+async function renderOnboarding(container) {
+    // Intentamos traer la URL del deslinde desde la configuraciÃ³n global
+    const config = await DB.getGlobalConfig('deslinde');
+    const deslindeUrl = config?.url || '#';
+
+    container.innerHTML = `
+        <div class="onboarding-container fade-in">
+            <div class="onboarding-card">
+                <div class="row-between mb-6">
+                    <img src="Img/Punto Activo.jpeg" alt="Logo" class="onboarding-logo" style="margin-bottom:0; width:50px; height:50px">
+                    <button onclick="auth.signOut()" class="btn btn-secondary btn-sm" style="gap:6px">
+                        <i data-lucide="log-out" style="width:14px"></i> Salir
+                    </button>
+                </div>
+
+                <div class="onboarding-header" style="text-align:left">
+                    <h2 class="welcome-title">Â¡Bienvenido a Punto Activo!</h2>
+                    <p class="text-muted">Necesitamos que completes tu ficha de socio para habilitar tu cuenta.</p>
+                </div>
+
+                <form id="onboarding-form" class="form-stack mt-6">
+                    <div class="form-group">
+                        <label class="label">Nombre Completo</label>
+                        <input type="text" id="ob-name" class="input" value="\${State.user.name || ''}" required>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label class="label">DNI</label>
+                            <input type="text" id="ob-dni" class="input" placeholder="Sin puntos" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Fecha de Nacimiento</label>
+                            <input type="date" id="ob-birth" class="input" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Tu TelÃ©fono (WhatsApp)</label>
+                        <input type="tel" id="ob-phone" class="input" placeholder="Ej: 2991234567" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="label">Email de Contacto</label>
+                        <input type="email" id="ob-email" class="input" placeholder="ejemplo@correo.com" value="\${State.user.personal_email || ''}">
+                    </div>
+
+                    <hr class="mt-4 mb-4">
+                    <p class="text-xs td-bold mb-4" style="color:var(--primary)">CONTACTO DE EMERGENCIA</p>
+
+                    <div class="form-group">
+                        <label class="label">Nombre del Contacto</label>
+                        <input type="text" id="ob-emergency-name" class="input" placeholder="Nombre completo" required>
+                    </div>
+
+                    <div class="form-row-2">
+                        <div class="form-group">
+                            <label class="label">TelÃ©fono de Emergencia</label>
+                            <input type="tel" id="ob-emergency-phone" class="input" placeholder="Ej: 2991234567" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="label">Parentesco</label>
+                            <select id="ob-emergency-rel" class="input" required>
+                                <option value="">Seleccionar...</option>
+                                <option value="Padre/Madre">Padre/Madre</option>
+                                <option value="Hijo/a">Hijo/a</option>
+                                <option value="Hermano/a">Hermano/a</option>
+                                <option value="Esposo/a">Esposo/a</option>
+                                <option value="Amigo/a">Amigo/a</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="deslinde-box mt-6">
+                        <h4 style="font-size:14px; margin-bottom:10px">Deslinde de Responsabilidad</h4>
+                        <div class="deslinde-text">
+                            Declaro estar en condiciones fÃ­sicas Ã³ptimas para realizar actividad fÃ­sica. 
+                            Libero de toda responsabilidad al establecimiento Punto Activo y a sus profesionales 
+                            por cualquier lesiÃ³n o percance derivado de la prÃ¡ctica deportiva.
+                        </div>
+                        
+                        <div class="mt-4 mb-4">
+                            <a href="\${deslindeUrl}" target="_blank" class="btn btn-secondary w-full btn-sm" style="gap:8px; justify-content:center">
+                                <i data-lucide="download" style="width:16px"></i> Descargar Deslinde para Firmar
+                            </a>
+                            <p class="text-xs text-muted mt-2">Descargalo, firmalo y entregalo en tu primera clase.</p>
+                        </div>
+
+                        <label class="checkbox-container">
+                            <input type="checkbox" id="ob-deslinde" required>
+                            <span class="checkmark"></span>
+                            <span class="text-sm">He leÃ­do y acepto los tÃ©rminos del deslinde.</span>
+                        </label>
+                    </div>
+
+                    <button type="submit" id="ob-submit" class="btn btn-primary w-full mt-8" style="padding:18px; font-size:16px">
+                        FINALIZAR Y ENTRAR
+                    </button>
+                </form>
+            </div>
+        </div>`;
+
+    window.refreshIcons();
+
+    document.getElementById('onboarding-form').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById('ob-submit');
+        btn.disabled = true; btn.textContent = 'Guardando datos...';
+
+        const data = {
+            name: document.getElementById('ob-name').value.trim(),
+            dni: document.getElementById('ob-dni').value.trim(),
+            birthdate: document.getElementById('ob-birth').value,
+            phone: document.getElementById('ob-phone').value.trim(),
+            personal_email: document.getElementById('ob-email').value.trim(),
+            emergency_name: document.getElementById('ob-emergency-name').value.trim(),
+            emergency_phone: document.getElementById('ob-emergency-phone').value.trim(),
+            emergency_relationship: document.getElementById('ob-emergency-rel').value,
+            profile_completed: true,
+            onboarding_date: new Date().toISOString()
+        };
+
+        try {
+            await DB.updateUserProfile(State.user.id, data);
+            State.user = { ...State.user, ...data };
+            State.onboardingRequired = false;
+            UI.notify('Â¡Ficha completada! Bienvenido.');
+            renderView('dashboard');
+        } catch (err) {
+            UI.notify(err.message, 'error');
+            btn.disabled = false; btn.textContent = 'FINALIZAR Y ENTRAR';
+        }
+    };
+}
+
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    DASHBOARD
-═══════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderDashboard(container) {
     const isAdmin = State.user.role === 'admin';
     const isProfesor = State.user.role === 'profesor';
 
     if (isAdmin || isProfesor) {
-        // 1. CARGA RÁPIDA: Solo lo que es instantáneo
+        // 1. CARGA RÃPIDA: Solo lo que es instantÃ¡neo
         const [quickData, announcements] = await Promise.all([
             DB.getQuickStats(isAdmin ? null : State.user.id, isAdmin ? null : State.user.name),
             DB.getAnnouncements().catch(() => [])
@@ -317,21 +502,21 @@ async function renderDashboard(container) {
         const visibleAnnouncements = announcements.filter(a => a.role === 'all' || a.role === State.user.role).slice(0, 2);
 
         container.innerHTML = `
-            ${visibleAnnouncements.length > 0 ? `
+            \${visibleAnnouncements.length > 0 ? `
                 <div class="announcements-stack">
-                    ${visibleAnnouncements.map(a => `
-                        <div class="announcement-card priority-${a.priority}">
+                    \${visibleAnnouncements.map(a => `
+                        <div class="announcement-card priority-\${a.priority}">
                             <div class="announcement-header">
-                                <h3 class="announcement-title">${a.title}</h3>
-                                <span class="announcement-date">${a.createdAt ? UI.formatDate(new Date((a.createdAt.seconds || a.createdAt._seconds || 0) * 1000).toISOString().split('T')[0]) : 'Reciente'}</span>
+                                <h3 class="announcement-title">\${a.title}</h3>
+                                <span class="announcement-date">\${a.createdAt ? UI.formatDate(new Date((a.createdAt.seconds || a.createdAt._seconds || 0) * 1000).toISOString().split('T')[0]) : 'Reciente'}</span>
                             </div>
-                            <div class="announcement-content">${a.content}</div>
+                            <div class="announcement-content">\${a.content}</div>
                         </div>`).join('')}
                 </div>
             ` : ''}
             
             <div class="dashboard-grid">
-                <div class="stat-card" style="--accent-c: var(--primary); cursor:pointer" onclick="navigateTo('${isAdmin ? 'usuarios' : 'mis_alumnos'}')">
+                <div class="stat-card" style="--accent-c: var(--primary); cursor:pointer" onclick="navigateTo('\${isAdmin ? 'usuarios' : 'mis_alumnos'}')">
                     <div class="stat-icon" style="background:rgba(8,145,178,0.1);color:var(--primary)">
                         <i data-lucide="users"></i>
                     </div>
@@ -347,7 +532,7 @@ async function renderDashboard(container) {
                     <div class="stat-body">
                         <div class="stat-label">Estado Pagos</div>
                         <div class="stat-value" id="stat-alumnos-morosos" style="color:var(--overdue)">...</div>
-                        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Ver Morosos →</div>
+                        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Ver Morosos â†’</div>
                     </div>
                 </div>
                 <div class="stat-card" style="--accent-c: var(--overdue); cursor:pointer" onclick="navigateTo('payments_admin')">
@@ -374,20 +559,20 @@ async function renderDashboard(container) {
                 <div class="card">
                     <h3 class="section-title">Actividades</h3>
                     <div class="list-stack">
-                        ${quickData.activities.slice(0, 5).map(a => `
+                        \${quickData.activities.slice(0, 5).map(a => `
                             <div class="list-row">
                                 <div>
-                                    <div class="row-title">${a.name}</div>
-                                    <div class="row-sub">Prof. ${a.teacher}</div>
+                                    <div class="row-title">\${a.name}</div>
+                                    <div class="row-sub">Prof. \${a.teacher}</div>
                                 </div>
                                 <span class="badge badge-active">Activa</span>
                             </div>`).join('')}
                     </div>
                 </div>
                 <div class="card">
-                    <h3 class="section-title">Ocupación</h3>
+                    <h3 class="section-title">OcupaciÃ³n</h3>
                     <div class="list-stack">
-                        <button class="btn btn-ghost btn-sm w-full" onclick="navigateTo('occupancy')">Ver Panel Visual →</button>
+                        <button class="btn btn-ghost btn-sm w-full" onclick="navigateTo('occupancy')">Ver Panel Visual â†’</button>
                     </div>
                 </div>
             </div>`;
@@ -401,7 +586,7 @@ async function renderDashboard(container) {
     window.refreshIcons();
 }
 
-/* ─── ALUMNO DASHBOARD ─────────────────────────────────────────── */
+/* â”€â”€â”€ ALUMNO DASHBOARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
 
 async function renderAlumnoDashboard(container) {
     const targetUserId = State.activeProfileId || State.user.id;
@@ -424,53 +609,53 @@ async function renderAlumnoDashboard(container) {
         <div class="welcome-banner">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:15px">
                 <div>
-                    <h2 class="welcome-title">¡Hola, ${firstName}!</h2>
-                    <p class="welcome-sub">Estás viendo el panel de: <strong>${viewingName}</strong></p>
+                    <h2 class="welcome-title">Â¡Hola, \${firstName}!</h2>
+                    <p class="welcome-sub">EstÃ¡s viendo el panel de: <strong>\${viewingName}</strong></p>
                 </div>
                 
-                ${State.family.length > 0 ? `
+                \${State.family.length > 0 ? `
                 <div class="profile-selector">
-                    <button class="profile-chip ${!State.activeProfileId ? 'active' : ''}" onclick="window.switchProfile(null)">Yo</button>
-                    ${State.family.map(f => `
-                        <button class="profile-chip ${State.activeProfileId === f.id ? 'active' : ''}" onclick="window.switchProfile('${f.id}')">
-                            ${f.name.split(' ')[0]}
+                    <button class="profile-chip \${!State.activeProfileId ? 'active' : ''}" onclick="window.switchProfile(null)">Yo</button>
+                    \${State.family.map(f => `
+                        <button class="profile-chip \${State.activeProfileId === f.id ? 'active' : ''}" onclick="window.switchProfile('\${f.id}')">
+                            \${f.name.split(' ')[0]}
                         </button>
                     `).join('')}
                 </div>` : ''}
             </div>
 
             <div class="mt-4" style="display:flex; gap:10px; flex-wrap:wrap">
-                ${config?.url ? `
-                    <a href="${config.url}" target="_blank" class="btn btn-secondary btn-sm" style="background:rgba(255,255,255,0.2); border:none; color:white">
+                \${config?.url ? `
+                    <a href="\${config.url}" target="_blank" class="btn btn-secondary btn-sm" style="background:rgba(255,255,255,0.2); border:none; color:white">
                         <i data-lucide="download"></i> Descargar Deslinde + Ficha (Para completar)
                     </a>
                 ` : ''}
-                ${State.user.waiver_url ? `
-                    <a href="${State.user.waiver_url}" target="_blank" class="btn btn-secondary btn-sm" style="background:rgba(255,255,255,0.3); border:none; color:white">
+                \${State.user.waiver_url ? `
+                    <a href="\${State.user.waiver_url}" target="_blank" class="btn btn-secondary btn-sm" style="background:rgba(255,255,255,0.3); border:none; color:white">
                         <i data-lucide="file-check"></i> Ver mi Deslinde Completo
                     </a>
                 ` : ''}
             </div>
         </div>
 
-        ${visibleAnnouncements.length > 0 ? `
+        \${visibleAnnouncements.length > 0 ? `
             <div class="announcements-stack mt-6">
-                ${visibleAnnouncements.map(a => `
-                    <div class="announcement-card priority-${a.priority}">
+                \${visibleAnnouncements.map(a => `
+                    <div class="announcement-card priority-\${a.priority}">
                         <div class="announcement-header">
-                            <h3 class="announcement-title">${a.title}</h3>
-                            <span class="announcement-date">${a.createdAt ? UI.formatDate(new Date((a.createdAt.seconds || a.createdAt._seconds || 0) * 1000).toISOString().split('T')[0]) : 'Reciente'}</span>
+                            <h3 class="announcement-title">\${a.title}</h3>
+                            <span class="announcement-date">\${a.createdAt ? UI.formatDate(new Date((a.createdAt.seconds || a.createdAt._seconds || 0) * 1000).toISOString().split('T')[0]) : 'Reciente'}</span>
                         </div>
-                        <div class="announcement-content">${a.content}</div>
+                        <div class="announcement-content">\${a.content}</div>
                     </div>`).join('')}
             </div>
         ` : ''}
         
         <div class="two-col-grid mt-6">
-            ${myInscs.length === 0 ? `
+            \${myInscs.length === 0 ? `
                 <div class="empty-state" style="grid-column:1/-1">
-                    <div style="font-size:48px;margin-bottom:16px;opacity:0.5">🗓️</div>
-                    <p>No estás inscripto en ninguna actividad aún.</p>
+                    <div style="font-size:48px;margin-bottom:16px;opacity:0.5">ðŸ—“ï¸</div>
+                    <p>No estÃ¡s inscripto en ninguna actividad aÃºn.</p>
                     <button onclick="navigateTo('inscripciones')" class="btn btn-primary mt-4">Ver Actividades</button>
                 </div>` :
             (() => {
@@ -484,8 +669,8 @@ async function renderAlumnoDashboard(container) {
                     
                     const isMoroso = !status || status.status === 'moroso' || (status.expiration && status.expiration < nowStr);
 
-                    // Ordenar turnos cronológicamente por día y hora
-                    const dayOrder = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+                    // Ordenar turnos cronolÃ³gicamente por dÃ­a y hora
+                    const dayOrder = ['Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado', 'Domingo'];
                     inscs.sort((a, b) => {
                         const t1 = turnos.find(x => x.id === a.turno_id);
                         const t2 = turnos.find(x => x.id === b.turno_id);
@@ -501,39 +686,39 @@ async function renderAlumnoDashboard(container) {
                     });
 
                     return `
-                            <div class="card ${isMoroso ? 'card-danger' : 'card-success'}">
+                            <div class="card \${isMoroso ? 'card-danger' : 'card-success'}">
                                 <div class="row-between mb-3">
-                                    <h3 class="row-title">${act?.name || 'Actividad'}</h3>
-                                    <span class="badge ${isMoroso ? 'badge-moroso' : 'badge-active'}">
-                                        ${isMoroso ? (status ? 'MOROSO' : 'PAGÓ PENDIENTE') : 'AL DÍA'}
+                                    <h3 class="row-title">\${act?.name || 'Actividad'}</h3>
+                                    <span class="badge \${isMoroso ? 'badge-moroso' : 'badge-active'}">
+                                        \${isMoroso ? (status ? 'MOROSO' : 'PAGÃ“ PENDIENTE') : 'AL DÃA'}
                                     </span>
                                 </div>
                                 <div class="row-sub mb-3">
-                                    ${status ? `Vencimiento: <strong>${UI.formatDate(status.expiration)}</strong>` : 'Suscripción no iniciada'}
+                                    \${status ? `Vencimiento: <strong>\${UI.formatDate(status.expiration)}</strong>` : 'SuscripciÃ³n no iniciada'}
                                 </div>
                                 
                                 <div class="turno-chips-wrap mb-4">
-                                    ${inscs.map(i => {
+                                    \${inscs.map(i => {
                         const t = turnos.find(x => x.id === i.turno_id);
                         return t ? `
                                             <div class="turno-chip-row">
                                                 <span class="turno-chip-label">
                                                     <i data-lucide="clock" style="width:12px;height:12px"></i>
-                                                    ${t.slots ? t.slots.map(s => `${s.day} ${s.start}-${s.end}`).join(' | ') : `${t.day} ${t.start}–${t.end}`}
+                                                    \${t.slots ? t.slots.map(s => `\${s.day} \${s.start}-\${s.end}`).join(' | ') : `\${t.day} \${t.start}â€“\${t.end}`}
                                                 </span>
-                                                <button class="btn btn-cancel btn-xs" onclick="window.cancelInscripcion('${i.id}')" title="Solicitar Baja">
+                                                <button class="btn btn-cancel btn-xs" onclick="window.cancelInscripcion('\${i.id}')" title="Solicitar Baja">
                                                     <i data-lucide="user-minus" style="width:11px;height:11px"></i>
                                                 </button>
                                             </div>` : '';
                     }).join('')}
                                 </div>
 
-                                ${isMoroso ? `
+                                \${isMoroso ? `
                                     <button onclick="navigateTo('pagos_socio')" class="btn btn-danger w-full">
                                         <i data-lucide="credit-card"></i> REPORTAR PAGO
                                     </button>` : `
                                     <div class="status-ok">
-                                        <i data-lucide="check-circle"></i> Actividad al día
+                                        <i data-lucide="check-circle"></i> Actividad al dÃ­a
                                     </div>`}
                             </div>`;
                 }).join('');
@@ -547,9 +732,9 @@ window.switchProfile = (id) => {
     renderView('dashboard');
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   ACTIVIDADES — Admin
-═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   ACTIVIDADES â€” Admin
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderActivities(container) {
     let activities = await DB.getActivities();
@@ -569,40 +754,40 @@ async function renderActivities(container) {
 
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">Gestión de Actividades</h2>
+            <h2 class="view-title">GestiÃ³n de Actividades</h2>
             <button class="btn btn-primary" onclick="window.showActivityModal()">
                 <i data-lucide="plus"></i> Nueva Actividad
             </button>
         </div>
-        ${activities.length === 0 ? `
+        \${activities.length === 0 ? `
             <div class="empty-state">
                 <i data-lucide="zap" style="width:48px;height:48px;color:var(--text-muted);margin-bottom:16px"></i>
-                <p>No hay actividades. ¡Creá la primera!</p>
+                <p>No hay actividades. Â¡CreÃ¡ la primera!</p>
             </div>` : `
             <div class="cards-grid">
-                ${activities.map(a => `
+                \${activities.map(a => `
                     <div class="card activity-card">
                         <div class="row-between mb-3">
-                            <span class="badge ${a.status === 'active' ? 'badge-active' : 'badge-moroso'}">
-                                ${a.status === 'active' ? 'Activa' : 'Inactiva'}
+                            <span class="badge \${a.status === 'active' ? 'badge-active' : 'badge-moroso'}">
+                                \${a.status === 'active' ? 'Activa' : 'Inactiva'}
                             </span>
                         </div>
-                        <h3 class="act-title">${a.name}</h3>
-                        <p class="act-teacher">Prof. ${a.teacher}</p>
+                        <h3 class="act-title">\${a.name}</h3>
+                        <p class="act-teacher">Prof. \${a.teacher}</p>
                         <div class="mt-2" style="font-size:12px">
-                            <div class="row-between"><span>Efectivo:</span> <strong>$${Number(a.price_cash || a.price || 0).toLocaleString('es-AR')}</strong></div>
-                            <div class="row-between"><span>Transf./MP:</span> <strong>$${Number(a.price_digital || a.price || 0).toLocaleString('es-AR')}</strong></div>
+                            <div class="row-between"><span>Efectivo:</span> <strong>$\${Number(a.price_cash || a.price || 0).toLocaleString('es-AR')}</strong></div>
+                            <div class="row-between"><span>Transf./MP:</span> <strong>$\${Number(a.price_digital || a.price || 0).toLocaleString('es-AR')}</strong></div>
                         </div>
                         <div class="card-actions">
-                            ${State.user.role === 'admin' ? `
-                            <button class="btn btn-secondary btn-sm" onclick="window.showActivityModal('${a.id}')">
+                            \${State.user.role === 'admin' ? `
+                            <button class="btn btn-secondary btn-sm" onclick="window.showActivityModal('\${a.id}')">
                                 <i data-lucide="pencil" style="width:13px;height:13px"></i> Editar
                             </button>
-                            <button class="btn btn-ghost btn-sm" onclick="window.toggleActivity('${a.id}','${a.status}')">
-                                <i data-lucide="${a.status === 'active' ? 'eye-off' : 'eye'}" style="width:13px;height:13px"></i>
-                                ${a.status === 'active' ? 'Desactivar' : 'Activar'}
+                            <button class="btn btn-ghost btn-sm" onclick="window.toggleActivity('\${a.id}','\${a.status}')">
+                                <i data-lucide="\${a.status === 'active' ? 'eye-off' : 'eye'}" style="width:13px;height:13px"></i>
+                                \${a.status === 'active' ? 'Desactivar' : 'Activar'}
                             </button>
-                            <button class="btn btn-danger-ghost btn-sm" onclick="window.deleteActivity('${a.id}')">
+                            <button class="btn btn-danger-ghost btn-sm" onclick="window.deleteActivity('\${a.id}')">
                                 <i data-lucide="trash-2" style="width:13px;height:13px"></i>
                             </button>
                             ` : `<p class="text-xs text-muted">Vista de profesor (solo lectura)</p>`}
@@ -624,41 +809,41 @@ window.showActivityModal = async (actId = null) => {
         <form id="act-form" class="form-stack">
             <div class="form-group">
                 <label class="label">Nombre</label>
-                <input type="text" id="act-name" class="input" placeholder="Ej: Crossfit" value="${act?.name || ''}" required>
+                <input type="text" id="act-name" class="input" placeholder="Ej: Crossfit" value="\${act?.name || ''}" required>
             </div>
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="label">Profesor Titular (Login)</label>
                     <select id="act-profesor-id" class="input">
                         <option value="">Seleccionar profesor...</option>
-                        ${profesores.map(p => `<option value="${p.id}" ${act?.profesor_id === p.id ? 'selected' : ''}>${p.name}</option>`).join('')}
+                        \${profesores.map(p => `<option value="\${p.id}" \${act?.profesor_id === p.id ? 'selected' : ''}>\${p.name}</option>`).join('')}
                     </select>
                 </div>
                 <div class="form-group">
                     <label class="label">Nombre Profesor (Texto)</label>
-                    <input type="text" id="act-teacher" class="input" placeholder="Nombre visible" value="${act?.teacher || ''}" required>
+                    <input type="text" id="act-teacher" class="input" placeholder="Nombre visible" value="\${act?.teacher || ''}" required>
                 </div>
             </div>
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="label">Precio Efectivo ($)</label>
-                    <input type="number" id="act-price-cash" class="input" placeholder="0" value="${act?.price_cash || act?.price || ''}" required>
+                    <input type="number" id="act-price-cash" class="input" placeholder="0" value="\${act?.price_cash || act?.price || ''}" required>
                 </div>
                 <div class="form-group">
                     <label class="label">Precio Transf./Digital ($)</label>
-                    <input type="number" id="act-price-digital" class="input" placeholder="0" value="${act?.price_digital || act?.price || ''}" required>
+                    <input type="number" id="act-price-digital" class="input" placeholder="0" value="\${act?.price_digital || act?.price || ''}" required>
                 </div>
             </div>
             <div class="form-group">
                 <label class="label">Estado</label>
                 <select id="act-status" class="input">
-                    <option value="active"   ${!act || act.status === 'active' ? 'selected' : ''}>Activa</option>
-                    <option value="inactive" ${act?.status === 'inactive' ? 'selected' : ''}>Inactiva</option>
+                    <option value="active"   \${!act || act.status === 'active' ? 'selected' : ''}>Activa</option>
+                    <option value="inactive" \${act?.status === 'inactive' ? 'selected' : ''}>Inactiva</option>
                 </select>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="UI.hideModal()">Cancelar</button>
-                <button type="submit" id="act-submit" class="btn btn-primary">${act ? 'Guardar Cambios' : 'Crear Actividad'}</button>
+                <button type="submit" id="act-submit" class="btn btn-primary">\${act ? 'Guardar Cambios' : 'Crear Actividad'}</button>
             </div>
         </form>`);
 
@@ -690,7 +875,7 @@ window.toggleActivity = async (actId, currentStatus) => {
     try {
         const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
         await DB.updateActivity(actId, { status: newStatus });
-        UI.notify(`Actividad ${newStatus === 'active' ? 'activada' : 'desactivada'}.`);
+        UI.notify(\`Actividad \${newStatus === 'active' ? 'activada' : 'desactivada'}.\`);
         renderView('activities');
     } catch (err) { UI.notify(err.message, 'error'); }
 };
@@ -699,8 +884,8 @@ window.deleteActivity = (actId) => {
     UI.showModal('Eliminar Actividad', `
         <div class="confirm-danger">
             <i data-lucide="alert-triangle" style="width:40px;height:40px;color:var(--overdue);margin-bottom:12px"></i>
-            <p>¿Estás seguro de que querés <strong>eliminar</strong> esta actividad?</p>
-            <p class="text-sm text-muted" style="margin-top:8px">Esta acción no se puede deshacer.</p>
+            <p>Â¿EstÃ¡s seguro de que querÃ©s <strong>eliminar</strong> esta actividad?</p>
+            <p class="text-sm text-muted" style="margin-top:8px">Esta acciÃ³n no se puede deshacer.</p>
         </div>
         <div class="modal-actions mt-4">
             <button class="btn btn-secondary" onclick="UI.hideModal()">Cancelar</button>
@@ -719,9 +904,9 @@ window.deleteActivity = (actId) => {
     };
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   TURNOS — Admin
-═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   TURNOS â€” Admin
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderTurnos(container) {
     let [activities, turnos, countMap] = await Promise.all([
@@ -745,57 +930,57 @@ async function renderTurnos(container) {
 
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">Gestión de Turnos</h2>
+            <h2 class="view-title">GestiÃ³n de Turnos</h2>
             <button class="btn btn-primary" onclick="window.showTurnoModal()">
                 <i data-lucide="plus"></i> Nuevo Turno
             </button>
         </div>
-        ${activities.length === 0 ? `<div class="empty-state">No hay actividades. Creá una primero.</div>` :
+        \${activities.length === 0 ? \`<div class="empty-state">No hay actividades. CreÃ¡ una primero.</div>\` :
             activities.map(act => {
                 const actTurnos = turnos.filter(t => t.activity_id === act.id);
-                return `
+                return \`
                 <div class="card mb-4">
                     <div class="row-between mb-4">
                         <div>
-                            <h3 class="row-title">${act.name}</h3>
-                            <span class="row-sub">Prof. ${act.teacher}</span>
+                            <h3 class="row-title">\${act.name}</h3>
+                            <span class="row-sub">Prof. \${act.teacher}</span>
                         </div>
-                        <button class="btn btn-secondary btn-sm" onclick="window.showTurnoModal(null,'${act.id}')">
+                        <button class="btn btn-secondary btn-sm" onclick="window.showTurnoModal(null,'\${act.id}')">
                             <i data-lucide="plus" style="width:13px;height:13px"></i> Turno
                         </button>
                     </div>
-                    ${actTurnos.length === 0 ? `<div class="empty-inline">Sin turnos aún.</div>` : `
+                    \${actTurnos.length === 0 ? \`<div class="empty-inline">Sin turnos aÃºn.</div>\` : \`
                         <div class="turnos-table-wrap">
                             <table class="turnos-table">
                                 <thead>
-                                    <tr><th>Días y Horarios</th><th>Cupo Máx.</th><th>Disponibles</th><th>Acciones</th></tr>
+                                    <tr><th>DÃ­as y Horarios</th><th>Cupo MÃ¡x.</th><th>Disponibles</th><th>Acciones</th></tr>
                                 </thead>
                                 <tbody>
-                                    ${actTurnos.map(t => {
+                                    \${actTurnos.map(t => {
                     const used = countMap[t.id] || 0;
                     const avail = Math.max(0, t.max_cupo - used);
-                    const slotsStr = t.slots ? t.slots.map(s => `${s.day} ${s.start}-${s.end}`).join('<br>') : `${t.day} ${t.start}-${t.end}`;
-                    return `
+                    const slotsStr = t.slots ? t.slots.map(s => \`\${s.day} \${s.start}-\${s.end}\`).join('<br>') : \`\${t.day} \${t.start}-\${t.end}\`;
+                    return \`
                                         <tr>
-                                            <td class="td-bold">${slotsStr}</td>
-                                            <td>${t.max_cupo}</td>
-                                            <td><span class="badge ${avail > 0 ? 'badge-active' : 'badge-moroso'}">${avail} libres</span></td>
+                                            <td class="td-bold">\${slotsStr}</td>
+                                            <td>\${t.max_cupo}</td>
+                                            <td><span class="badge \${avail > 0 ? 'badge-active' : 'badge-moroso'}">\${avail} libres</span></td>
                                             <td>
                                                 <div class="action-row">
-                                                    <button class="btn btn-secondary btn-xs" onclick="window.showTurnoModal('${t.id}')">
+                                                    <button class="btn btn-secondary btn-xs" onclick="window.showTurnoModal('\${t.id}')">
                                                         <i data-lucide="pencil" style="width:12px;height:12px"></i>
                                                     </button>
-                                                    <button class="btn btn-danger-ghost btn-xs" onclick="window.deleteTurno('${t.id}')">
+                                                    <button class="btn btn-danger-ghost btn-xs" onclick="window.deleteTurno('\${t.id}')">
                                                         <i data-lucide="trash-2" style="width:12px;height:12px"></i>
                                                     </button>
                                                 </div>
                                             </td>
-                                        </tr>`;
+                                        </tr>\`;
                 }).join('')}
                                 </tbody>
                             </table>
-                        </div>`}
-                </div>`;
+                        </div>\`}
+                </div>\`;
             }).join('')}`;
 }
 
@@ -807,33 +992,33 @@ window.showTurnoModal = async (turnoId = null, preselectedActId = null) => {
         turno = allTurnos.find(t => t.id === turnoId);
     }
 
-    const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const days = ['Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado', 'Domingo'];
 
     UI.showModal(turno ? 'Editar Turno' : 'Nuevo Turno', `
         <form id="turno-form" class="form-stack">
             <div class="form-group">
                 <label class="label">Actividad</label>
                 <select id="t-activity" class="input" required>
-                    ${activities.map(a => `
-                        <option value="${a.id}" ${(turno?.activity_id === a.id || preselectedActId === a.id) ? 'selected' : ''}>
-                            ${a.name}
-                        </option>`).join('')}
+                    \${activities.map(a => \`
+                        <option value="\${a.id}" \${(turno?.activity_id === a.id || preselectedActId === a.id) ? 'selected' : ''}>
+                            \${a.name}
+                        </option>\`).join('')}
                 </select>
             </div>
             
             <div class="form-group">
-                <label class="label">Días y Horarios</label>
+                <label class="label">DÃ­as y Horarios</label>
                 <div id="slots-container" class="list-stack mb-2">
                     <!-- Slots dynamic -->
                 </div>
                 <button type="button" class="btn btn-secondary btn-sm" onclick="window.addSlotRow()">
-                    <i data-lucide="plus" style="width:12px;height:12px"></i> Agregar Día/Hora
+                    <i data-lucide="plus" style="width:12px;height:12px"></i> Agregar DÃ­a/Hora
                 </button>
             </div>
 
             <div class="form-group">
-                <label class="label">Cupo Máximo</label>
-                <input type="number" id="t-cupo" class="input" min="1" max="200" value="${turno?.max_cupo || 20}" required>
+                <label class="label">Cupo MÃ¡ximo</label>
+                <input type="number" id="t-cupo" class="input" min="1" max="200" value="\${turno?.max_cupo || 20}" required>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="UI.hideModal()">Cancelar</button>
@@ -849,14 +1034,14 @@ window.showTurnoModal = async (turnoId = null, preselectedActId = null) => {
         div.innerHTML = `
             <div style="flex:1">
                 <select class="input slot-day" required>
-                    ${days.map(d => `<option value="${d}" ${data?.day === d ? 'selected' : ''}>${d}</option>`).join('')}
+                    \${days.map(d => \`<option value="\${d}" \${data?.day === d ? 'selected' : ''}>\${d}</option>\`).join('')}
                 </select>
             </div>
             <div style="width:100px">
-                <input type="time" class="input slot-start" value="${data?.start || '18:00'}" required>
+                <input type="time" class="input slot-start" value="\${data?.start || '18:00'}" required>
             </div>
             <div style="width:100px">
-                <input type="time" class="input slot-end" value="${data?.end || '19:00'}" required>
+                <input type="time" class="input slot-end" value="\${data?.end || '19:00'}" required>
             </div>
             <button type="button" class="btn btn-danger-ghost btn-xs" onclick="this.parentElement.remove()">
                 <i data-lucide="trash-2" style="width:14px;height:14px"></i>
@@ -885,7 +1070,7 @@ window.showTurnoModal = async (turnoId = null, preselectedActId = null) => {
         }));
 
         if (slots.length === 0) {
-            UI.notify('Agregá al menos un horario.', 'error');
+            UI.notify('AgregÃ¡ al menos un horario.', 'error');
             return;
         }
 
@@ -919,7 +1104,7 @@ window.deleteTurno = (turnoId) => {
     UI.showModal('Eliminar Turno', `
         <div class="confirm-danger">
             <i data-lucide="alert-triangle" style="width:40px;height:40px;color:var(--overdue);margin-bottom:12px"></i>
-            <p>¿Estás seguro de que querés eliminar este turno?</p>
+            <p>Â¿EstÃ¡s seguro de que querÃ©s eliminar este turno?</p>
         </div>
         <div class="modal-actions mt-4">
             <button class="btn btn-secondary" onclick="UI.hideModal()">Cancelar</button>
@@ -934,21 +1119,19 @@ window.deleteTurno = (turnoId) => {
     };
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   MIS ALUMNOS — Profesor
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   MIS ALUMNOS â€” Profesor
    Vista para que el profesor vea solo sus alumnos inscriptos.
-   ═══════════════════════════════════════════════════════════════ */
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 
 async function renderMisAlumnos(container) {
-    const [activities, allStatuses, users, allInscriptions] = await Promise.all([
+    const [activities, allStatuses, users, inscriptions] = await Promise.all([
         DB.getActivities(),
         DB.getAllStatuses(),
         DB.getUsers(),
-        db.collection('inscripciones').where('status', '==', 'active').get()
+        DB.getInscripciones()
     ]);
-
-    const inscriptions = allInscriptions.docs.map(d => ({ id: d.id, ...d.data() }));
 
     // Filtrar actividades del profesor (con matching flexible de nombre)
     const myActivities = activities.filter(a => {
@@ -972,7 +1155,7 @@ async function renderMisAlumnos(container) {
     container.innerHTML = `
         <div class="view-header">
             <h2 class="view-title">Mis Alumnos Inscriptos</h2>
-            <div class="badge badge-active" style="padding:6px 12px">${myStudents.length} Alumno(s)</div>
+            <div class="badge badge-active" style="padding:6px 12px">\${myStudents.length} Alumno(s)</div>
         </div>
         
         <div class="socios-table-wrap card" style="padding:0;overflow:hidden">
@@ -981,9 +1164,9 @@ async function renderMisAlumnos(container) {
                     <tr><th>Alumno</th><th>Contacto</th><th>Actividad(es)</th><th>Estado</th><th>Acciones</th></tr>
                 </thead>
                 <tbody>
-                    ${myStudents.length === 0 ? `
+                    \${myStudents.length === 0 ? `
                         <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">
-                            No tenés alumnos inscriptos aún en tus actividades.
+                            No tenÃ©s alumnos inscriptos aÃºn en tus actividades.
                         </td></tr>` :
             myStudents.map(u => {
                 const userActStats = myStudentsStatuses.filter(st => st.user_id === u.id);
@@ -993,8 +1176,8 @@ async function renderMisAlumnos(container) {
 
                 const nowStr = new Date().toISOString().split('T')[0];
                 // Es moroso si tiene estado 'moroso' en CUALQUIERA de mis actividades
-                // O si no tiene estado record para una actividad en la que está inscripto (pago inicial)
-                // O si está activo pero EXPIRÓ
+                // O si no tiene estado record para una actividad en la que estÃ¡ inscripto (pago inicial)
+                // O si estÃ¡ activo pero EXPIRÃ“
                 const isMoroso = uniqueInscActIds.some(aid => {
                     const st = userActStats.find(s => s.activity_id === aid);
                     if (!st) return true;
@@ -1014,31 +1197,31 @@ async function renderMisAlumnos(container) {
                             <tr>
                                 <td>
                                     <div class="socio-avatar-wrap">
-                                        <div class="socio-avatar">${displayName.charAt(0).toUpperCase()}</div>
+                                        <div class="socio-avatar">\${displayName.charAt(0).toUpperCase()}</div>
                                         <div>
-                                            <div class="td-bold">${displayName}</div>
-                                            <div class="text-xs text-muted">@${u.usuario || '—'}</div>
+                                            <div class="td-bold">\${displayName}</div>
+                                            <div class="text-xs text-muted">@\${u.usuario || 'â€”'}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="text-sm">${u.phone || '—'}</div>
-                                    <div class="text-xs text-muted">DNI: ${u.dni || '—'}</div>
+                                    <div class="text-sm">\${u.phone || 'â€”'}</div>
+                                    <div class="text-xs text-muted">DNI: \${u.dni || 'â€”'}</div>
                                 </td>
                                 <td>
-                                    <div class="text-xs" style="font-weight:600">${studentActs}</div>
+                                    <div class="text-xs" style="font-weight:600">\${studentActs}</div>
                                 </td>
                                 <td>
-                                    <span class="badge ${isMoroso ? 'badge-moroso' : 'badge-active'}">
-                                        ${isMoroso ? 'DEUDA / PEDN.' : 'AL DÍA'}
+                                    <span class="badge \${isMoroso ? 'badge-moroso' : 'badge-active'}">
+                                        \${isMoroso ? 'DEUDA / PEDN.' : 'AL DÃA'}
                                     </span>
                                 </td>
                                 <td>
                                     <div class="action-row" style="display:flex; gap:4px">
-                                        <button class="btn btn-secondary btn-xs" onclick="window.showUserFicha('${u.id}')" title="Ver Ficha">
+                                        <button class="btn btn-secondary btn-xs" onclick="window.showUserFicha('\${u.id}')" title="Ver Ficha">
                                             <i data-lucide="user" style="width:12px;height:12px"></i> Ficha
                                         </button>
-                                        <button class="btn btn-ghost btn-xs" onclick="window.showAlumnoHistory('${u.id}')" title="Historial de Pagos">
+                                        <button class="btn btn-ghost btn-xs" onclick="window.showAlumnoHistory('\${u.id}')" title="Historial de Pagos">
                                             <i data-lucide="history" style="width:12px;height:12px"></i> Pagos
                                         </button>
                                     </div>
@@ -1053,27 +1236,25 @@ async function renderMisAlumnos(container) {
 
 window.showUserFicha = async (userId) => {
     UI.showModal('Ficha de Alumno', '<div class="loader-wrapper"><i data-lucide="loader-2" class="spin-icon"></i></div>');
-    const [user, statuses, activities, allInscriptions] = await Promise.all([
+    const [user, statuses, activities, inscriptions] = await Promise.all([
         DB.getUserProfile(userId),
         DB.getUserStatuses(userId),
         DB.getActivities(),
-        db.collection('inscripciones').where('user_id', '==', userId).where('status', '==', 'active').get()
+        DB.getMyInscripciones(userId)
     ]);
-
-    const inscriptions = allInscriptions.docs.map(d => ({ id: d.id, ...d.data() }));
 
     const myActivities = activities.filter(a => a.profesor_id === State.user.id || a.teacher === State.user.name);
     const myActIds = myActivities.map(a => a.id);
 
-    // Actividades en las que está inscripto y son de este profesor
+    // Actividades en las que estÃ¡ inscripto y son de este profesor
     const studentActIds = [...new Set(inscriptions.map(i => i.activity_id))].filter(aid => myActIds.includes(aid));
 
     document.getElementById('modal-content').querySelector('.modal-body').innerHTML = `
         <div style="display:flex; align-items:center; gap:20px; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--border)">
-            <div class="socio-avatar" style="width:64px; height:64px; font-size:24px">${(user.name || 'A').charAt(0).toUpperCase()}</div>
+            <div class="socio-avatar" style="width:64px; height:64px; font-size:24px">\${(user.name || 'A').charAt(0).toUpperCase()}</div>
             <div>
-                <h3 style="margin:0">${user.name}</h3>
-                <p class="text-muted" style="margin:5px 0 0">@${user.usuario}</p>
+                <h3 style="margin:0">\${user.name}</h3>
+                <p class="text-muted" style="margin:5px 0 0">@\${user.usuario}</p>
             </div>
         </div>
         
@@ -1081,40 +1262,40 @@ window.showUserFicha = async (userId) => {
             <div class="form-row-2">
                 <div>
                     <label class="label">DNI</label>
-                    <div class="input" style="background:#f8fafc">${user.dni || '—'}</div>
+                    <div class="input" style="background:#f8fafc">\${user.dni || 'â€”'}</div>
                 </div>
                 <div>
-                    <label class="label">Teléfono</label>
-                    <div class="input" style="background:#f8fafc">${user.phone || '—'}</div>
+                    <label class="label">TelÃ©fono</label>
+                    <div class="input" style="background:#f8fafc">\${user.phone || 'â€”'}</div>
                 </div>
             </div>
             
             <div class="form-group">
                 <label class="label">Email Personal</label>
-                <div class="input" style="background:#f8fafc">${user.personal_email || '—'}</div>
+                <div class="input" style="background:#f8fafc">\${user.personal_email || 'â€”'}</div>
             </div>
 
             <div class="form-group">
                 <label class="label">Contacto de Emergencia</label>
                 <div class="input" style="background:#f8fafc; display:flex; flex-direction:column; gap:4px; padding:12px">
-                    <div style="font-weight:700">${user.emergency_name || '—'} (${user.emergency_relationship || 'Parentesco s/n'})</div>
-                    <div class="text-xs text-muted">Tel: ${user.emergency_phone || '—'}</div>
+                    <div style="font-weight:700">\${user.emergency_name || 'â€”'} (\${user.emergency_relationship || 'Parentesco s/n'})</div>
+                    <div class="text-xs text-muted">Tel: \${user.emergency_phone || 'â€”'}</div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="label">Estado en mis actividades</label>
                 <div class="list-stack mt-2">
-                    ${studentActIds.length === 0 ? '<p class="text-muted text-sm">No tiene inscripciones activas.</p>' :
+                    \${studentActIds.length === 0 ? '<p class="text-muted text-sm">No tiene inscripciones activas.</p>' :
             studentActIds.map(aid => {
                 const act = activities.find(a => a.id === aid);
                 const s = statuses.find(st => st.activity_id === aid);
                 const isMoroso = !s || s.status === 'moroso';
                 return `
                             <div class="row-between" style="padding:10px; background:#f8fafc; border-radius:10px; margin-bottom:8px">
-                                <span style="font-weight:600">${act?.name || 'Actividad'}</span>
-                                <span class="badge ${isMoroso ? 'badge-moroso' : 'badge-active'}">
-                                    ${isMoroso ? (s ? 'MOROSO' : 'PAGO PEND.') : 'AL DÍA'}
+                                <span style="font-weight:600">\${act?.name || 'Actividad'}</span>
+                                <span class="badge \${isMoroso ? 'badge-moroso' : 'badge-active'}">
+                                    \${isMoroso ? (s ? 'MOROSO' : 'PAGO PEND.') : 'AL DÃA'}
                                 </span>
                             </div>
                         `;
@@ -1122,10 +1303,10 @@ window.showUserFicha = async (userId) => {
                 </div>
             </div>
 
-            ${user.waiver_url ? `
+            \${user.waiver_url ? `
             <div class="form-group">
-                <label class="label">Documentación</label>
-                <a href="${user.waiver_url}" target="_blank" class="btn btn-secondary btn-sm w-full">
+                <label class="label">DocumentaciÃ³n</label>
+                <a href="\${user.waiver_url}" target="_blank" class="btn btn-secondary btn-sm w-full">
                     <i data-lucide="file-text"></i> Ver Deslinde de Responsabilidad (PDF)
                 </a>
             </div>` : ''}
@@ -1138,9 +1319,9 @@ window.showUserFicha = async (userId) => {
     window.refreshIcons();
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   SOCIOS — Admin
-   ═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   SOCIOS â€” Admin
+   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderUsers(container) {
     const [users, allStatuses] = await Promise.all([
@@ -1150,7 +1331,7 @@ async function renderUsers(container) {
 
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">Gestión de Usuarios</h2>
+            <h2 class="view-title">GestiÃ³n de Usuarios</h2>
             <div style="display:flex; gap:10px">
                 <button class="btn btn-secondary" onclick="window.showConfigDeslinde()">
                     <i data-lucide="upload"></i> Subir Deslinde General
@@ -1166,9 +1347,9 @@ async function renderUsers(container) {
                     <tr><th>Usuario</th><th>Contacto / DNI</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr>
                 </thead>
                 <tbody>
-                    ${users.length === 0 ? `
+                    \${users.length === 0 ? `
                         <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">
-                            No hay usuarios registrados aún.
+                            No hay usuarios registrados aÃºn.
                         </td></tr>` :
             users.map(u => {
                 const userStats = allStatuses.filter(st => st.user_id === u.id);
@@ -1179,38 +1360,38 @@ async function renderUsers(container) {
                             <tr>
                                 <td>
                                     <div class="socio-avatar-wrap">
-                                        <div class="socio-avatar">${displayName.charAt(0).toUpperCase()}</div>
+                                        <div class="socio-avatar">\${displayName.charAt(0).toUpperCase()}</div>
                                         <div>
-                                            <div class="td-bold">${displayName}</div>
-                                            <div class="text-xs text-muted">@${u.usuario || '—'}</div>
+                                            <div class="td-bold">\${displayName}</div>
+                                            <div class="text-xs text-muted">@\${u.usuario || 'â€”'}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="text-sm">${u.phone || '—'}</div>
-                                    <div class="text-xs text-muted">DNI: ${u.dni || '—'}</div>
+                                    <div class="text-sm">\${u.phone || 'â€”'}</div>
+                                    <div class="text-xs text-muted">DNI: \${u.dni || 'â€”'}</div>
                                 </td>
                                 <td>
-                                    <span class="badge ${u.role === 'admin' ? 'badge-active' : u.role === 'profesor' ? 'badge-warning' : 'badge-secondary'}" style="background:var(--bg-muted); color:var(--text-main); border:1px solid var(--border)">
-                                        ${roles[u.role] || u.role}
+                                    <span class="badge \${u.role === 'admin' ? 'badge-active' : u.role === 'profesor' ? 'badge-warning' : 'badge-secondary'}" style="background:var(--bg-muted); color:var(--text-main); border:1px solid var(--border)">
+                                        \${roles[u.role] || u.role}
                                     </span>
                                 </td>
                                 <td>
-                                    ${u.role === 'alumno' || u.role === 'socio' ? `
-                                        <span class="badge ${isMoroso ? 'badge-moroso' : 'badge-active'}">
-                                            ${isMoroso ? 'MOROSO' : 'AL DÍA'}
-                                        </span>` : '—'}
+                                    \${u.role === 'alumno' || u.role === 'socio' ? `
+                                        <span class="badge \${isMoroso ? 'badge-moroso' : 'badge-active'}">
+                                            \${isMoroso ? 'MOROSO' : 'AL DÃA'}
+                                        </span>` : 'â€”'}
                                 </td>
                                 <td>
                                     <div class="action-row">
-                                        <button class="btn btn-secondary btn-xs" onclick="window.showUserModal('${u.id}')" title="Editar">
+                                        <button class="btn btn-secondary btn-xs" onclick="window.showUserModal('\${u.id}')" title="Editar">
                                             <i data-lucide="pencil" style="width:12px;height:12px"></i>
                                         </button>
-                                        ${u.role === 'alumno' || u.role === 'socio' ? `
-                                        <button class="btn btn-secondary btn-xs" onclick="window.showAlumnoHistory('${u.id}')" title="Pagos">
+                                        \${u.role === 'alumno' || u.role === 'socio' ? `
+                                        <button class="btn btn-secondary btn-xs" onclick="window.showAlumnoHistory('\${u.id}')" title="Pagos">
                                             <i data-lucide="history" style="width:12px;height:12px"></i>
                                         </button>` : ''}
-                                        <button class="btn btn-danger-ghost btn-xs" onclick="window.deleteUser('${u.id}')" title="Eliminar">
+                                        <button class="btn btn-danger-ghost btn-xs" onclick="window.deleteUser('\${u.id}')" title="Eliminar">
                                             <i data-lucide="trash-2" style="width:12px;height:12px"></i>
                                         </button>
                                     </div>
@@ -1231,79 +1412,59 @@ window.showUserModal = async (userId = null) => {
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="label">Nombre Completo</label>
-                    <input type="text" id="u-name" class="input" placeholder="Juan Pérez" value="${user?.name || ''}" required>
+                    <input type="text" id="u-name" class="input" placeholder="Juan PÃ©rez" value="\${user?.name || ''}" required>
                 </div>
                 <div class="form-group">
                     <label class="label">Rol</label>
                     <select id="u-role" class="input" required>
-                        <option value="alumno" ${user?.role === 'alumno' || user?.role === 'socio' ? 'selected' : ''}>Alumno</option>
-                        <option value="profesor" ${user?.role === 'profesor' ? 'selected' : ''}>Profesor</option>
-                        <option value="admin" ${user?.role === 'admin' ? 'selected' : ''}>Administrador</option>
+                        <option value="alumno" \${user?.role === 'alumno' || user?.role === 'socio' ? 'selected' : ''}>Alumno</option>
+                        <option value="profesor" \${user?.role === 'profesor' ? 'selected' : ''}>Profesor</option>
+                        <option value="admin" \${user?.role === 'admin' ? 'selected' : ''}>Administrador</option>
                     </select>
                 </div>
             </div>
-            <div class="form-row-2">
-                <div class="form-group">
-                    <label class="label">DNI</label>
-                    <input type="text" id="u-dni" class="input" placeholder="DNI sin puntos" value="${user?.dni || ''}" required>
-                </div>
-                <div class="form-group">
-                    <label class="label">Email Personal</label>
-                    <input type="email" id="u-personal-email" class="input" placeholder="ejemplo@correo.com" value="${user?.personal_email || ''}">
-                </div>
-            </div>
-            <div class="form-row-2">
-                <div class="form-group">
-                    <label class="label">Teléfono</label>
-                    <input type="tel" id="u-phone" class="input" placeholder="+54 9 ..." value="${user?.phone || ''}">
-                </div>
-                <div class="form-group">
-                    <label class="label">Tel. Emergencia</label>
-                    <input type="tel" id="u-emergency" class="input" placeholder="Contacto de emergencia" value="${user?.emergency_phone || ''}">
-                </div>
-            </div>
-            <div class="form-row-2">
-                <div class="form-group">
-                    <label class="label">Nombre Contacto Emergencia</label>
-                    <input type="text" id="u-emergency-name" class="input" placeholder="Nombre completo" value="${user?.emergency_name || ''}">
-                </div>
-                <div class="form-group">
-                    <label class="label">Parentesco</label>
-                    <select id="u-emergency-rel" class="input">
-                        <option value="">Seleccionar...</option>
-                        <option value="Padre/Madre" ${user?.emergency_relationship === 'Padre/Madre' ? 'selected' : ''}>Padre/Madre</option>
-                        <option value="Hijo/a" ${user?.emergency_relationship === 'Hijo/a' ? 'selected' : ''}>Hijo/a</option>
-                        <option value="Hermano/a" ${user?.emergency_relationship === 'Hermano/a' ? 'selected' : ''}>Hermano/a</option>
-                        <option value="Esposo/a" ${user?.emergency_relationship === 'Esposo/a' ? 'selected' : ''}>Esposo/a</option>
-                        <option value="Amigo/a" ${user?.emergency_relationship === 'Amigo/a' ? 'selected' : ''}>Amigo/a</option>
-                        <option value="Otro" ${user?.emergency_relationship === 'Otro' ? 'selected' : ''}>Otro</option>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="label">Deslinde + Ficha Completo (PDF/Imagen)</label>
-                <input type="file" id="u-waiver-file" class="input" accept=".pdf,image/*" style="padding:8px">
-                ${user?.waiver_url ? `
-                    <div class="mt-1" style="display:flex; align-items:center; gap:8px">
-                        <span class="badge badge-active" style="font-size:10px">Documento Cargado</span>
-                        <a href="${user.waiver_url}" target="_blank" class="text-xs text-primary" style="text-decoration:underline">Ver actual</a>
-                    </div>
-                ` : ''}
-                <span class="field-hint">Subí la foto o PDF del documento ya completado por el alumno.</span>
-            </div>
+
             <div class="form-group">
                 <label class="label">Nombre de Usuario (Login)</label>
                 <input type="text" id="u-usuario" class="input" placeholder="Ej: JuanP"
-                    value="${user?.usuario || ''}" ${user ? 'readonly style="background:#f1f5f9;cursor:not-allowed"' : ''} required>
+                    value="\${user?.usuario || ''}" \${user ? 'readonly style="background:#f1f5f9;cursor:not-allowed"' : ''} required>
+                <span class="field-hint">Este serÃ¡ el identificador para entrar al sistema.</span>
             </div>
-            ${!user ? `
+
+            \${!user ? `
             <div class="form-group">
-                <label class="label">Contraseña Inicial</label>
-                <input type="password" id="u-password" class="input" placeholder="Mínimo 6 caracteres" required minlength="6">
+                <label class="label">ContraseÃ±a Inicial</label>
+                <input type="password" id="u-password" class="input" placeholder="MÃ­nimo 6 caracteres" required minlength="6">
             </div>` : ''}
+
+            \${user ? `
+            <hr class="mt-4 mb-4">
+            <p class="text-xs text-muted mb-4">Campos adicionales (Opcionales - Se completan en el onboarding):</p>
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label class="label">DNI</label>
+                    <input type="text" id="u-dni" class="input" placeholder="DNI sin puntos" value="\${user?.dni || ''}">
+                </div>
+                <div class="form-group">
+                    <label class="label">Email Personal</label>
+                    <input type="email" id="u-personal-email" class="input" placeholder="ejemplo@correo.com" value="\${user?.personal_email || ''}">
+                </div>
+            </div>
+            <div class="form-row-2">
+                <div class="form-group">
+                    <label class="label">TelÃ©fono</label>
+                    <input type="tel" id="u-phone" class="input" placeholder="+54 9 ..." value="\${user?.phone || ''}">
+                </div>
+                <div class="form-group">
+                    <label class="label">Tel. Emergencia</label>
+                    <input type="tel" id="u-emergency" class="input" placeholder="Contacto de emergencia" value="\${user?.emergency_phone || ''}">
+                </div>
+            </div>
+            ` : ''}
+
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="UI.hideModal()">Cancelar</button>
-                <button type="submit" id="u-submit" class="btn btn-primary">${user ? 'Guardar Cambios' : 'Crear Usuario'}</button>
+                <button type="submit" id="u-submit" class="btn btn-primary">\${user ? 'Guardar Cambios' : 'Crear Usuario'}</button>
             </div>
         </form>`);
 
@@ -1315,14 +1476,15 @@ window.showUserModal = async (userId = null) => {
         const data = {
             name: document.getElementById('u-name').value.trim(),
             role: document.getElementById('u-role').value,
-            dni: document.getElementById('u-dni').value.trim(),
-            personal_email: document.getElementById('u-personal-email').value.trim(),
+            dni: document.getElementById('u-dni')?.value.trim() || '',
+            personal_email: document.getElementById('u-personal-email')?.value.trim() || '',
             usuario: document.getElementById('u-usuario').value.trim(),
-            phone: document.getElementById('u-phone').value.trim(),
-            emergency_phone: document.getElementById('u-emergency').value.trim(),
-            emergency_name: document.getElementById('u-emergency-name').value.trim(),
-            emergency_relationship: document.getElementById('u-emergency-rel').value,
+            phone: document.getElementById('u-phone')?.value.trim() || '',
+            emergency_phone: document.getElementById('u-emergency')?.value.trim() || '',
+            emergency_name: document.getElementById('u-emergency-name')?.value.trim() || '',
+            emergency_relationship: document.getElementById('u-emergency-rel')?.value || '',
             waiver_url: user?.waiver_url || '',
+            profile_completed: user ? true : false // Si es nuevo, forzamos onboarding
         };
 
         const runWithTimeout = (promise, ms, errorMsg) => {
@@ -1331,7 +1493,8 @@ window.showUserModal = async (userId = null) => {
         };
 
         try {
-            const waiverFile = document.getElementById('u-waiver-file').files[0];
+            const waiverFileInput = document.getElementById('u-waiver-file');
+            const waiverFile = waiverFileInput ? waiverFileInput.files[0] : null;
             if (waiverFile) {
                 try {
                     btn.textContent = 'Iniciando subida... (0%)';
@@ -1339,7 +1502,7 @@ window.showUserModal = async (userId = null) => {
 
                     const ext = waiverFile.name.split('.').pop() || 'pdf';
                     const storageId = userId || data.usuario || Date.now();
-                    const storageRef = storage.ref(`deslindes/${storageId}_deslinde.${ext}`);
+                    const storageRef = storage.ref(`deslindes/\${storageId}_deslinde.\${ext}`);
 
                     const uploadTask = storageRef.put(waiverFile);
 
@@ -1347,7 +1510,7 @@ window.showUserModal = async (userId = null) => {
                         uploadTask.on('state_changed',
                             (snapshot) => {
                                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                btn.textContent = `Subiendo: ${Math.round(progress)}%`;
+                                btn.textContent = `Subiendo: \${Math.round(progress)}%`;
                                 console.log('Progreso de subida:', progress + '%');
                             },
                             (error) => {
@@ -1362,7 +1525,7 @@ window.showUserModal = async (userId = null) => {
                     });
 
                     // Timeout de 60 segundos
-                    await runWithTimeout(uploadPromise, 60000, "Tiempo de subida agotado (60s). El archivo es muy grande o la conexión es inestable.");
+                    await runWithTimeout(uploadPromise, 60000, "Tiempo de subida agotado (60s). El archivo es muy grande o la conexiÃ³n es inestable.");
 
                     data.waiver_url = await storageRef.getDownloadURL();
                     console.log("URL de descarga obtenida:", data.waiver_url);
@@ -1419,26 +1582,26 @@ window.showAlumnoHistory = async (alumnoId) => {
     }
 
     document.getElementById('modal-content').querySelector('.modal-body').innerHTML = `
-        <h4 style="margin-bottom:12px">${profile?.name}</h4>
+        <h4 style="margin-bottom:12px">\${profile?.name}</h4>
         <div class="list-stack">
-            ${payments.length === 0 ? '<p class="text-muted">Sin pagos registrados.</p>' :
+            \${payments.length === 0 ? '<p class="text-muted">Sin pagos registrados.</p>' :
             payments.map(p => {
                 const act = activities.find(a => a.id === p.activity_id);
-                return `
+                return \`
                     <div class="list-row">
                         <div>
-                            <div class="row-title">${act?.name || p.activity_id}</div>
-                            <div class="row-sub">${p.date || '—'} · ${p.method}</div>
+                            <div class="row-title">\${act?.name || p.activity_id}</div>
+                            <div class="row-sub">\${p.date || 'â€”'} Â· \${p.method}</div>
                         </div>
                         <div style="text-align:right">
-                            <div style="font-weight:700">$${Number(p.amount).toLocaleString('es-AR')}</div>
-                            <span class="badge ${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
-                                ${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
+                            <div style="font-weight:700">$\${Number(p.amount).toLocaleString('es-AR')}</div>
+                            <span class="badge \${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
+                                \${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
                             </span>
                         </div>
-                    </div>`;
+                    </div>\`;
             }).join('')}
-        </div>`;
+        </div>\`;
     window.refreshIcons();
 };
 
@@ -1446,9 +1609,9 @@ window.deleteUser = (userId) => {
     UI.showModal('Eliminar Usuario', `
         <div class="confirm-danger">
             <i data-lucide="alert-triangle" style="width:40px;height:40px;color:var(--overdue);margin-bottom:12px"></i>
-            <p>¿Estás seguro de que querés eliminar este usuario?</p>
+            <p>Â¿EstÃ¡s seguro de que querÃ©s eliminar este usuario?</p>
             <p class="text-sm text-muted" style="margin-top:8px">
-                Se eliminará el perfil en Firestore. La cuenta de acceso debe eliminarse manualmente en Firebase Console.
+                Se eliminarÃ¡ el perfil en Firestore. La cuenta de acceso debe eliminarse manualmente en Firebase Console.
             </p>
         </div>
         <div class="modal-actions mt-4">
@@ -1464,9 +1627,9 @@ window.deleteUser = (userId) => {
     };
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   PAGOS — Admin
-═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   PAGOS â€” Admin
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderPaymentsAdmin(container) {
     const isProfesor = State.user.role === 'profesor';
@@ -1488,10 +1651,10 @@ async function renderPaymentsAdmin(container) {
 
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">Pagos Pendientes de Aprobación</h2>
-            <span class="badge badge-warning" style="font-size:13px;padding:6px 14px">${payments.length} pendiente(s)</span>
+            <h2 class="view-title">Pagos Pendientes de AprobaciÃ³n</h2>
+            <span class="badge badge-warning" style="font-size:13px;padding:6px 14px">\${payments.length} pendiente(s)</span>
         </div>
-        ${payments.length === 0 ? `
+        \${payments.length === 0 ? `
             <div class="empty-state">
                 <i data-lucide="check-circle" style="width:48px;height:48px;color:var(--success);margin-bottom:16px"></i>
                 <p>No hay pagos pendientes.</p>
@@ -1506,19 +1669,19 @@ async function renderPaymentsAdmin(container) {
                             <i data-lucide="file-text" style="width:20px;height:20px"></i>
                         </div>
                         <div>
-                            <div class="row-title">${socio?.name || 'Alumno desconocido'}</div>
+                            <div class="row-title">\${socio?.name || 'Alumno desconocido'}</div>
                             <div class="row-sub">
-                                ${act?.name || 'Actividad'} ·
-                                $${Number(p.amount).toLocaleString('es-AR')} ·
-                                ${p.date || '—'} · ${p.method}
+                                \${act?.name || 'Actividad'} Â·
+                                $\${Number(p.amount).toLocaleString('es-AR')} Â·
+                                \${p.date || 'â€”'} Â· \${p.method}
                             </div>
                         </div>
                     </div>
                     <div class="action-row">
-                        <button class="btn btn-primary btn-sm" onclick="window.approvePay('${p.id}')">
+                        <button class="btn btn-primary btn-sm" onclick="window.approvePay('\${p.id}')">
                             <i data-lucide="check" style="width:13px;height:13px"></i> Aprobar
                         </button>
-                        <button class="btn btn-danger-ghost btn-sm" onclick="window.rejectPay('${p.id}')">
+                        <button class="btn btn-danger-ghost btn-sm" onclick="window.rejectPay('\${p.id}')">
                             <i data-lucide="x" style="width:13px;height:13px"></i> Rechazar
                         </button>
                     </div>
@@ -1529,7 +1692,7 @@ async function renderPaymentsAdmin(container) {
 window.approvePay = async (payId) => {
     try {
         await DB.approvePayment(payId);
-        UI.notify('Pago aprobado. Suscripción renovada por 1 mes.');
+        UI.notify('Pago aprobado. SuscripciÃ³n renovada por 1 mes.');
         renderView('payments_admin');
     } catch (err) { UI.notify(err.message, 'error'); }
 };
@@ -1542,10 +1705,10 @@ window.rejectPay = async (payId) => {
     } catch (err) { UI.notify(err.message, 'error'); }
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   HISTORIAL DE PAGOS — Admin
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   HISTORIAL DE PAGOS â€” Admin
    Identificando socios, pagos y periodos.
-═══════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderPaymentsHistory(container) {
     const isProfesor = State.user.role === 'profesor';
@@ -1581,30 +1744,30 @@ async function renderPaymentsHistory(container) {
                         <th>Actividad</th>
                         <th>Periodo</th>
                         <th>Monto</th>
-                        <th>Método</th>
+                        <th>MÃ©todo</th>
                         <th>Estado</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${payments.length === 0 ? `
+                    \${payments.length === 0 ? `
                         <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">
-                            No hay registros de pagos aún.
+                            No hay registros de pagos aÃºn.
                         </td></tr>` :
             payments.map(p => {
                 const socio = users.find(s => s.id === (p.user_id || p.userId));
                 const act = activities.find(a => a.id === p.activity_id);
-                const dateStr = p.createdAt ? (p.createdAt.toDate ? p.createdAt.toDate().toISOString().split('T')[0] : '—') : '—';
+                const dateStr = p.createdAt ? (p.createdAt.toDate ? p.createdAt.toDate().toISOString().split('T')[0] : 'â€”') : 'â€”';
                 return `
                             <tr>
-                                <td>${dateStr !== '—' ? UI.formatDate(dateStr) : '—'}</td>
-                                <td class="td-bold">${socio?.name || 'Usuario Desconocido'}</td>
-                                <td>${act?.name || 'Actividad'}</td>
-                                <td>${p.month || p.Month || '—'}</td>
-                                <td>$${Number(p.amount || p.Amount || 0).toLocaleString('es-AR')}</td>
-                                <td>${p.method === 'transfer' ? 'Transferencia' : p.method === 'digital' ? 'Mercado Pago' : 'Efectivo'}</td>
+                                <td>\${dateStr !== 'â€”' ? UI.formatDate(dateStr) : 'â€”'}</td>
+                                <td class="td-bold">\${socio?.name || 'Usuario Desconocido'}</td>
+                                <td>\${act?.name || 'Actividad'}</td>
+                                <td>\${p.month || p.Month || 'â€”'}</td>
+                                <td>$\${Number(p.amount || p.Amount || 0).toLocaleString('es-AR')}</td>
+                                <td>\${p.method === 'transfer' ? 'Transferencia' : p.method === 'digital' ? 'Mercado Pago' : 'Efectivo'}</td>
                                 <td>
-                                    <span class="badge ${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
-                                        ${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
+                                    <span class="badge \${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
+                                        \${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
                                     </span>
                                 </td>
                             </tr>`;
@@ -1614,14 +1777,14 @@ async function renderPaymentsHistory(container) {
         </div>
         
         <script>
-            // Inyectamos esto para asegurarnos de que el botón de morosidad aparezca si se quiere
+            // Inyectamos esto para asegurarnos de que el botÃ³n de morosidad aparezca si se quiere
         </script>`;
     window.refreshIcons();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   INSCRIPCIONES — Alumno
-═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   INSCRIPCIONES â€” Alumno
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderInscripcionesAlumno(container) {
     const targetUserId = State.activeProfileId || State.user.id;
@@ -1634,14 +1797,14 @@ async function renderInscripcionesAlumno(container) {
     ]);
 
     const activeActs = activities.filter(a => a.status === 'active');
-    const dayOrder = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'];
+    const dayOrder = ['Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado', 'Domingo'];
 
     container.innerHTML = `
-        <h2 class="view-title mb-6">Inscripción a Turnos</h2>
-        <p class="text-sm text-muted mb-6">Podés inscribirte a múltiples turnos de la misma actividad.</p>
-        ${activeActs.length === 0 ? `<div class="empty-state">No hay actividades disponibles.</div>` : ''}
+        <h2 class="view-title mb-6">InscripciÃ³n a Turnos</h2>
+        <p class="text-sm text-muted mb-6">PodÃ©s inscribirte a mÃºltiples turnos de la misma actividad.</p>
+        \${activeActs.length === 0 ? \`<div class="empty-state">No hay actividades disponibles.</div>\` : ''}
         <div class="list-stack">
-            ${activeActs.map(act => {
+            \${activeActs.map(act => {
         const actTurnos = turnos
             .filter(t => t.activity_id === act.id)
             .sort((a, b) => {
@@ -1653,54 +1816,54 @@ async function renderInscripcionesAlumno(container) {
                 return (s1.start || '').localeCompare(s2.start || '');
             });
 
-        return `
+        return \`
                     <div class="mb-6">
                         <h3 class="subsection-title">
                             <span class="act-indicator"></span>
-                            ${act.name}
+                            \${act.name}
                             <div class="price-stack">
-                                <span class="price-sup">Efectivo: $${Number(act.price_cash || act.price || 0).toLocaleString('es-AR')}</span>
-                                <span class="price-sup">Transf: $${Number(act.price_digital || act.price || 0).toLocaleString('es-AR')}</span>
+                                <span class="price-sup">Efectivo: $\${Number(act.price_cash || act.price || 0).toLocaleString('es-AR')}</span>
+                                <span class="price-sup">Transf: $\${Number(act.price_digital || act.price || 0).toLocaleString('es-AR')}</span>
                             </div>
                         </h3>
-                        ${actTurnos.length === 0 ? `<div class="empty-inline">Sin turnos disponibles.</div>` : `
+                        \${actTurnos.length === 0 ? \`<div class="empty-inline">Sin turnos disponibles.</div>\` : \`
                             <div class="cards-grid-sm">
-                                ${actTurnos.map(turno => {
+                                \${actTurnos.map(turno => {
             const used = countMap[turno.id] || 0;
             const avail = Math.max(0, turno.max_cupo - used);
             const myInsc = myInscs.find(i => i.turno_id === turno.id);
             const check = DB.canInscribe(targetUserId, turno, countMap, myInscs, myStatuses);
-            return `
-                                        <div class="card turno-card ${myInsc ? 'turno-inscripto' : (!check.allowed ? 'turno-disabled' : '')}">
+            return \`
+                                        <div class="card turno-card \${myInsc ? 'turno-inscripto' : (!check.allowed ? 'turno-disabled' : '')}">
                                             <div class="row-between mb-2">
                                                 <div class="td-bold" style="font-size:13px">
-                                                    ${turno.slots ? turno.slots.map(s => `${s.day} ${s.start}-${s.end}`).join('<br>') : `${turno.day} ${turno.start}-${turno.end}`}
+                                                    \${turno.slots ? turno.slots.map(s => \`\${s.day} \${s.start}-\${s.end}\`).join('<br>') : \`\${turno.day} \${turno.start}-\${turno.end}\`}
                                                 </div>
                                             </div>
-                                            <div class="cupo-info ${avail > 0 ? 'cupo-ok' : 'cupo-full'}">
-                                                <i data-lucide="${avail > 0 ? 'users' : 'user-x'}" style="width:13px;height:13px"></i>
-                                                ${avail} / ${turno.max_cupo} libres
+                                            <div class="cupo-info \${avail > 0 ? 'cupo-ok' : 'cupo-full'}">
+                                                <i data-lucide="\${avail > 0 ? 'users' : 'user-x'}" style="width:13px;height:13px"></i>
+                                                \${avail} / \${turno.max_cupo} libres
                                             </div>
-                                            ${myInsc ? `
+                                            \${myInsc ? \`
                                                 <div class="inscripto-badge mt-2">
                                                     <i data-lucide="check" style="width:12px;height:12px"></i> Inscripto
                                                 </div>
-                                                <button onclick="window.cancelInscripcion('${myInsc.id}')"
+                                                <button onclick="window.cancelInscripcion('\${myInsc.id}')"
                                                     class="btn btn-cancel w-full mt-3 btn-sm">
                                                     <i data-lucide="user-minus" style="width:13px;height:13px"></i> CANCELAR
-                                                </button>` : `
+                                                </button>\` : \`
                                                 <button
-                                                    onclick="window.inscribe('${turno.id}','${turno.activity_id}',${turno.max_cupo})"
-                                                    ${!check.allowed ? 'disabled' : ''}
-                                                    class="btn ${check.allowed ? 'btn-primary' : 'btn-secondary'} w-full mt-3 btn-sm">
-                                                    ${check.allowed ? 'INSCRIBIRME' : check.reason}
-                                                </button>`}
-                                        </div>`;
+                                                    onclick="window.inscribe('\${turno.id}','\${turno.activity_id}',\${turno.max_cupo})"
+                                                    \${!check.allowed ? 'disabled' : ''}
+                                                    class="btn \${check.allowed ? 'btn-primary' : 'btn-secondary'} w-full mt-3 btn-sm">
+                                                    \${check.allowed ? 'INSCRIBIRME' : check.reason}
+                                                </button>\`}
+                                        </div>\`;
         }).join('')}
-                            </div>`}
-                    </div>`;
+                            </div>\`}
+                    </div>\`;
     }).join('')}
-        </div>`;
+        </div>\`;
 }
 
 window.inscribe = async (turnoId, activityId, maxCupo) => {
@@ -1711,7 +1874,7 @@ window.inscribe = async (turnoId, activityId, maxCupo) => {
             turno_id: turnoId,
             activity_id: activityId,
         });
-        UI.notify('¡Inscripción exitosa!');
+        UI.notify('Â¡InscripciÃ³n exitosa!');
         renderView('inscripciones');
     } catch (err) { UI.notify(err.message, 'error'); }
 };
@@ -1720,11 +1883,11 @@ window.cancelInscripcion = (inscripcionId) => {
     UI.showModal('Solicitar Baja de Actividad', `
         <div class="confirm-danger">
             <i data-lucide="user-minus" style="width:40px;height:40px;color:var(--overdue);margin-bottom:12px"></i>
-            <p>¿Estás seguro de que querés solicitar la <strong>baja</strong> de esta actividad?</p>
+            <p>Â¿EstÃ¡s seguro de que querÃ©s solicitar la <strong>baja</strong> de esta actividad?</p>
             <p class="text-sm text-muted" style="margin-top:8px">La baja debe ser aprobada por el administrador.</p>
             <div class="form-group mt-4" style="text-align:left">
                 <label class="label">Motivo (opcional)</label>
-                <textarea id="baja-reason" class="input" style="height:80px" placeholder="Contanos por qué dejas la actividad..."></textarea>
+                <textarea id="baja-reason" class="input" style="height:80px" placeholder="Contanos por quÃ© dejas la actividad..."></textarea>
             </div>
         </div>
         <div class="modal-actions mt-4">
@@ -1744,9 +1907,9 @@ window.cancelInscripcion = (inscripcionId) => {
     };
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   REPORTE DE PAGO — Alumno
-═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   REPORTE DE PAGO â€” Alumno
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderPagosAlumno(container) {
     const activities = await DB.getActivities();
@@ -1763,13 +1926,13 @@ async function renderPagosAlumno(container) {
                         <div class="form-group">
                             <label class="label">Actividad</label>
                             <select id="pay-activity" class="input" required>
-                                ${activities.map(a => `<option value="${a.id}">${a.name}</option>`).join('')}
+                                \${activities.map(a => `<option value="\${a.id}">\${a.name}</option>`).join('')}
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="label">Mes a Pagar</label>
                             <select id="pay-month" class="input" required>
-                                ${months.map((m, i) => `<option value="${m}" ${i === currentMonthIndex ? 'selected' : ''}>${m}</option>`).join('')}
+                                \${months.map((m, i) => `<option value="\${m}" \${i === currentMonthIndex ? 'selected' : ''}>\${m}</option>`).join('')}
                             </select>
                         </div>
                     </div>
@@ -1779,7 +1942,7 @@ async function renderPagosAlumno(container) {
                             <input type="number" id="pay-amount" class="input" placeholder="0" required>
                         </div>
                         <div class="form-group">
-                            <label class="label">Método</label>
+                            <label class="label">MÃ©todo</label>
                             <select id="pay-method" class="input" onchange="window.updatePayAmount()">
                                 <option value="transfer">Transferencia</option>
                                 <option value="digital">Mercado Pago</option>
@@ -1799,22 +1962,22 @@ async function renderPagosAlumno(container) {
                         <div id="file-name-display" class="file-name-display hidden"></div>
                     </div>
 
-                    ${State.family.length > 0 ? `
+                    \${State.family.length > 0 ? `
                     <div class="form-group mt-4">
-                        <label class="label">¿A quiénes corresponde este pago?</label>
+                        <label class="label">Â¿A quiÃ©nes corresponde este pago?</label>
                         <div style="display:flex; gap:15px; flex-wrap:wrap; background:rgba(0,0,0,0.02); padding:15px; border-radius:var(--radius-md); border:1px solid var(--border)">
                             <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
-                                <input type="checkbox" class="fam-pay-check" value="${State.user.id}" checked> 
-                                <span>Yo (${State.user.name.split(' ')[0]})</span>
+                                <input type="checkbox" class="fam-pay-check" value="\${State.user.id}" checked> 
+                                <span>Yo (\${State.user.name.split(' ')[0]})</span>
                             </label>
-                            ${State.family.map(f => `
+                            \${State.family.map(f => `
                                 <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
-                                    <input type="checkbox" class="fam-pay-check" value="${f.id}"> 
-                                    <span>${f.name}</span>
+                                    <input type="checkbox" class="fam-pay-check" value="\${f.id}"> 
+                                    <span>\${f.name}</span>
                                 </label>
                             `).join('')}
                         </div>
-                        <span class="field-hint">Marcá a todos los que cubre este único comprobante.</span>
+                        <span class="field-hint">MarcÃ¡ a todos los que cubre este Ãºnico comprobante.</span>
                     </div>
                     ` : ''}
                     <button type="submit" id="pay-submit" class="btn btn-primary w-full" style="padding:16px">
@@ -1834,7 +1997,7 @@ async function renderPagosAlumno(container) {
                             <th>Actividad</th>
                             <th>Periodo</th>
                             <th>Monto</th>
-                            <th>Método</th>
+                            <th>MÃ©todo</th>
                             <th>Estado</th>
                         </tr>
                     </thead>
@@ -1867,20 +2030,20 @@ async function renderPagosAlumno(container) {
 
         const body = document.getElementById('member-payments-body');
         if (payments.length === 0) {
-            body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted)">No tenés pagos registrados.</td></tr>';
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted)">No tenÃ©s pagos registrados.</td></tr>';
         } else {
             body.innerHTML = payments.map(p => {
                 const act = activitiesList.find(a => a.id === p.activity_id);
                 return `
                     <tr>
-                        <td>${p.createdAt ? UI.formatDate(p.createdAt.toDate().toISOString().split('T')[0]) : '—'}</td>
-                        <td class="td-bold">${act?.name || 'Actividad'}</td>
-                        <td>${p.month || '—'}</td>
-                        <td>$${Number(p.amount).toLocaleString('es-AR')}</td>
-                        <td>${p.method === 'transfer' ? 'Transferencia' : p.method === 'digital' ? 'Mercado Pago' : 'Efectivo'}</td>
+                        <td>\${p.createdAt ? UI.formatDate(p.createdAt.toDate().toISOString().split('T')[0]) : 'â€”'}</td>
+                        <td class="td-bold">\${act?.name || 'Actividad'}</td>
+                        <td>\${p.month || 'â€”'}</td>
+                        <td>$\${Number(p.amount).toLocaleString('es-AR')}</td>
+                        <td>\${p.method === 'transfer' ? 'Transferencia' : p.method === 'digital' ? 'Mercado Pago' : 'Efectivo'}</td>
                         <td>
-                            <span class="badge ${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
-                                ${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
+                            <span class="badge \${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
+                                \${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
                             </span>
                         </td>
                     </tr>`;
@@ -1908,7 +2071,7 @@ async function renderPagosAlumno(container) {
                 status: 'pending'
             };
             await DB.addPayment(data);
-            UI.notify('Pago reportado. Pendiente de aprobación por el administrador.');
+            UI.notify('Pago reportado. Pendiente de aprobaciÃ³n por el administrador.');
             navigateTo('dashboard');
         } catch (err) {
             UI.notify(err.message, 'error');
@@ -1920,14 +2083,14 @@ async function renderPagosAlumno(container) {
 window.showFileName = (input) => {
     const display = document.getElementById('file-name-display');
     if (input.files.length > 0) {
-        display.textContent = '📎 ' + input.files[0].name;
+        display.textContent = 'ðŸ“Ž ' + input.files[0].name;
         display.classList.remove('hidden');
     }
 };
 
-/* ═══════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    LOGIN
-═══════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function showLogin() {
     const container = document.getElementById('auth-container');
@@ -1946,8 +2109,8 @@ function showLogin() {
                         autocomplete="username" required>
                 </div>
                 <div class="form-group">
-                    <label class="label">Contraseña</label>
-                    <input type="password" id="l-pass" class="input" placeholder="Contraseña"
+                    <label class="label">ContraseÃ±a</label>
+                    <input type="password" id="l-pass" class="input" placeholder="ContraseÃ±a"
                         autocomplete="current-password" required>
                 </div>
                 <div id="l-error" class="hidden" style="background:#fff1f2;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;font-size:13px;color:var(--overdue);font-weight:600"></div>
@@ -1968,19 +2131,19 @@ function showLogin() {
         errBox.classList.add('hidden');
 
         try {
-            const email = `${usuario}@espacioactivo.app`;
+            const email = \`\${usuario}@espacioactivo.app\`;
             await auth.signInWithEmailAndPassword(email, password);
-            // onAuthStateChanged se encargará del resto
+            // onAuthStateChanged se encargarÃ¡ del resto
         } catch (err) {
             const msgs = {
                 'auth/user-not-found': 'Usuario no encontrado.',
-                'auth/wrong-password': 'Contraseña incorrecta.',
-                'auth/invalid-credential': 'Usuario o contraseña incorrectos.',
-                'auth/too-many-requests': 'Demasiados intentos. Esperá unos minutos.',
-                'auth/invalid-email': 'Formato de usuario inválido.',
-                'auth/network-request-failed': 'Sin conexión a internet.',
+                'auth/wrong-password': 'ContraseÃ±a incorrecta.',
+                'auth/invalid-credential': 'Usuario o contraseÃ±a incorrectos.',
+                'auth/too-many-requests': 'Demasiados intentos. EsperÃ¡ unos minutos.',
+                'auth/invalid-email': 'Formato de usuario invÃ¡lido.',
+                'auth/network-request-failed': 'Sin conexiÃ³n a internet.',
             };
-            errBox.textContent = msgs[err.code] || 'Error al iniciar sesión.';
+            errBox.textContent = msgs[err.code] || 'Error al iniciar sesiÃ³n.';
             errBox.classList.remove('hidden');
             btn.disabled = false; btn.textContent = 'INGRESAR';
         }
@@ -1988,9 +2151,9 @@ function showLogin() {
     window.refreshIcons();
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   MI PERFIL — General
-═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   MI PERFIL â€” General
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 window.showMyProfile = async () => {
     const user = State.user;
@@ -1998,18 +2161,18 @@ window.showMyProfile = async () => {
         <form id="profile-form" class="form-stack">
             <div class="form-group">
                 <label class="label">Nombre para mostrar</label>
-                <input type="text" id="p-name" class="input" value="${user.name || ''}" required>
+                <input type="text" id="p-name" class="input" value="\${user.name || ''}" required>
                 <span class="field-hint">Este es el nombre que se ve en el tablero y reportes.</span>
             </div>
             
             <div class="form-group">
                 <label class="label">Nombre de Usuario (Login)</label>
-                <input type="text" id="p-usuario" class="input" value="${user.usuario || ''}" required>
+                <input type="text" id="p-usuario" class="input" value="\${user.usuario || ''}" required>
                 <span class="field-hint">Se usa para ingresar al sistema (junto a @espacioactivo.app).</span>
             </div>
 
             <div id="re-login-warn" class="hidden mt-4 badge badge-warning" style="display:block; white-space:normal; line-height:1.4">
-                ⚠️ Si cambias tu Nombre de Usuario, deberás usar el nuevo nombre la próxima vez que ingreses. Tené en cuenta que para que funcione, el administrador también debe actualizar tu email en la consola de Firebase.
+                âš ï¸ Si cambias tu Nombre de Usuario, deberÃ¡s usar el nuevo nombre la prÃ³xima vez que ingreses. TenÃ© en cuenta que para que funcione, el administrador tambiÃ©n debe actualizar tu email en la consola de Firebase.
             </div>
 
             <div class="modal-actions">
@@ -2019,14 +2182,14 @@ window.showMyProfile = async () => {
         </form>
         <div class="mt-8 pt-6" style="border-top:1px solid var(--border)">
             <h3 class="section-title">Grupo Familiar</h3>
-            <p class="text-xs text-muted mb-4">Agregá a tus hijos o familiares para gestionar sus actividades desde tu cuenta.</p>
+            <p class="text-xs text-muted mb-4">AgregÃ¡ a tus hijos o familiares para gestionar sus actividades desde tu cuenta.</p>
             
             <div id="family-list-container" class="list-stack mb-4">
-                ${State.family.length === 0 ? '<p class="text-sm text-muted">No tenés familiares vinculados.</p>' : 
+                \${State.family.length === 0 ? '<p class="text-sm text-muted">No tenÃ©s familiares vinculados.</p>' : 
                     State.family.map(f => `
                         <div class="list-row" style="background:var(--bg-app); border-radius:10px; padding:10px 15px">
                             <div>
-                                <div class="row-title" style="font-size:14px">${f.name}</div>
+                                <div class="row-title" style="font-size:14px">\${f.name}</div>
                                 <div class="text-xs text-muted">Familiar Directo</div>
                             </div>
                             <i data-lucide="user" style="width:16px; color:var(--text-muted)"></i>
@@ -2073,7 +2236,7 @@ window.showMyProfile = async () => {
             UI.hideModal();
 
             if (newUser !== origUser) {
-                UI.notify('Cerrá sesión e ingresá con tu nuevo usuario.', 'warning');
+                UI.notify('CerrÃ¡ sesiÃ³n e ingresÃ¡ con tu nuevo usuario.', 'warning');
             }
         } catch (err) {
             UI.notify(err.message, 'error');
@@ -2082,9 +2245,9 @@ window.showMyProfile = async () => {
     };
 };
 
-/* ═══════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    REPORTES PDF
-═══════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 window.generatePDFReport = async () => {
     UI.notify('Generando reporte PDF...');
@@ -2121,7 +2284,7 @@ window.generatePDFReport = async () => {
     doc.setTextColor(100);
     doc.text('Reporte de Cobranzas y Morosidad', 14, 30);
     doc.setFontSize(10);
-    doc.text(`Fecha de generación: ${new Date().toLocaleString()}`, 14, 38);
+    doc.text(\`Fecha de generaciÃ³n: \${new Date().toLocaleString()}\`, 14, 38);
 
     let yPos = 50;
 
@@ -2130,7 +2293,7 @@ window.generatePDFReport = async () => {
 
         doc.setFontSize(16);
         doc.setTextColor(0);
-        doc.text(`Actividad: ${act.name}`, 14, yPos);
+        doc.text(\`Actividad: \${act.name}\`, 14, yPos);
         yPos += 10;
 
         // Cobranzas Table
@@ -2138,17 +2301,17 @@ window.generatePDFReport = async () => {
         const approvedData = actPayments.map(p => {
             const u = users.find(usr => usr.id === p.user_id);
             return [
-                p.date || '—',
-                u?.name || '—',
-                p.month || '—',
-                `$${p.amount.toLocaleString('es-AR')}`,
+                p.date || 'â€”',
+                u?.name || 'â€”',
+                p.month || 'â€”',
+                \`$\${p.amount.toLocaleString('es-AR')}\`,
                 p.method
             ];
         });
 
         doc.autoTable({
             startY: yPos,
-            head: [['Fecha', 'Alumno', 'Periodo', 'Monto', 'Método']],
+            head: [['Fecha', 'Alumno', 'Periodo', 'Monto', 'MÃ©todo']],
             body: approvedData.length > 0 ? approvedData : [['No hay cobranzas aprobadas', '', '', '', '']],
             theme: 'striped',
             headStyles: { fillColor: [37, 99, 235] }
@@ -2161,21 +2324,21 @@ window.generatePDFReport = async () => {
         const morososData = actMorosos.map(st => {
             const u = users.find(usr => usr.id === st.user_id);
             return [
-                u?.name || '—',
-                u?.phone || '—',
-                st.expiration || '—'
+                u?.name || 'â€”',
+                u?.phone || 'â€”',
+                st.expiration || 'â€”'
             ];
         });
 
         if (morososData.length > 0) {
             doc.setFontSize(12);
             doc.setTextColor(220, 38, 38); // Warning/Overdue color
-            doc.text(`Alumnos Morosos - ${act.name}`, 14, yPos);
+            doc.text(\`Alumnos Morosos - \${act.name}\`, 14, yPos);
             yPos += 5;
 
             doc.autoTable({
                 startY: yPos,
-                head: [['Alumno', 'Teléfono', 'Vencimiento']],
+                head: [['Alumno', 'TelÃ©fono', 'Vencimiento']],
                 body: morososData,
                 theme: 'grid',
                 headStyles: { fillColor: [220, 38, 38] }
@@ -2184,7 +2347,7 @@ window.generatePDFReport = async () => {
         } else {
             doc.setFontSize(10);
             doc.setTextColor(22, 163, 74); // Success color
-            doc.text(`Sin alumnos morosos en ${act.name}`, 14, yPos);
+            doc.text(\`Sin alumnos morosos en \${act.name}\`, 14, yPos);
             yPos += 15;
         }
     });
@@ -2201,16 +2364,16 @@ window.generatePDFReport = async () => {
     doc.setTextColor(0);
     doc.text('RESUMEN GENERAL', 14, yPos + 10);
     doc.setFontSize(12);
-    doc.text(`Total Recaudado (Aprobado): $${totalIncome.toLocaleString('es-AR')}`, 14, yPos + 20);
-    doc.text(`Total Alumnos Morosos: ${totalMorosos}`, 14, yPos + 30);
+    doc.text(\`Total Recaudado (Aprobado): $\${totalIncome.toLocaleString('es-AR')}\`, 14, yPos + 20);
+    doc.text(\`Total Alumnos Morosos: \${totalMorosos}\`, 14, yPos + 30);
 
-    doc.save(`Reporte_Punto_Activo_${new Date().toISOString().split('T')[0]}.pdf`);
+    doc.save(\`Reporte_Punto_Activo_\${new Date().toISOString().split('T')[0]}.pdf\`);
     UI.notify('Reporte generado correctamente.');
 };
 
-/* ═══════════════════════════════════════════════════════════════
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    GLOBAL LISTENERS
-═══════════════════════════════════════════════════════════════ */
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 function setupGlobalListeners() {
     document.getElementById('logout-btn').onclick = async () => {
@@ -2250,22 +2413,22 @@ function setupGlobalListeners() {
     };
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   CONFIGURACIÓN DESLINDE GENERAL
-═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   CONFIGURACIÃ“N DESLINDE GENERAL
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 window.showConfigDeslinde = async () => {
     const config = await DB.getGlobalConfig('deslinde');
     UI.showModal('Configurar Deslinde General', `
         <form id="config-deslinde-form" class="form-stack">
-            <p class="text-sm text-muted mb-4">Este es el PDF (Deslinde + Ficha Médica) que todos los alumnos podrán descargar para completar.</p>
+            <p class="text-sm text-muted mb-4">Este es el PDF (Deslinde + Ficha MÃ©dica) que todos los alumnos podrÃ¡n descargar para completar.</p>
             
             <div class="form-group">
                 <label class="label">Archivo PDF</label>
-                <div class="${config?.url ? 'row-between' : ''}" style="background:var(--bg-muted); padding:12px; border-radius:10px; border:1px dashed var(--border)">
+                <div class="\${config?.url ? 'row-between' : ''}" style="background:var(--bg-muted); padding:12px; border-radius:10px; border:1px dashed var(--border)">
                     <input type="file" id="cfg-file" class="input" accept=".pdf" style="border:none; background:transparent; padding:0">
-                    ${config?.url ? `
-                        <a href="${config.url}" target="_blank" class="badge badge-active" style="text-decoration:none">
+                    \${config?.url ? `
+                        <a href="\${config.url}" target="_blank" class="badge badge-active" style="text-decoration:none">
                             <i data-lucide="eye" style="width:12px; height:12px"></i> Ver Actual
                         </a>
                     ` : ''}
@@ -2281,7 +2444,7 @@ window.showConfigDeslinde = async () => {
     document.getElementById('config-deslinde-form').onsubmit = async (e) => {
         e.preventDefault();
         const file = document.getElementById('cfg-file').files[0];
-        if (!file && !config?.url) return UI.notify('Seleccioná un archivo.', 'error');
+        if (!file && !config?.url) return UI.notify('SeleccionÃ¡ un archivo.', 'error');
 
         const btn = document.getElementById('cfg-submit');
         btn.disabled = true; btn.textContent = 'Subiendo...';
@@ -2289,12 +2452,12 @@ window.showConfigDeslinde = async () => {
         try {
             let url = config?.url || '';
             if (file) {
-                const storageRef = storage.ref(`config/deslinde_general_${Date.now()}.pdf`);
+                const storageRef = storage.ref(\`config/deslinde_general_\${Date.now()}.pdf\`);
                 await storageRef.put(file);
                 url = await storageRef.getDownloadURL();
             }
             await DB.setGlobalConfig('deslinde', { url });
-            UI.notify('Configuración guardada.');
+            UI.notify('ConfiguraciÃ³n guardada.');
             UI.hideModal();
         } catch (err) {
             UI.notify(err.message, 'error');
@@ -2303,9 +2466,9 @@ window.showConfigDeslinde = async () => {
     };
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   GESTIÓN DE BAJAS — Admin
-═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   GESTIÃ“N DE BAJAS â€” Admin
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderBajasAdmin(container) {
     const isProfesor = State.user.role === 'profesor';
@@ -2326,9 +2489,9 @@ async function renderBajasAdmin(container) {
     container.innerHTML = `
         <div class="view-header">
             <h2 class="view-title">Solicitudes de Baja</h2>
-            <span class="badge ${bajas.length > 0 ? 'badge-warning' : 'badge-active'}">${bajas.length} pendiente(s)</span>
+            <span class="badge \${bajas.length > 0 ? 'badge-warning' : 'badge-active'}">\${bajas.length} pendiente(s)</span>
         </div>
-        ${bajas.length === 0 ? `
+        \${bajas.length === 0 ? `
             <div class="empty-state">
                 <i data-lucide="check-circle" style="width:48px;height:48px;color:var(--success);margin-bottom:16px"></i>
                 <p>No hay solicitudes de baja pendientes.</p>
@@ -2340,23 +2503,23 @@ async function renderBajasAdmin(container) {
                 <div class="card mb-4">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start">
                         <div>
-                            <div class="row-title">${socio?.name || 'Socio'} (@${socio?.usuario || '—'})</div>
-                            <div class="row-sub">Solicita baja de: <strong>${act?.name || 'Actividad'}</strong></div>
-                            ${b.baja_reason ? `
+                            <div class="row-title">\${socio?.name || 'Socio'} (@\${socio?.usuario || 'â€”'})</div>
+                            <div class="row-sub">Solicita baja de: <strong>\${act?.name || 'Actividad'}</strong></div>
+                            \${b.baja_reason ? `
                                 <div class="mt-4 p-3" style="background:var(--bg-muted); border-radius:8px; font-size:13px; border-left:4px solid var(--overdue)">
-                                    " ${b.baja_reason} "
+                                    " \${b.baja_reason} "
                                 </div>
                             ` : ''}
                         </div>
                         <div class="text-xs text-muted">
-                            ${b.baja_requested_at ? UI.formatDate(b.baja_requested_at.toDate().toISOString().split('T')[0]) : ''}
+                            \${b.baja_requested_at ? UI.formatDate(b.baja_requested_at.toDate().toISOString().split('T')[0]) : ''}
                         </div>
                     </div>
                     <div class="action-row mt-6">
-                        <button class="btn btn-primary btn-sm" onclick="window.approveBajaBtn('${b.id}')">
+                        <button class="btn btn-primary btn-sm" onclick="window.approveBajaBtn('\${b.id}')">
                             <i data-lucide="check"></i> Aprobar Baja
                         </button>
-                        <button class="btn btn-danger-ghost btn-sm" onclick="window.rejectBajaBtn('${b.id}')">
+                        <button class="btn btn-danger-ghost btn-sm" onclick="window.rejectBajaBtn('\${b.id}')">
                             <i data-lucide="x"></i> Rechazar
                         </button>
                     </div>
@@ -2366,7 +2529,7 @@ async function renderBajasAdmin(container) {
 }
 
 window.approveBajaBtn = async (id) => {
-    if (!confirm('¿Aprobar la baja? El alumno dejará de estar inscripto.')) return;
+    if (!confirm('Â¿Aprobar la baja? El alumno dejarÃ¡ de estar inscripto.')) return;
     try {
         await DB.approveBaja(id);
         UI.notify('Baja aprobada.');
@@ -2375,17 +2538,17 @@ window.approveBajaBtn = async (id) => {
 };
 
 window.rejectBajaBtn = async (id) => {
-    if (!confirm('¿Rechazar la solicitud de baja?')) return;
+    if (!confirm('Â¿Rechazar la solicitud de baja?')) return;
     try {
         await DB.rejectBaja(id);
-        UI.notify('Solicitud rechazada. La inscripción sigue activa.');
+        UI.notify('Solicitud rechazada. La inscripciÃ³n sigue activa.');
         renderView('bajas_admin');
     } catch (err) { UI.notify(err.message, 'error'); }
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   MOROSIDADES — Admin
-═══════════════════════════════════════════════════════════════ */
+/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+   MOROSIDADES â€” Admin
+â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
 async function renderMorosidades(container) {
     const isProfesor = State.user.role === 'profesor';
@@ -2422,12 +2585,12 @@ async function renderMorosidades(container) {
                         <th>Socio</th>
                         <th>Actividad</th>
                         <th>Vencimiento</th>
-                        <th>Teléfono</th>
+                        <th>TelÃ©fono</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    ${morososList.length === 0 ? `
+                    \${morososList.length === 0 ? `
                         <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">
                             No hay socios morosos registrados.
                         </td></tr>` :
@@ -2436,12 +2599,12 @@ async function renderMorosidades(container) {
                 const act = activities.find(a => a.id === st.activity_id);
                 return `
                             <tr>
-                                <td class="td-bold">${socio?.name || 'Desconocido'}</td>
-                                <td>${act?.name || 'Actividad'}</td>
-                                <td style="color:var(--overdue); font-weight:700">${st.expiration ? UI.formatDate(st.expiration) : '—'}</td>
-                                <td>${socio?.phone || '—'}</td>
+                                <td class="td-bold">\${socio?.name || 'Desconocido'}</td>
+                                <td>\${act?.name || 'Actividad'}</td>
+                                <td style="color:var(--overdue); font-weight:700">\${st.expiration ? UI.formatDate(st.expiration) : 'â€”'}</td>
+                                <td>\${socio?.phone || 'â€”'}</td>
                                 <td>
-                                    <button class="btn btn-secondary btn-xs" onclick="window.showUserFicha('${st.user_id}')">
+                                    <button class="btn btn-secondary btn-xs" onclick="window.showUserFicha('\${st.user_id}')">
                                         <i data-lucide="eye" style="width:12px;height:12px"></i> Ver Ficha
                                     </button>
                                 </td>
@@ -2449,124 +2612,72 @@ async function renderMorosidades(container) {
             }).join('')}
                 </tbody>
             </table>
-        </div>`;
+        </div>\`;
     window.refreshIcons();
 }
 
 window.generateMorososPDF = async () => {
     UI.notify('Generando reporte morosos...');
-
     const isProfesor = State.user.role === 'profesor';
     let profesorId = null;
     let profesorName = null;
-
     if (isProfesor) {
         profesorId = State.user.id;
         profesorName = State.user.name;
     }
-
     const [morososList, users, activities] = await Promise.all([
         DB.getMorososList(profesorId, profesorName),
         DB.getUsers(),
         DB.getActivities()
     ]);
-
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF();
-
-    // Header
     doc.setFontSize(22);
     doc.setTextColor(220, 38, 38);
     doc.text('REPORTE DE MOROSIDAD', 14, 20);
-    doc.setFontSize(14);
-    doc.setTextColor(100);
-    doc.text('Alumnos con deudas pendientes', 14, 30);
-    doc.setFontSize(10);
-    doc.text(`Fecha de generación: ${new Date().toLocaleString()}`, 14, 38);
-
-    let yPos = 50;
-
-    activities.forEach(act => {
-        const actMorosos = morososList.filter(m => m.activity_id === act.id);
-        if (actMorosos.length === 0) return;
-
-        if (yPos > 250) { doc.addPage(); yPos = 20; }
-
-        doc.setFontSize(16);
-        doc.setTextColor(0);
-        doc.text(`Actividad: ${act.name}`, 14, yPos);
-        yPos += 8;
-
-        const morososData = actMorosos.map(m => {
-            const u = users.find(usr => usr.id === m.user_id);
-            return [
-                u?.name || '—',
-                u?.phone || '—',
-                m.expiration ? UI.formatDate(m.expiration) : 'Inic. Pendiente'
-            ];
-        });
-
-        doc.autoTable({
-            startY: yPos,
-            head: [['Alumno', 'Teléfono', 'Vencimiento']],
-            body: morososData,
-            theme: 'grid',
-            headStyles: { fillColor: [220, 38, 38] }
-        });
-
-        yPos = doc.lastAutoTable.finalY + 15;
+    doc.autoTable({
+        startY: 50,
+        head: [['Alumno', 'TelÃ©fono', 'Vencimiento']],
+        body: morososList.map(m => [
+            users.find(u => u.id === m.user_id)?.name || 'â€”',
+            users.find(u => u.id === m.user_id)?.phone || 'â€”',
+            m.expiration ? UI.formatDate(m.expiration) : 'â€”'
+        ]),
+        theme: 'grid',
+        headStyles: { fillColor: [220, 38, 38] }
     });
-
-    if (yPos > 260) { doc.addPage(); yPos = 20; }
-    doc.setFontSize(12);
-    doc.text(`Total Alumnos Morosos: ${morososList.length}`, 14, yPos + 10);
-
-    doc.save(`Reporte_Morosidad_Punto_Activo_${new Date().toISOString().split('T')[0]}.pdf`);
-    UI.notify('Reporte de morosos generado.');
+    doc.save('Reporte_Morosidad.pdf');
+    UI.notify('Reporte generado.');
 };
-
-
-/* ═══════════════════════════════════════════════════════════════
-   ANNOUNCEMENTS MANAGEMENT (Admin)
-═══════════════════════════════════════════════════════════════ */
 
 async function renderAnnouncementsAdmin(container) {
     const announcements = await DB.getAnnouncements().catch(() => []);
-
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">Gestión del Tablón</h2>
+            <h2 class="view-title">GestiÃ³n del TablÃ³n</h2>
             <button class="btn btn-primary" onclick="showAnnouncementForm()">
                 <i data-lucide="plus"></i> Nuevo Anuncio
             </button>
         </div>
-
         <div class="card" style="padding:16px">
             <div class="list-stack">
-                ${announcements.length === 0 ? '<p class="text-muted p-4">No hay anuncios publicados.</p>' :
+                \${announcements.length === 0 ? '<p class="text-muted p-4">No hay anuncios publicados.</p>' :
             announcements.map(a => `
                     <div class="admin-announcement-card">
                         <div>
-                            <div class="row-title">${a.title}</div>
+                            <div class="row-title">\${a.title}</div>
                             <div class="announcement-meta">
-                                <span class="announcement-tag tag-${a.role}">${a.role === 'all' ? 'Todos' : a.role}</span>
-                                <span>Prioridad: ${a.priority === 'important' ? 'Alta' : 'Normal'}</span>
-                                <span>${a.createdAt ? UI.formatDate(new Date((a.createdAt.seconds || a.createdAt._seconds || 0) * 1000).toISOString().split('T')[0]) : ''}</span>
+                                <span class="announcement-tag tag-\${a.role}">\${a.role === 'all' ? 'Todos' : a.role}</span>
+                                <span>Prioridad: \${a.priority === 'important' ? 'Alta' : 'Normal'}</span>
                             </div>
                         </div>
                         <div class="action-row">
-                            <button class="btn btn-ghost btn-sm" onclick="showAnnouncementForm('${a.id}')">
-                                <i data-lucide="edit-2"></i>
-                            </button>
-                            <button class="btn btn-ghost btn-sm text-overdue" onclick="window.deleteAnnouncement('${a.id}')">
-                                <i data-lucide="trash-2"></i>
-                            </button>
+                            <button class="btn btn-ghost btn-sm" onclick="showAnnouncementForm('\${a.id}')"><i data-lucide="edit-2"></i></button>
+                            <button class="btn btn-ghost btn-sm text-overdue" onclick="window.deleteAnnouncement('\${a.id}')"><i data-lucide="trash-2"></i></button>
                         </div>
-                    </div>`).join('')
-        }
+                    </div>\`).join('')}
             </div>
-        </div>
-    `;
+        </div>\`;
     window.refreshIcons();
 }
 
@@ -2576,284 +2687,129 @@ window.showAnnouncementForm = async (id = null) => {
         const list = await DB.getAnnouncements();
         a = list.find(item => item.id === id);
     }
-
-    const html = `
+    const html = \`
         <form id="ann-form" class="form-stack">
-            <input type="hidden" id="ann-id" value="${id || ''}">
-            <div class="form-group">
-                <label>Título del Anuncio</label>
-                <input type="text" id="ann-title" value="${a.title}" required placeholder="Ej: Feriado del lunes">
-            </div>
-            <div class="form-group">
-                <label>Contenido</label>
-                <textarea id="ann-content" rows="4" required placeholder="Escribí el mensaje aquí...">${a.content}</textarea>
-            </div>
+            <div class="form-group"><label>TÃ­tulo</label><input type="text" id="ann-title" value="\${a.title}" required></div>
+            <div class="form-group"><label>Contenido</label><textarea id="ann-content" rows="4" required>\${a.content}</textarea></div>
             <div class="form-row-2">
-                <div class="form-group">
-                    <label>Dirigido a</label>
-                    <select id="ann-role">
-                        <option value="all" ${a.role === 'all' ? 'selected' : ''}>Todos</option>
-                        <option value="alumno" ${a.role === 'alumno' ? 'selected' : ''}>Solo Alumnos</option>
-                        <option value="profesor" ${a.role === 'profesor' ? 'selected' : ''}>Solo Profesores</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Prioridad</label>
-                    <select id="ann-priority">
-                        <option value="normal" ${a.priority === 'normal' ? 'selected' : ''}>Normal</option>
-                        <option value="important" ${a.priority === 'important' ? 'selected' : ''}>Importante (Rojo)</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Rol</label><select id="ann-role"><option value="all">Todos</option><option value="alumno">Alumnos</option></select></div>
+                <div class="form-group"><label>Prioridad</label><select id="ann-priority"><option value="normal">Normal</option><option value="important">Alta</option></select></div>
             </div>
-            <div class="form-actions mt-4">
-                <button type="button" class="btn btn-ghost" onclick="UI.hideModal()">Cancelar</button>
-                <button type="submit" class="btn btn-primary">Publicar</button>
-            </div>
-        </form>
-    `;
-
-    UI.showModal(id ? 'Editar Anuncio' : 'Nuevo Anuncio', html);
-
+            <div class="modal-actions"><button type="submit" class="btn btn-primary">Publicar</button></div>
+        </form>\`;
+    UI.showModal('Anuncio', html);
     document.getElementById('ann-form').onsubmit = async (e) => {
         e.preventDefault();
-        const data = {
-            title: document.getElementById('ann-title').value,
-            content: document.getElementById('ann-content').value,
-            role: document.getElementById('ann-role').value,
-            priority: document.getElementById('ann-priority').value,
-            createdBy: State.user.id
-        };
-
-        try {
-            if (id) await DB.updateAnnouncement(id, data);
-            else await DB.addAnnouncement(data);
-            UI.hideModal();
-            UI.notify('Anuncio guardado.');
-            renderView('announcements_admin');
-        } catch (err) {
-            UI.notify('Error al guardar.', 'error');
-        }
+        const data = { title: document.getElementById('ann-title').value, content: document.getElementById('ann-content').value, role: document.getElementById('ann-role').value, priority: document.getElementById('ann-priority').value };
+        if (id) await DB.updateAnnouncement(id, data); else await DB.addAnnouncement(data);
+        UI.hideModal(); renderView('announcements_admin');
     };
 };
 
-window.deleteAnnouncement = async (id) => {
-    if (!confirm('¿Estás seguro de eliminar este anuncio?')) return;
-    await DB.deleteAnnouncement(id);
-    UI.notify('Anuncio eliminado.');
-    renderView('announcements_admin');
-};
+window.deleteAnnouncement = async (id) => { if (confirm('Â¿Eliminar?')) { await DB.deleteAnnouncement(id); renderView('announcements_admin'); } };
 
-
-/* ═══════════════════════════════════════════════════════════════
-   ASISTENCIA (ATTENDANCE) LOGIC
-═══════════════════════════════════════════════════════════════ */
-
-let currentAttendanceData = {
-    turnoId: null,
-    activityId: null,
-    date: null,
-    presents: new Set(), // IDs de alumnos presentes
-    allStudents: [] // Alumnos de la actividad
-};
-
+let currentAttendanceData = { turnoId: null, presents: new Set(), allStudents: [] };
 window.showAttendanceModal = async (turnoId) => {
-    UI.notify('Cargando lista de asistencia...');
     const today = new Date().toISOString().split('T')[0];
-    
-    const [turnos, activities, users, inscsSnap, existingAttendance] = await Promise.all([
-        DB.getTurnos(),
-        DB.getActivities(),
-        DB.getUsers(),
-        db.collection('inscripciones').where('status', '==', 'active').get().catch(() => ({ docs: [] })),
-        DB.getAttendance(today, turnoId)
-    ]);
-
+    const [turnos, activities, users, inscriptions, existingAttendance] = await Promise.all([DB.getTurnos(), DB.getActivities(), DB.getUsers(), DB.getInscripciones(), DB.getAttendance(today, turnoId)]);
     const turno = turnos.find(t => t.id === turnoId);
     const activity = activities.find(a => a.id === turno.activity_id);
-    
-    // Alumnos inscriptos en ESTA actividad
-    const activeInscs = inscsSnap.docs.map(d => d.data()).filter(i => i.activity_id === activity.id);
-    const studentIds = [...new Set(activeInscs.map(i => i.user_id))];
-    
-    const activityStudents = users.filter(u => studentIds.includes(u.id)).map(u => {
-        const insc = activeInscs.find(i => i.user_id === u.id);
-        return {
-            ...u,
-            isRegular: insc.turno_id === turnoId
-        };
-    });
-
-    currentAttendanceData = {
-        turnoId,
-        activityId: activity.id,
-        date: today,
-        presents: new Set(existingAttendance.map(a => a.user_id)),
-        allStudents: activityStudents
-    };
-
+    const activeInscs = inscriptions.filter(i => i.activity_id === activity.id && i.status === 'active');
+    const activityStudents = users.filter(u => activeInscs.some(i => i.user_id === u.id)).map(u => ({ ...u, isRegular: activeInscs.find(i => i.user_id === u.id).turno_id === turnoId }));
+    currentAttendanceData = { turnoId, activityId: activity.id, date: today, presents: new Set(existingAttendance.map(a => a.user_id)), allStudents: activityStudents };
     renderAttendanceModal();
 };
 
 function renderAttendanceModal() {
     const { allStudents, presents, date } = currentAttendanceData;
-    
-    const html = `
-        <div class="attendance-header-info">
-            <div>
-                <div style="font-size:12px; color:var(--text-muted); font-weight:700">FECHA</div>
-                <div style="font-weight:800">${UI.formatDate(date)}</div>
-            </div>
-            <div style="text-align:right">
-                <div style="font-size:12px; color:var(--text-muted); font-weight:700">PRESENTES</div>
-                <div id="attendance-count" style="font-weight:800; color:var(--primary); font-size:18px">${presents.size}</div>
-            </div>
-        </div>
-
-        <div class="attendance-search-box">
-            <i data-lucide="search"></i>
-            <input type="text" placeholder="Buscar alumno de esta actividad..." oninput="window.filterAttendanceList(this.value)">
-        </div>
-
-        <div class="attendance-list" id="attendance-list-container">
-            ${renderAttendanceItems(allStudents)}
-        </div>
-
-        <div class="form-actions mt-6">
-            <button class="btn btn-secondary" onclick="UI.hideModal()">Cancelar</button>
-            <button class="btn btn-primary" onclick="window.saveAttendanceData()">
-                <i data-lucide="save"></i> Guardar Asistencia
-            </button>
-        </div>
-    `;
-
-    UI.showModal('Tomar Asistencia', html);
+    const html = \`
+        <div class="attendance-list-container">
+            <h3>Asistencia \${UI.formatDate(date)}</h3>
+            <div id="attendance-list">\${renderAttendanceItems(allStudents)}</div>
+            <button class="btn btn-primary w-full mt-4" onclick="window.saveAttendanceData()">Guardar</button>
+        </div>\`;
+    UI.showModal('Asistencia', html);
 }
 
 function renderAttendanceItems(students) {
     const { presents } = currentAttendanceData;
-    
-    // Primero los regulares, luego los extras
-    const sorted = [...students].sort((a, b) => (b.isRegular - a.isRegular) || a.name.localeCompare(b.name));
-
-    return sorted.map(s => {
-        const isPresent = presents.has(s.id);
-        return `
-            <div class="attendance-item ${isPresent ? 'is-present' : ''}" onclick="window.toggleAttendance('${s.id}')">
-                <div class="attendance-student-info">
-                    <span class="attendance-student-name">${s.name}</span>
-                    <span class="attendance-student-tag ${s.isRegular ? '' : 'tag-extra-attendance'}">
-                        ${s.isRegular ? 'Turno Regular' : 'Cambio de Turno / Extra'}
-                    </span>
-                </div>
-                <div class="check-indicator">
-                    ${isPresent ? '<i data-lucide="check" style="width:16px;height:16px"></i>' : ''}
-                </div>
-            </div>
-        `;
-    }).join('');
+    return students.map(s => \`
+        <div class="attendance-item \${presents.has(s.id) ? 'is-present' : ''}" onclick="window.toggleAttendance('\${s.id}')">
+            <span>\${s.name}</span>
+            <i data-lucide="\${presents.has(s.id) ? 'check-square' : 'square'}"></i>
+        </div>\`).join('');
 }
 
-window.toggleAttendance = (studentId) => {
-    if (currentAttendanceData.presents.has(studentId)) {
-        currentAttendanceData.presents.delete(studentId);
-    } else {
-        currentAttendanceData.presents.add(studentId);
-    }
-    
-    // Update counter
-    const counter = document.getElementById('attendance-count');
-    if (counter) counter.innerText = currentAttendanceData.presents.size;
-
-    // Update only the list part
-    const query = document.querySelector('.attendance-search-box input')?.value || '';
-    window.filterAttendanceList(query);
-};
-
-window.filterAttendanceList = (query) => {
-    const container = document.getElementById('attendance-list-container');
-    if (!container) return;
-    const filtered = currentAttendanceData.allStudents.filter(s => 
-        s.name.toLowerCase().includes(query.toLowerCase())
-    );
-    container.innerHTML = renderAttendanceItems(filtered);
-    window.refreshIcons();
+window.toggleAttendance = (id) => {
+    if (currentAttendanceData.presents.has(id)) currentAttendanceData.presents.delete(id); else currentAttendanceData.presents.add(id);
+    renderAttendanceModal();
 };
 
 window.saveAttendanceData = async () => {
     const { date, turnoId, activityId, presents, allStudents } = currentAttendanceData;
-    
-    try {
-        const presentsList = [...presents].map(id => {
-            const s = allStudents.find(u => u.id === id);
-            return {
-                user_id: id,
-                type: (s && s.isRegular) ? 'regular' : 'extra'
-            };
-        });
-
-        UI.notify('Guardando asistencia...');
-        await DB.saveAttendance(date, turnoId, activityId, presentsList);
-        UI.hideModal();
-        UI.notify('¡Asistencia guardada correctamente!');
-    } catch (err) {
-        console.error("Error saving attendance:", err);
-        UI.notify('Error al guardar: ' + err.message, 'error');
-    }
+    const list = [...presents].map(id => ({ user_id: id, type: allStudents.find(u => u.id === id)?.isRegular ? 'regular' : 'extra' }));
+    await DB.saveAttendance(date, turnoId, activityId, list);
+    UI.hideModal(); UI.notify('Guardado');
 };
 
-/* ═══════════════════════════════════════════════════════════════
-   ARRANQUE
-═══════════════════════════════════════════════════════════════ */
 document.addEventListener('DOMContentLoaded', initApp);
 
 window.fetchBackgroundStats = async (profesorId) => {
-    // Total Alumnos (Únicos)
-    db.collection('inscripciones').where('status', '==', 'active').get().then(snap => {
-        const ids = profesorId ? snap.docs.filter(d => d.data().profesor_id === profesorId).map(d => d.data().user_id) : snap.docs.map(d => d.data().user_id);
-        const unique = [...new Set(ids)].length;
-        const el = document.getElementById('stat-total-alumnos');
-        if (el) el.innerText = unique;
-        
-        // Cupos Libres
-        DB.getQuickStats().then(data => {
-            const countMap = {};
-            snap.docs.forEach(d => {
-                const tid = d.data().turno_id;
-                countMap[tid] = (countMap[tid] || 0) + 1;
-            });
-            let free = 0;
-            data.turnos.forEach(t => {
-                const used = countMap[t.id] || 0;
-                free += Math.max(0, (t.max_cupo || 0) - used);
-            });
-            const elC = document.getElementById('stat-cupos-libres');
-            if (elC) elC.innerText = free;
+    try {
+        // Ejecutamos todo en paralelo para velocidad de "aviÃ³n"
+        const [allInscs, allPayments, activities, turnos, morosos] = await Promise.all([
+            DB.getInscripciones(),
+            db.collection('payments').where('status', '==', 'pending').get(),
+            DB.getActivities(),
+            DB.getTurnos(),
+            DB.getMorososList(profesorId)
+        ]);
+
+        // 1. Total Alumnos (Ãšnicos)
+        const ids = profesorId ? allInscs.filter(i => i.profesor_id === profesorId).map(i => i.user_id) : allInscs.map(i => i.user_id);
+        const uniqueCount = [...new Set(ids)].length;
+        const elT = document.getElementById('stat-total-alumnos');
+        if (elT) elT.innerText = uniqueCount;
+
+        // 2. Cupos Libres
+        const countMap = {};
+        allInscs.forEach(i => {
+            if (['active', 'pending_baja'].includes(i.status)) {
+                countMap[i.turno_id] = (countMap[i.turno_id] || 0) + 1;
+            }
         });
-    });
+        
+        let freeSlots = 0;
+        turnos.forEach(t => {
+            const used = countMap[t.id] || 0;
+            freeSlots += Math.max(0, (t.max_cupo || 0) - used);
+        });
+        const elC = document.getElementById('stat-cupos-libres');
+        if (elC) elC.innerText = freeSlots;
 
-    // Pagos Pendientes
-    db.collection('payments').where('status', '==', 'pending').get().then(snap => {
+        // 3. Pagos Pendientes
         const elP = document.getElementById('stat-pagos-pendientes');
-        if (elP) elP.innerText = snap.size;
-    });
+        if (elP) elP.innerText = allPayments.size;
 
-    // Alumnos Morosos
-    DB.getMorososList(profesorId).then(list => {
+        // 4. Alumnos Morosos
         const elM = document.getElementById('stat-alumnos-morosos');
-        if (elM) elM.innerText = list.length + ' Morosos';
-    });
+        if (elM) elM.innerText = morosos.length + (morosos.length === 1 ? ' Moroso' : ' Morosos');
+
+    } catch (err) {
+        console.error("Error al cargar estadÃ­sticas de fondo:", err);
+    }
 }
 
 window.showAddFamilyModal = () => {
     UI.showModal('Agregar Familiar', `
         <form id="add-family-form" class="form-stack">
-            <p class="text-sm text-muted mb-4">Ingresá el nombre completo de tu familiar. No necesita email ni contraseña propia.</p>
+            <p class="text-sm text-muted mb-4">IngresÃ¡ el nombre completo de tu familiar. No necesita email ni contraseÃ±a propia.</p>
             <div class="form-group">
                 <label class="label">Nombre Completo</label>
                 <input type="text" id="fam-name" class="input" placeholder="Ej: Juan Perez" required>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="window.showMyProfile()">Atrás</button>
+                <button type="button" class="btn btn-secondary" onclick="window.showMyProfile()">AtrÃ¡s</button>
                 <button type="submit" id="fam-submit" class="btn btn-primary">Vincular Familiar</button>
             </div>
         </form>
@@ -2868,7 +2824,7 @@ window.showAddFamilyModal = () => {
         try {
             await DB.addFamilyMember(State.user.id, { name });
             State.family = await DB.getFamilyMembers(State.user.id);
-            UI.notify(`¡${name} vinculado correctamente!`);
+            UI.notify(\`Â¡\${name} vinculado correctamente!\`);
             window.showMyProfile(); // Volver al perfil
         } catch (err) {
             UI.notify(err.message, 'error');
@@ -2876,3 +2832,35 @@ window.showAddFamilyModal = () => {
         }
     };
 };
+
+/* --- NOTIFICACIONES PUSH ----------------------------------------- */
+async function initNotifications() {
+    if (!("Notification" in window)) {
+        console.log("Este navegador no soporta notificaciones.");
+        return;
+    }
+
+    try {
+        const messaging = firebase.messaging();
+        
+        // Pedir permiso
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+            // Obtener Token
+            const token = await messaging.getToken({
+                vapidKey: "BF5KvXFPV1YH08ED2V7MSW7hoGEXdhOuKmScV0M-6OmaZFHr94fNa3vnrxeaAw9ZwBrPa9cGKWywkMIH8qNfTrE"
+            });
+            
+            if (token) {
+                console.log("Token de notificaciÃ³n obtenido:", token);
+                await DB.saveFCMToken(State.user.id, token);
+            } else {
+                console.log("No se pudo obtener el token.");
+            }
+        } else {
+            console.log("Permiso de notificaciones denegado.");
+        }
+    } catch (error) {
+        console.error("Error al inicializar notificaciones:", error);
+    }
+}

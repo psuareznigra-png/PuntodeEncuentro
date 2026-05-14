@@ -17,9 +17,20 @@ const DB = {
        ACTIVIDADES
     ══════════════════════════════════════════════════════════════ */
 
+    _cache: {
+        activities: null,
+        turnos: null,
+        lastFetch: 0
+    },
+
     async getActivities() {
+        if (this._cache.activities && (Date.now() - this._cache.lastFetch < 300000)) {
+            return this._cache.activities;
+        }
         const snap = await db.collection('activities').orderBy('name').get();
-        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        this._cache.activities = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        this._cache.lastFetch = Date.now();
+        return this._cache.activities;
     },
 
     async addActivity(data) {
@@ -46,8 +57,12 @@ const DB = {
     ══════════════════════════════════════════════════════════════ */
 
     async getTurnos() {
+        if (this._cache.turnos && (Date.now() - this._cache.lastFetch < 300000)) {
+            return this._cache.turnos;
+        }
         const snap = await db.collection('turnos').get();
-        return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        this._cache.turnos = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        return this._cache.turnos;
     },
 
     async addTurno(data) {
@@ -418,6 +433,14 @@ const DB = {
         });
     },
 
+    async saveFCMToken(uid, token) {
+        if (!uid || !token) return;
+        await db.collection('users').doc(uid).update({
+            fcm_tokens: firebase.firestore.FieldValue.arrayUnion(token),
+            last_token_update: new Date().toISOString()
+        });
+    },
+
     /**
      * Crea cuenta Firebase Auth del usuario usando la app secundaria
      */
@@ -618,67 +641,55 @@ const DB = {
 
 
     async getMorososList(profesorId = null, profesorName = null) {
-        console.log("DB: getMorososList - Fetching collections...");
+        console.log("DB: getMorososList - Start...");
         
-        // We MUST filter by activity_id if possible to avoid reading the whole collection
+        // 1. Cargamos todo en paralelo para velocidad máxima
+        const [allInscs, allStatuses, allPayments, activities] = await Promise.all([
+            this.getInscripciones(),
+            this.getAllStatuses(),
+            db.collection('payments').where('status', '==', 'pending').get(),
+            this.getActivities()
+        ]);
+
         let myActIds = null;
         if (profesorId) {
-            const actSnap = await db.collection('activities').get();
-            myActIds = actSnap.docs
-                .map(d => ({ id: d.id, ...d.data() }))
+            myActIds = activities
                 .filter(a => a.profesor_id === profesorId || (profesorName && a.teacher === profesorName))
                 .map(a => a.id);
         }
 
-        let paymentsQuery = db.collection('payments').where('status', '==', 'pending');
-        let inscQuery = db.collection('inscripciones').where('status', 'in', ['active', 'pending_baja']);
-        let statusQuery = db.collection('user_activity_status');
-
-        // If we have activity IDs, and they are few, we can use 'in' filter to comply with rules
-        if (myActIds && myActIds.length > 0 && myActIds.length <= 10) {
-            inscQuery = inscQuery.where('activity_id', 'in', myActIds);
-            // paymentsQuery index might not exist for status+activity_id, so we be careful.
-        }
-
-        const [paymentsSnap, statusSnap, inscSnap] = await Promise.all([
-            paymentsQuery.get(),
-            statusQuery.get(),
-            inscQuery.get()
-        ]);
-        
-        console.log(`DB: Pagos Pend: ${paymentsSnap.size}, StatusRecs: ${statusSnap.size}, Inscripciones: ${inscSnap.size}`);
-
         const nowStr = new Date().toISOString().split('T')[0];
+        
+        // Mapas para búsqueda O(1)
         const statusMap = new Map();
-        statusSnap.docs.forEach(d => {
-            const data = d.data();
-            statusMap.set(`${data.user_id}_${data.activity_id}`, data);
-        });
+        allStatuses.forEach(s => statusMap.set(`${s.user_id}_${s.activity_id}`, s));
 
         const pendingPaymentSet = new Set();
-        paymentsSnap.docs.forEach(d => {
-            const data = d.data();
-            const uid = data.user_id || data.userId || data.User_id;
-            pendingPaymentSet.add(`${uid}_${data.activity_id}`);
+        allPayments.docs.forEach(d => {
+            const p = d.data();
+            const uid = p.user_id || p.userId;
+            pendingPaymentSet.add(`${uid}_${p.activity_id}`);
         });
 
         const morosos = [];
         const processedPairs = new Set();
 
-        inscSnap.docs.forEach(d => {
-            const insc = d.data();
+        allInscs.forEach(insc => {
+            // Filtro por profesor si aplica
             if (myActIds && !myActIds.includes(insc.activity_id)) return;
 
             const pairKey = `${insc.user_id}_${insc.activity_id}`;
             if (processedPairs.has(pairKey)) return;
             processedPairs.add(pairKey);
 
+            // Si tiene pago pendiente de aprobación, NO es moroso todavía
             if (pendingPaymentSet.has(pairKey)) return;
 
             const st = statusMap.get(pairKey);
             let isMoroso = false;
 
             if (!st) {
+                // Si no tiene registro de estado, asumimos deuda si tiene inscripción activa
                 isMoroso = true;
             } else {
                 const s = (st.status || '').toLowerCase();
