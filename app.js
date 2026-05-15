@@ -53,12 +53,18 @@ function initApp() {
 
                     State.user = { ...profile, id: firebaseUser.uid };
 
-                    // Chequeo automÃ¡tico de morosidad y perfil en cada login del alumno
+                    // Chequeo automático de morosidad y perfil en cada login del alumno
                     if (State.user.role === 'alumno' || State.user.role === 'socio') {
                         await DB.checkAndUpdateMorosidad(State.user.id);
                         // Cargar familiares
                         State.family = await DB.getFamilyMembers(State.user.id);
                         
+                        // Si hay familiares y no hay perfil seleccionado, mostrar selector
+                        if (State.family && State.family.length > 0 && !State.activeProfileId) {
+                            showProfileSelector();
+                            return;
+                        }
+
                         // Verificar si debe completar la ficha obligatoria
                         // Solo exigimos onboarding a Alumnos/Socios
                         const isAlumno = State.user.role === 'alumno' || State.user.role === 'socio';
@@ -125,7 +131,11 @@ function showAppLoader() {
 
 function updateUserInfo() {
     if (!State.user) return;
-    const name = State.user.name || 'Usuario';
+    
+    // El perfil activo es el familiar seleccionado o el titular
+    const activeProfile = (State.family || []).find(f => f.id === State.activeProfileId) || State.user;
+    
+    const name = activeProfile.name || 'Usuario';
     const roles = {
         'admin': 'Administrador',
         'profesor': 'Profesor',
@@ -135,7 +145,57 @@ function updateUserInfo() {
     document.getElementById('user-name').textContent = name;
     document.getElementById('user-role').textContent = roles[State.user.role] || 'Usuario';
     document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
+
+    // Si hay familiares, mostrar botón de cambio de perfil
+    const avatarEl = document.getElementById('user-avatar');
+    if (State.family && State.family.length > 0) {
+        avatarEl.style.cursor = 'pointer';
+        avatarEl.title = 'Cambiar Perfil';
+        avatarEl.onclick = showProfileSelector;
+    }
 }
+
+function showProfileSelector() {
+    const profiles = [State.user, ...(State.family || [])];
+    
+    const html = `
+        <div class="profile-selector-container">
+            <h2 class="profile-selector-title">¿Quién está entrenando?</h2>
+            <div class="profile-grid">
+                ${profiles.map(p => `
+                    <div class="profile-item ${State.activeProfileId === p.id || (!State.activeProfileId && p.id === State.user.id) ? 'active' : ''}" 
+                         onclick="selectProfile('${p.id}')">
+                        <div class="profile-avatar">${p.name.charAt(0).toUpperCase()}</div>
+                        <div class="profile-name">${p.name}</div>
+                        ${p.id === State.user.id ? '<div class="profile-tag">Titular</div>' : ''}
+                    </div>
+                `).join('')}
+            </div>
+            <div style="margin-top:30px; text-align:center">
+                <button class="btn btn-secondary" onclick="auth.signOut()">Cerrar Sesión</button>
+            </div>
+        </div>
+    `;
+
+    // Usamos el contenedor de auth para que sea a pantalla completa y bloqueante
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('auth-container').classList.remove('hidden');
+    document.getElementById('auth-container').innerHTML = html;
+    window.refreshIcons();
+}
+
+window.selectProfile = (profileId) => {
+    // Si seleccionamos al titular, el ID es el del usuario de Auth
+    State.activeProfileId = (profileId === State.user.id) ? null : profileId;
+    
+    // Reiniciar app con el nuevo perfil
+    document.getElementById('auth-container').classList.add('hidden');
+    document.getElementById('app').classList.remove('hidden');
+    
+    updateUserInfo();
+    renderNav();
+    navigateTo('dashboard');
+};
 
 /* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
    NAVIGATION

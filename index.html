@@ -34,6 +34,24 @@
 </head>
 
 <body>
+    <script>
+        // Global error catcher for "Blank Page" debugging
+        window.onerror = function(msg, url, lineNo, columnNo, error) {
+            console.error('GLOBAL ERROR:', msg, url, lineNo);
+            const container = document.getElementById('main-content');
+            if (container) {
+                container.innerHTML = `
+                    <div style="padding:40px; text-align:center; color:var(--overdue)">
+                        <h2 style="margin-bottom:10px">Error de Carga</h2>
+                        <p style="font-size:14px; color:var(--text-secondary); margin-bottom:20px">${msg}</p>
+                        <p style="font-size:12px; color:var(--text-muted)">Línea: ${lineNo} en ${url.split('/').pop()}</p>
+                        <button class="btn btn-primary" onclick="location.reload()">Reintentar</button>
+                    </div>`;
+            }
+            return false;
+        };
+    </script>
+
     <!-- AUTH SCREEN -->
     <div id="auth-container" class="hidden">
         <!-- Login inyectado por JS -->

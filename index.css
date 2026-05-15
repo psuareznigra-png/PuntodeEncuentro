@@ -2172,3 +2172,76 @@ textarea {
     border: 1px solid var(--border);
     position: relative;
 }
+
+/* ---------------------------------------------------------------
+   PROFILE SELECTOR (FAMILY ACCESS)
+   --------------------------------------------------------------- */
+.profile-selector-container {
+    max-width: 600px;
+    margin: 80px auto;
+    padding: 40px 20px;
+    text-align: center;
+}
+
+.profile-selector-title {
+    font-size: 28px;
+    margin-bottom: 40px;
+    color: var(--text-primary);
+}
+
+.profile-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+}
+
+.profile-item {
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 120px;
+    text-align: center;
+    position: relative;
+}
+
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    background: var(--primary);
+    color: white;
+    font-size: 40px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 24px;
+    margin: 0 auto 12px;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.2);
+    border: 4px solid transparent;
+}
+
+.profile-item:hover .profile-avatar {
+    transform: scale(1.08) translateY(-5px);
+    box-shadow: 0 15px 30px rgba(37, 99, 235, 0.3);
+}
+
+.profile-item.active .profile-avatar {
+    border-color: white;
+    box-shadow: 0 0 0 4px var(--primary);
+}
+
+.profile-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+.profile-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: var(--primary);
+    font-weight: 800;
+    margin-top: 4px;
+    letter-spacing: 0.5px;
+}
+
