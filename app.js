@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Punto Activo "Centro de Entrenamiento"
- * AplicaciÃ³n principal â€” v3.0 Firebase
+ * AplicaciÃƒÆ’Ã‚Â³n principal ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â v3.0 Firebase
  */
 
 const State = {
@@ -8,7 +8,7 @@ const State = {
     currentView: 'dashboard',
     family: [], // Familiares vinculados
     activeProfileId: null, // ID del perfil que estamos viendo (null = el titular)
-    onboardingRequired: false // Bloqueo de navegaciÃ³n para ficha obligatoria
+    onboardingRequired: false // Bloqueo de navegaciÃƒÆ’Ã‚Â³n para ficha obligatoria
 };
 
 const Views = {
@@ -21,28 +21,28 @@ const Views = {
     payments_admin: { title: 'Pagos Pendientes', icon: 'credit-card', role: 'profesor' },
     payments_history: { title: 'Registro de Cobranzas', icon: 'history', role: 'profesor' },
     morosidades: { title: 'Morosidades', icon: 'alert-circle', role: 'profesor' },
-    occupancy: { title: 'OcupaciÃ³n', icon: 'calendar', role: 'profesor' },
-    announcements_admin: { title: 'TablÃ³n de Anuncios', icon: 'megaphone', role: 'admin' },
+    occupancy: { title: 'OcupaciÃƒÆ’Ã‚Â³n', icon: 'calendar', role: 'profesor' },
+    announcements_admin: { title: 'TablÃƒÆ’Ã‚Â³n de Anuncios', icon: 'megaphone', role: 'admin' },
     inscripciones: { title: 'Mis Actividades', icon: 'plus-circle', role: 'alumno' },
     pagos_socio: { title: 'Mis Pagos', icon: 'wallet', role: 'alumno' },
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   INIT â€” Firebase Auth state listener
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   INIT ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Firebase Auth state listener
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 console.log("DEBUG: app.js cargado");
 
 function initApp() {
-    console.log("🚀 PUNTO ACTIVO APP - v4.2 - INICIALIZANDO");
+    console.log("Ã°Å¸Å¡â‚¬ PUNTO ACTIVO APP - v4.2 - INICIALIZANDO");
     try {
         if (typeof firebase === 'undefined') {
             console.error("DEBUG: firebase is undefined");
-            throw new Error('Firebase no se pudo cargar. Verificá los enlaces en index.html');
+            throw new Error('Firebase no se pudo cargar. VerificÃƒÂ¡ los enlaces en index.html');
         }
         if (typeof auth === 'undefined') {
             console.error("DEBUG: auth is undefined");
-            throw new Error('Auth no inicializado. Verificá firebase-config.js');
+            throw new Error('Auth no inicializado. VerificÃƒÂ¡ firebase-config.js');
         }
 
         auth.onAuthStateChanged(async (firebaseUser) => {
@@ -54,7 +54,7 @@ function initApp() {
                     const profile = await DB.getUserProfile(firebaseUser.uid);
 
                     if (!profile) {
-                        UI.notify('El usuario no tiene un perfil configurado en Firestore. VerificÃ¡ el "Paso 5" de la guÃ­a.', 'error');
+                        UI.notify('El usuario no tiene un perfil configurado en Firestore. VerificÃƒÆ’Ã‚Â¡ el "Paso 5" de la guÃƒÆ’Ã‚Â­a.', 'error');
                         console.error('UID sin perfil en Firestore:', firebaseUser.uid);
                         await auth.signOut();
                         return;
@@ -62,7 +62,7 @@ function initApp() {
 
                     State.user = { ...profile, id: firebaseUser.uid };
 
-                    // Chequeo automático de morosidad y perfil en cada login del alumno
+                    // Chequeo automÃƒÂ¡tico de morosidad y perfil en cada login del alumno
                     if (State.user.role === 'alumno' || State.user.role === 'socio') {
                         await DB.checkAndUpdateMorosidad(State.user.id);
                         // Cargar familiares
@@ -116,9 +116,9 @@ function initApp() {
         console.error('Initialization error:', err);
         document.body.innerHTML = `
             <div style="height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;font-family:sans-serif;padding:20px;text-align:center">
-                <div style="color:var(--overdue);font-size:40px;margin-bottom:20px">âšï¸</div>
-                <h2 style="margin-bottom:10px">Error de ConfiguraciÃ³n</h2>
-                <p style="color:#64748b;max-width:400px;line-height:1.5">\${err.message}</p>
+                <div style="color:var(--overdue);font-size:40px;margin-bottom:20px">ÃƒÂ¢Ã…Â¡ÃƒÂ¯Ã‚Â¸</div>
+                <h2 style="margin-bottom:10px">Error de ConfiguraciÃƒÆ’Ã‚Â³n</h2>
+                <p style="color:#64748b;max-width:400px;line-height:1.5">${err.message}</p>
                 <button onclick="location.reload()" style="margin-top:20px;padding:12px 24px;background:#2563eb;color:white;border:none;border-radius:10px;cursor:pointer;font-weight:600">Reintentar</button>
             </div>
         `;
@@ -155,7 +155,7 @@ function updateUserInfo() {
     document.getElementById('user-role').textContent = roles[State.user.role] || 'Usuario';
     document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
 
-    // Si hay familiares, mostrar botón de cambio de perfil
+    // Si hay familiares, mostrar botÃƒÂ³n de cambio de perfil
     const avatarEl = document.getElementById('user-avatar');
     if (State.family && State.family.length > 0) {
         avatarEl.style.cursor = 'pointer';
@@ -169,7 +169,7 @@ function showProfileSelector() {
     
     const html = `
         <div class="profile-selector-container">
-            <h2 class="profile-selector-title">¿Quién está entrenando?</h2>
+            <h2 class="profile-selector-title">Ã‚Â¿QuiÃƒÂ©n estÃƒÂ¡ entrenando?</h2>
             <div class="profile-grid">
                 ${profiles.map(p => `
                     <div class="profile-item ${State.activeProfileId === p.id || (!State.activeProfileId && p.id === State.user.id) ? 'active' : ''}" 
@@ -181,7 +181,7 @@ function showProfileSelector() {
                 `).join('')}
             </div>
             <div style="margin-top:30px; text-align:center">
-                <button class="btn btn-secondary" onclick="auth.signOut()">Cerrar Sesión</button>
+                <button class="btn btn-secondary" onclick="auth.signOut()">Cerrar SesiÃƒÂ³n</button>
             </div>
         </div>
     `;
@@ -206,9 +206,9 @@ window.selectProfile = (profileId) => {
     navigateTo('dashboard');
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
    NAVIGATION
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 function navigateTo(viewId) {
     if (!State.user) return;
@@ -216,12 +216,12 @@ function navigateTo(viewId) {
     const userRole = (State.user.role === 'socio' || State.user.role === 'alumno') ? 'alumno' : State.user.role;
     const viewRole = Views[viewId]?.role;
 
-    // LÃ³gica de acceso por roles:
+    // LÃƒÆ’Ã‚Â³gica de acceso por roles:
     if (userRole === 'admin') {
         // El admin tiene acceso a vistas de admin y profesor, pero NO de alumno.
         if (viewRole === 'alumno') viewId = 'dashboard';
     } else if (userRole === 'profesor') {
-        // El profesor tiene acceso a sus vistas y a actividades/turnos (filtrados por lÃ³gica de vista)
+        // El profesor tiene acceso a sus vistas y a actividades/turnos (filtrados por lÃƒÆ’Ã‚Â³gica de vista)
         if (viewRole && viewRole !== 'profesor' && !['activities', 'turnos', 'payments_admin', 'payments_history', 'morosidades', 'bajas_admin'].includes(viewId)) {
             viewId = 'dashboard';
         }
@@ -248,29 +248,29 @@ function renderNav() {
     Object.entries(Views).forEach(([id, view]) => {
         const userRole = State.user.role === 'socio' ? 'alumno' : State.user.role;
 
-        // Filtrar navegaciÃ³n por rol:
+        // Filtrar navegaciÃƒÆ’Ã‚Â³n por rol:
         if (userRole === 'admin') {
             // Admin ve admin y profesor, pero no alumno
             if (view.role === 'alumno') return;
         } else if (userRole === 'profesor') {
-            // Profesor ve lo suyo (y admin podrÃ­a permitir actividades/turnos si se desea en nav)
+            // Profesor ve lo suyo (y admin podrÃƒÆ’Ã‚Â­a permitir actividades/turnos si se desea en nav)
             if (view.role && view.role !== 'profesor') return;
         } else {
             // Alumno solo ve alumno
             if (view.role && view.role !== 'alumno') return;
         }
         const btn = document.createElement('button');
-        btn.className = `nav-item \${State.currentView === id ? 'active' : ''}`;
+        btn.className = `nav-item ${State.currentView === id ? 'active' : ''}`;
         btn.dataset.view = id;
-        btn.innerHTML = `<i data-lucide="\${view.icon}"></i><span>\${view.title}</span>`;
+        btn.innerHTML = `<i data-lucide="${view.icon}"></i><span>${view.title}</span>`;
         btn.onclick = () => navigateTo(id);
         container.appendChild(btn);
     });
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
    VIEW ROUTER
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderView(viewId) {
     const content = document.getElementById('main-content');
@@ -311,7 +311,7 @@ async function renderView(viewId) {
             case 'inscripciones': await renderInscripcionesAlumno(content); break;
             case 'pagos_socio': await renderPagosAlumno(content); break;
             default:
-                content.innerHTML = `<div class="empty-state">PrÃ³ximamente...</div>`;
+                content.innerHTML = `<div class="empty-state">PrÃƒÆ’Ã‚Â³ximamente...</div>`;
         }
     } catch (err) {
         console.error('Error en vista:', err);
@@ -319,17 +319,17 @@ async function renderView(viewId) {
             <div class="empty-state">
                 <i data-lucide="wifi-off" style="width:48px;height:48px;color:var(--text-muted);margin-bottom:16px"></i>
                 <p style="font-weight:700;margin-bottom:8px">Error al cargar datos</p>
-                <p style="font-size:13px;color:var(--text-muted)">\${err.message}</p>
-                <button class="btn btn-primary mt-4" onclick="renderView('\${viewId}')">Reintentar</button>
+                <p style="font-size:13px;color:var(--text-muted)">${err.message}</p>
+                <button class="btn btn-primary mt-4" onclick="renderView('${viewId}')">Reintentar</button>
             </div>`;
     }
     window.refreshIcons();
 }
 
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   OCCUPANCY GRID â€” Admin/Profesor
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   OCCUPANCY GRID ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Admin/Profesor
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderOccupancy(container) {
     const [activities, turnos, countMap] = await Promise.all([
@@ -340,7 +340,6 @@ async function renderOccupancy(container) {
 
     const days = ['Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado', 'Domingo'];
     
-    // Preparar slots individuales para la grilla
     let allSlots = [];
     turnos.forEach(t => {
         const act = activities.find(a => a.id === t.activity_id);
@@ -355,7 +354,6 @@ async function renderOccupancy(container) {
         }
     });
 
-    // Filtro para Profesores: Solo ven sus propias clases
     if (State.user.role === 'profesor') {
         const profName = State.user.name.toLowerCase();
         allSlots = allSlots.filter(s => {
@@ -375,15 +373,14 @@ async function renderOccupancy(container) {
         </div>
         
         <div class="occupancy-grid">
-            \${days.map(day => {
+            ${days.map(day => {
                 const daySlots = allSlots.filter(s => s.day === day);
-                // Ordenar por hora de inicio
                 daySlots.sort((a, b) => a.start.localeCompare(b.start));
 
                 return `
                 <div class="occupancy-day-col">
-                    <div class="day-header">\${day}</div>
-                    \${daySlots.length === 0 ? '<div class="empty-inline" style="text-align:center">Sin turnos</div>' : 
+                    <div class="day-header">${day}</div>
+                    ${daySlots.length === 0 ? '<div class="empty-inline" style="text-align:center">Sin turnos</div>' : 
                         daySlots.map(s => {
                             const used = countMap[s.turno.id] || 0;
                             const pct = Math.round((used / s.turno.max_cupo) * 100);
@@ -391,22 +388,22 @@ async function renderOccupancy(container) {
                             if (pct > 50) statusClass = 'occ-med';
                             if (pct > 85) statusClass = 'occ-high';
 
-                            return `
-                            <div class="shift-grid-card \${statusClass}" onclick="window.showTurnoModal('\${s.turno.id}')">
-                                <div class="shift-time">\${s.start} - \${s.end}</div>
-                                <div class="shift-act">\${s.activity.name}</div>
-                                <div class="shift-teacher">\${s.activity.teacher}</div>
+                            return \\`
+                            <div class="shift-grid-card ${statusClass}" onclick="window.showTurnoModal('${s.turno.id}')">
+                                <div class="shift-time">${s.start} - ${s.end}</div>
+                                <div class="shift-act">${s.activity.name}</div>
+                                <div class="shift-teacher">${s.activity.teacher}</div>
                                 <div class="shift-occ-bar">
-                                    <div class="shift-occ-fill" style="width:\${Math.min(100, pct)}%"></div>
+                                    <div class="shift-occ-fill" style="width:${Math.min(100, pct)}%"></div>
                                 </div>
                                 <div class="shift-occ-text">
-                                    <span>\${used}/\${s.turno.max_cupo}</span>
-                                    <span>\${pct}%</span>
+                                    <span>${used}/${s.turno.max_cupo}</span>
+                                    <span>${pct}%</span>
                                 </div>
-                                <button class="btn-asistencia" onclick="event.stopPropagation(); window.showAttendanceModal('\${s.turno.id}')">
+                                <button class="btn-asistencia" onclick="event.stopPropagation(); window.showAttendanceModal('${s.turno.id}')">
                                     <i data-lucide="check-square"></i> Pasar Lista
                                 </button>
-                            </div>`;
+                            </div>\\`;
                         }).join('')
                     }
                 </div>`;
@@ -416,9 +413,9 @@ async function renderOccupancy(container) {
     window.refreshIcons();
 }
 
-/* â”€â”€â”€ ONBOARDING â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ ONBOARDING ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 async function renderOnboarding(container) {
-    // Intentamos traer la URL del deslinde desde la configuraciÃ³n global
+    // Intentamos traer la URL del deslinde desde la configuraciÃƒÆ’Ã‚Â³n global
     const config = await DB.getGlobalConfig('deslinde');
     const deslindeUrl = config?.url || '#';
 
@@ -433,14 +430,14 @@ async function renderOnboarding(container) {
                 </div>
 
                 <div class="onboarding-header" style="text-align:left">
-                    <h2 class="welcome-title">Â¡Bienvenido a Punto Activo!</h2>
+                    <h2 class="welcome-title">Ãƒâ€šÃ‚Â¡Bienvenido a Punto Activo!</h2>
                     <p class="text-muted">Necesitamos que completes tu ficha de socio para habilitar tu cuenta.</p>
                 </div>
 
                 <form id="onboarding-form" class="form-stack mt-6">
                     <div class="form-group">
                         <label class="label">Nombre Completo</label>
-                        <input type="text" id="ob-name" class="input" value="\${State.user.name || ''}" required>
+                        <input type="text" id="ob-name" class="input" value="${State.user.name || ''}" required>
                     </div>
 
                     <div class="form-row-2">
@@ -455,13 +452,13 @@ async function renderOnboarding(container) {
                     </div>
 
                     <div class="form-group">
-                        <label class="label">Tu TelÃ©fono (WhatsApp)</label>
+                        <label class="label">Tu TelÃƒÆ’Ã‚Â©fono (WhatsApp)</label>
                         <input type="tel" id="ob-phone" class="input" placeholder="Ej: 2991234567" required>
                     </div>
 
                     <div class="form-group">
                         <label class="label">Email de Contacto</label>
-                        <input type="email" id="ob-email" class="input" placeholder="ejemplo@correo.com" value="\${State.user.personal_email || ''}">
+                        <input type="email" id="ob-email" class="input" placeholder="ejemplo@correo.com" value="${State.user.personal_email || ''}">
                     </div>
 
                     <hr class="mt-4 mb-4">
@@ -474,7 +471,7 @@ async function renderOnboarding(container) {
 
                     <div class="form-row-2">
                         <div class="form-group">
-                            <label class="label">TelÃ©fono de Emergencia</label>
+                            <label class="label">TelÃƒÆ’Ã‚Â©fono de Emergencia</label>
                             <input type="tel" id="ob-emergency-phone" class="input" placeholder="Ej: 2991234567" required>
                         </div>
                         <div class="form-group">
@@ -494,13 +491,13 @@ async function renderOnboarding(container) {
                     <div class="deslinde-box mt-6">
                         <h4 style="font-size:14px; margin-bottom:10px">Deslinde de Responsabilidad</h4>
                         <div class="deslinde-text">
-                            Declaro estar en condiciones fÃ­sicas Ã³ptimas para realizar actividad fÃ­sica. 
+                            Declaro estar en condiciones fÃƒÆ’Ã‚Â­sicas ÃƒÆ’Ã‚Â³ptimas para realizar actividad fÃƒÆ’Ã‚Â­sica. 
                             Libero de toda responsabilidad al establecimiento Punto Activo y a sus profesionales 
-                            por cualquier lesiÃ³n o percance derivado de la prÃ¡ctica deportiva.
+                            por cualquier lesiÃƒÆ’Ã‚Â³n o percance derivado de la prÃƒÆ’Ã‚Â¡ctica deportiva.
                         </div>
                         
                         <div class="mt-4 mb-4">
-                            <a href="\${deslindeUrl}" target="_blank" class="btn btn-secondary w-full btn-sm" style="gap:8px; justify-content:center">
+                            <a href="${deslindeUrl}" target="_blank" class="btn btn-secondary w-full btn-sm" style="gap:8px; justify-content:center">
                                 <i data-lucide="download" style="width:16px"></i> Descargar Deslinde para Firmar
                             </a>
                             <p class="text-xs text-muted mt-2">Descargalo, firmalo y entregalo en tu primera clase.</p>
@@ -509,7 +506,7 @@ async function renderOnboarding(container) {
                         <label class="checkbox-container">
                             <input type="checkbox" id="ob-deslinde" required>
                             <span class="checkmark"></span>
-                            <span class="text-sm">He leÃ­do y acepto los tÃ©rminos del deslinde.</span>
+                            <span class="text-sm">He leÃƒÆ’Ã‚Â­do y acepto los tÃƒÆ’Ã‚Â©rminos del deslinde.</span>
                         </label>
                     </div>
 
@@ -544,7 +541,7 @@ async function renderOnboarding(container) {
             await DB.updateUserProfile(State.user.id, data);
             State.user = { ...State.user, ...data };
             State.onboardingRequired = false;
-            UI.notify('Â¡Ficha completada! Bienvenido.');
+            UI.notify('Ãƒâ€šÃ‚Â¡Ficha completada! Bienvenido.');
             renderView('dashboard');
         } catch (err) {
             UI.notify(err.message, 'error');
@@ -553,16 +550,16 @@ async function renderOnboarding(container) {
     };
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
    DASHBOARD
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderDashboard(container) {
     const isAdmin = State.user.role === 'admin';
     const isProfesor = State.user.role === 'profesor';
 
     if (isAdmin || isProfesor) {
-        // 1. CARGA RÃPIDA: Solo lo que es instantÃ¡neo
+        // 1. CARGA RÃƒÆ’PIDA: Solo lo que es instantÃƒÆ’Ã‚Â¡neo
         const [quickData, announcements] = await Promise.all([
             DB.getQuickStats(isAdmin ? null : State.user.id, isAdmin ? null : State.user.name),
             DB.getAnnouncements().catch(() => [])
@@ -571,21 +568,21 @@ async function renderDashboard(container) {
         const visibleAnnouncements = announcements.filter(a => a.role === 'all' || a.role === State.user.role).slice(0, 2);
 
         container.innerHTML = `
-            \${visibleAnnouncements.length > 0 ? `
+            ${visibleAnnouncements.length > 0 ? `
                 <div class="announcements-stack">
-                    \${visibleAnnouncements.map(a => `
-                        <div class="announcement-card priority-\${a.priority}">
+                    ${visibleAnnouncements.map(a => `
+                        <div class="announcement-card priority-${a.priority}">
                             <div class="announcement-header">
-                                <h3 class="announcement-title">\${a.title}</h3>
-                                <span class="announcement-date">\${a.createdAt ? UI.formatDate(new Date((a.createdAt.seconds || a.createdAt._seconds || 0) * 1000).toISOString().split('T')[0]) : 'Reciente'}</span>
+                                <h3 class="announcement-title">${a.title}</h3>
+                                <span class="announcement-date">${a.createdAt ? UI.formatDate(new Date((a.createdAt.seconds || a.createdAt._seconds || 0) * 1000).toISOString().split('T')[0]) : 'Reciente'}</span>
                             </div>
-                            <div class="announcement-content">\${a.content}</div>
+                            <div class="announcement-content">${a.content}</div>
                         </div>`).join('')}
                 </div>
             ` : ''}
             
             <div class="dashboard-grid">
-                <div class="stat-card" style="--accent-c: var(--primary); cursor:pointer" onclick="navigateTo('\${isAdmin ? 'usuarios' : 'mis_alumnos'}')">
+                <div class="stat-card" style="--accent-c: var(--primary); cursor:pointer" onclick="navigateTo('${isAdmin ? 'usuarios' : 'mis_alumnos'}')">
                     <div class="stat-icon" style="background:rgba(8,145,178,0.1);color:var(--primary)">
                         <i data-lucide="users"></i>
                     </div>
@@ -601,7 +598,7 @@ async function renderDashboard(container) {
                     <div class="stat-body">
                         <div class="stat-label">Estado Pagos</div>
                         <div class="stat-value" id="stat-alumnos-morosos" style="color:var(--overdue)">...</div>
-                        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Ver Morosos â†’</div>
+                        <div style="font-size:12px;color:var(--text-muted);margin-top:4px">Ver Morosos ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</div>
                     </div>
                 </div>
                 <div class="stat-card" style="--accent-c: var(--overdue); cursor:pointer" onclick="navigateTo('payments_admin')">
@@ -628,20 +625,20 @@ async function renderDashboard(container) {
                 <div class="card">
                     <h3 class="section-title">Actividades</h3>
                     <div class="list-stack">
-                        \${quickData.activities.slice(0, 5).map(a => `
+                        ${quickData.activities.slice(0, 5).map(a => `
                             <div class="list-row">
                                 <div>
-                                    <div class="row-title">\${a.name}</div>
-                                    <div class="row-sub">Prof. \${a.teacher}</div>
+                                    <div class="row-title">${a.name}</div>
+                                    <div class="row-sub">Prof. ${a.teacher}</div>
                                 </div>
                                 <span class="badge badge-active">Activa</span>
                             </div>`).join('')}
                     </div>
                 </div>
                 <div class="card">
-                    <h3 class="section-title">OcupaciÃ³n</h3>
+                    <h3 class="section-title">OcupaciÃƒÆ’Ã‚Â³n</h3>
                     <div class="list-stack">
-                        <button class="btn btn-ghost btn-sm w-full" onclick="navigateTo('occupancy')">Ver Panel Visual â†’</button>
+                        <button class="btn btn-ghost btn-sm w-full" onclick="navigateTo('occupancy')">Ver Panel Visual ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</button>
                     </div>
                 </div>
             </div>`;
@@ -655,7 +652,7 @@ async function renderDashboard(container) {
     window.refreshIcons();
 }
 
-/* â”€â”€â”€ ALUMNO DASHBOARD â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ */
+/* ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ ALUMNO DASHBOARD ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ÃƒÂ¢Ã¢â‚¬ÂÃ¢â€šÂ¬ */
 
 async function renderAlumnoDashboard(container) {
     const targetUserId = State.activeProfileId || State.user.id;
@@ -678,53 +675,53 @@ async function renderAlumnoDashboard(container) {
         <div class="welcome-banner">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:15px">
                 <div>
-                    <h2 class="welcome-title">Â¡Hola, \${firstName}!</h2>
-                    <p class="welcome-sub">EstÃ¡s viendo el panel de: <strong>\${viewingName}</strong></p>
+                    <h2 class="welcome-title">Ãƒâ€šÃ‚Â¡Hola, ${firstName}!</h2>
+                    <p class="welcome-sub">EstÃƒÆ’Ã‚Â¡s viendo el panel de: <strong>${viewingName}</strong></p>
                 </div>
                 
-                \${State.family.length > 0 ? `
+                ${State.family.length > 0 ? `
                 <div class="profile-selector">
-                    <button class="profile-chip \${!State.activeProfileId ? 'active' : ''}" onclick="window.switchProfile(null)">Yo</button>
-                    \${State.family.map(f => `
-                        <button class="profile-chip \${State.activeProfileId === f.id ? 'active' : ''}" onclick="window.switchProfile('\${f.id}')">
-                            \${f.name.split(' ')[0]}
+                    <button class="profile-chip ${!State.activeProfileId ? 'active' : ''}" onclick="window.switchProfile(null)">Yo</button>
+                    ${State.family.map(f => `
+                        <button class="profile-chip ${State.activeProfileId === f.id ? 'active' : ''}" onclick="window.switchProfile('${f.id}')">
+                            ${f.name.split(' ')[0]}
                         </button>
                     `).join('')}
                 </div>` : ''}
             </div>
 
             <div class="mt-4" style="display:flex; gap:10px; flex-wrap:wrap">
-                \${config?.url ? `
-                    <a href="\${config.url}" target="_blank" class="btn btn-secondary btn-sm" style="background:rgba(255,255,255,0.2); border:none; color:white">
+                ${config?.url ? `
+                    <a href="${config.url}" target="_blank" class="btn btn-secondary btn-sm" style="background:rgba(255,255,255,0.2); border:none; color:white">
                         <i data-lucide="download"></i> Descargar Deslinde + Ficha (Para completar)
                     </a>
                 ` : ''}
-                \${State.user.waiver_url ? `
-                    <a href="\${State.user.waiver_url}" target="_blank" class="btn btn-secondary btn-sm" style="background:rgba(255,255,255,0.3); border:none; color:white">
+                ${State.user.waiver_url ? `
+                    <a href="${State.user.waiver_url}" target="_blank" class="btn btn-secondary btn-sm" style="background:rgba(255,255,255,0.3); border:none; color:white">
                         <i data-lucide="file-check"></i> Ver mi Deslinde Completo
                     </a>
                 ` : ''}
             </div>
         </div>
 
-        \${visibleAnnouncements.length > 0 ? `
+        ${visibleAnnouncements.length > 0 ? `
             <div class="announcements-stack mt-6">
-                \${visibleAnnouncements.map(a => `
-                    <div class="announcement-card priority-\${a.priority}">
+                ${visibleAnnouncements.map(a => `
+                    <div class="announcement-card priority-${a.priority}">
                         <div class="announcement-header">
-                            <h3 class="announcement-title">\${a.title}</h3>
-                            <span class="announcement-date">\${a.createdAt ? UI.formatDate(new Date((a.createdAt.seconds || a.createdAt._seconds || 0) * 1000).toISOString().split('T')[0]) : 'Reciente'}</span>
+                            <h3 class="announcement-title">${a.title}</h3>
+                            <span class="announcement-date">${a.createdAt ? UI.formatDate(new Date((a.createdAt.seconds || a.createdAt._seconds || 0) * 1000).toISOString().split('T')[0]) : 'Reciente'}</span>
                         </div>
-                        <div class="announcement-content">\${a.content}</div>
+                        <div class="announcement-content">${a.content}</div>
                     </div>`).join('')}
             </div>
         ` : ''}
         
         <div class="two-col-grid mt-6">
-            \${myInscs.length === 0 ? `
+            ${myInscs.length === 0 ? `
                 <div class="empty-state" style="grid-column:1/-1">
-                    <div style="font-size:48px;margin-bottom:16px;opacity:0.5">ðŸ—“ï¸</div>
-                    <p>No estÃ¡s inscripto en ninguna actividad aÃºn.</p>
+                    <div style="font-size:48px;margin-bottom:16px;opacity:0.5">ÃƒÂ°Ã…Â¸Ã¢â‚¬â€Ã¢â‚¬Å“ÃƒÂ¯Ã‚Â¸</div>
+                    <p>No estÃƒÆ’Ã‚Â¡s inscripto en ninguna actividad aÃƒÆ’Ã‚Âºn.</p>
                     <button onclick="navigateTo('inscripciones')" class="btn btn-primary mt-4">Ver Actividades</button>
                 </div>` :
             (() => {
@@ -738,8 +735,8 @@ async function renderAlumnoDashboard(container) {
                     
                     const isMoroso = !status || status.status === 'moroso' || (status.expiration && status.expiration < nowStr);
 
-                    // Ordenar turnos cronolÃ³gicamente por dÃ­a y hora
-                    const dayOrder = ['Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado', 'Domingo'];
+                    // Ordenar turnos cronolÃƒÆ’Ã‚Â³gicamente por dÃƒÆ’Ã‚Â­a y hora
+                    const dayOrder = ['Lunes', 'Martes', 'MiÃƒÆ’Ã‚Â©rcoles', 'Jueves', 'Viernes', 'SÃƒÆ’Ã‚Â¡bado', 'Domingo'];
                     inscs.sort((a, b) => {
                         const t1 = turnos.find(x => x.id === a.turno_id);
                         const t2 = turnos.find(x => x.id === b.turno_id);
@@ -755,39 +752,39 @@ async function renderAlumnoDashboard(container) {
                     });
 
                     return `
-                            <div class="card \${isMoroso ? 'card-danger' : 'card-success'}">
+                            <div class="card ${isMoroso ? 'card-danger' : 'card-success'}">
                                 <div class="row-between mb-3">
-                                    <h3 class="row-title">\${act?.name || 'Actividad'}</h3>
-                                    <span class="badge \${isMoroso ? 'badge-moroso' : 'badge-active'}">
-                                        \${isMoroso ? (status ? 'MOROSO' : 'PAGÃ“ PENDIENTE') : 'AL DÃA'}
+                                    <h3 class="row-title">${act?.name || 'Actividad'}</h3>
+                                    <span class="badge ${isMoroso ? 'badge-moroso' : 'badge-active'}">
+                                        ${isMoroso ? (status ? 'MOROSO' : 'PAGÃƒÆ’Ã¢â‚¬Å“ PENDIENTE') : 'AL DÃƒÆ’A'}
                                     </span>
                                 </div>
                                 <div class="row-sub mb-3">
-                                    \${status ? `Vencimiento: <strong>\${UI.formatDate(status.expiration)}</strong>` : 'SuscripciÃ³n no iniciada'}
+                                    ${status ? `Vencimiento: <strong>${UI.formatDate(status.expiration)}</strong>` : 'SuscripciÃƒÆ’Ã‚Â³n no iniciada'}
                                 </div>
                                 
                                 <div class="turno-chips-wrap mb-4">
-                                    \${inscs.map(i => {
+                                    ${inscs.map(i => {
                         const t = turnos.find(x => x.id === i.turno_id);
                         return t ? `
                                             <div class="turno-chip-row">
                                                 <span class="turno-chip-label">
                                                     <i data-lucide="clock" style="width:12px;height:12px"></i>
-                                                    \${t.slots ? t.slots.map(s => `\${s.day} \${s.start}-\${s.end}`).join(' | ') : `\${t.day} \${t.start}â€“\${t.end}`}
+                                                    ${t.slots ? t.slots.map(s => `${s.day} ${s.start}-${s.end}`).join(' | ') : `${t.day} ${t.start}ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“${t.end}`}
                                                 </span>
-                                                <button class="btn btn-cancel btn-xs" onclick="window.cancelInscripcion('\${i.id}')" title="Solicitar Baja">
+                                                <button class="btn btn-cancel btn-xs" onclick="window.cancelInscripcion('${i.id}')" title="Solicitar Baja">
                                                     <i data-lucide="user-minus" style="width:11px;height:11px"></i>
                                                 </button>
                                             </div>` : '';
                     }).join('')}
                                 </div>
 
-                                \${isMoroso ? `
+                                ${isMoroso ? `
                                     <button onclick="navigateTo('pagos_socio')" class="btn btn-danger w-full">
                                         <i data-lucide="credit-card"></i> REPORTAR PAGO
                                     </button>` : `
                                     <div class="status-ok">
-                                        <i data-lucide="check-circle"></i> Actividad al dÃ­a
+                                        <i data-lucide="check-circle"></i> Actividad al dÃƒÆ’Ã‚Â­a
                                     </div>`}
                             </div>`;
                 }).join('');
@@ -801,9 +798,9 @@ window.switchProfile = (id) => {
     renderView('dashboard');
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   ACTIVIDADES â€” Admin
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   ACTIVIDADES ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Admin
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderActivities(container) {
     let activities = await DB.getActivities();
@@ -823,40 +820,40 @@ async function renderActivities(container) {
 
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">GestiÃ³n de Actividades</h2>
+            <h2 class="view-title">GestiÃƒÆ’Ã‚Â³n de Actividades</h2>
             <button class="btn btn-primary" onclick="window.showActivityModal()">
                 <i data-lucide="plus"></i> Nueva Actividad
             </button>
         </div>
-        \${activities.length === 0 ? `
+        ${activities.length === 0 ? `
             <div class="empty-state">
                 <i data-lucide="zap" style="width:48px;height:48px;color:var(--text-muted);margin-bottom:16px"></i>
-                <p>No hay actividades. Â¡CreÃ¡ la primera!</p>
+                <p>No hay actividades. Ãƒâ€šÃ‚Â¡CreÃƒÆ’Ã‚Â¡ la primera!</p>
             </div>` : `
             <div class="cards-grid">
-                \${activities.map(a => `
+                ${activities.map(a => `
                     <div class="card activity-card">
                         <div class="row-between mb-3">
-                            <span class="badge \${a.status === 'active' ? 'badge-active' : 'badge-moroso'}">
-                                \${a.status === 'active' ? 'Activa' : 'Inactiva'}
+                            <span class="badge ${a.status === 'active' ? 'badge-active' : 'badge-moroso'}">
+                                ${a.status === 'active' ? 'Activa' : 'Inactiva'}
                             </span>
                         </div>
-                        <h3 class="act-title">\${a.name}</h3>
-                        <p class="act-teacher">Prof. \${a.teacher}</p>
+                        <h3 class="act-title">${a.name}</h3>
+                        <p class="act-teacher">Prof. ${a.teacher}</p>
                         <div class="mt-2" style="font-size:12px">
-                            <div class="row-between"><span>Efectivo:</span> <strong>$\${Number(a.price_cash || a.price || 0).toLocaleString('es-AR')}</strong></div>
-                            <div class="row-between"><span>Transf./MP:</span> <strong>$\${Number(a.price_digital || a.price || 0).toLocaleString('es-AR')}</strong></div>
+                            <div class="row-between"><span>Efectivo:</span> <strong>$${Number(a.price_cash || a.price || 0).toLocaleString('es-AR')}</strong></div>
+                            <div class="row-between"><span>Transf./MP:</span> <strong>$${Number(a.price_digital || a.price || 0).toLocaleString('es-AR')}</strong></div>
                         </div>
                         <div class="card-actions">
-                            \${State.user.role === 'admin' ? `
-                            <button class="btn btn-secondary btn-sm" onclick="window.showActivityModal('\${a.id}')">
+                            ${State.user.role === 'admin' ? `
+                            <button class="btn btn-secondary btn-sm" onclick="window.showActivityModal('${a.id}')">
                                 <i data-lucide="pencil" style="width:13px;height:13px"></i> Editar
                             </button>
-                            <button class="btn btn-ghost btn-sm" onclick="window.toggleActivity('\${a.id}','\${a.status}')">
-                                <i data-lucide="\${a.status === 'active' ? 'eye-off' : 'eye'}" style="width:13px;height:13px"></i>
-                                \${a.status === 'active' ? 'Desactivar' : 'Activar'}
+                            <button class="btn btn-ghost btn-sm" onclick="window.toggleActivity('${a.id}','${a.status}')">
+                                <i data-lucide="${a.status === 'active' ? 'eye-off' : 'eye'}" style="width:13px;height:13px"></i>
+                                ${a.status === 'active' ? 'Desactivar' : 'Activar'}
                             </button>
-                            <button class="btn btn-danger-ghost btn-sm" onclick="window.deleteActivity('\${a.id}')">
+                            <button class="btn btn-danger-ghost btn-sm" onclick="window.deleteActivity('${a.id}')">
                                 <i data-lucide="trash-2" style="width:13px;height:13px"></i>
                             </button>
                             ` : `<p class="text-xs text-muted">Vista de profesor (solo lectura)</p>`}
@@ -878,41 +875,41 @@ window.showActivityModal = async (actId = null) => {
         <form id="act-form" class="form-stack">
             <div class="form-group">
                 <label class="label">Nombre</label>
-                <input type="text" id="act-name" class="input" placeholder="Ej: Crossfit" value="\${act?.name || ''}" required>
+                <input type="text" id="act-name" class="input" placeholder="Ej: Crossfit" value="${act?.name || ''}" required>
             </div>
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="label">Profesor Titular (Login)</label>
                     <select id="act-profesor-id" class="input">
                         <option value="">Seleccionar profesor...</option>
-                        \${profesores.map(p => `<option value="\${p.id}" \${act?.profesor_id === p.id ? 'selected' : ''}>\${p.name}</option>`).join('')}
+                        ${profesores.map(p => `<option value="${p.id}" ${act?.profesor_id === p.id ? 'selected' : ''}>${p.name}</option>`).join('')}
                     </select>
                 </div>
                 <div class="form-group">
                     <label class="label">Nombre Profesor (Texto)</label>
-                    <input type="text" id="act-teacher" class="input" placeholder="Nombre visible" value="\${act?.teacher || ''}" required>
+                    <input type="text" id="act-teacher" class="input" placeholder="Nombre visible" value="${act?.teacher || ''}" required>
                 </div>
             </div>
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="label">Precio Efectivo ($)</label>
-                    <input type="number" id="act-price-cash" class="input" placeholder="0" value="\${act?.price_cash || act?.price || ''}" required>
+                    <input type="number" id="act-price-cash" class="input" placeholder="0" value="${act?.price_cash || act?.price || ''}" required>
                 </div>
                 <div class="form-group">
                     <label class="label">Precio Transf./Digital ($)</label>
-                    <input type="number" id="act-price-digital" class="input" placeholder="0" value="\${act?.price_digital || act?.price || ''}" required>
+                    <input type="number" id="act-price-digital" class="input" placeholder="0" value="${act?.price_digital || act?.price || ''}" required>
                 </div>
             </div>
             <div class="form-group">
                 <label class="label">Estado</label>
                 <select id="act-status" class="input">
-                    <option value="active"   \${!act || act.status === 'active' ? 'selected' : ''}>Activa</option>
-                    <option value="inactive" \${act?.status === 'inactive' ? 'selected' : ''}>Inactiva</option>
+                    <option value="active"   ${!act || act.status === 'active' ? 'selected' : ''}>Activa</option>
+                    <option value="inactive" ${act?.status === 'inactive' ? 'selected' : ''}>Inactiva</option>
                 </select>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="UI.hideModal()">Cancelar</button>
-                <button type="submit" id="act-submit" class="btn btn-primary">\${act ? 'Guardar Cambios' : 'Crear Actividad'}</button>
+                <button type="submit" id="act-submit" class="btn btn-primary">${act ? 'Guardar Cambios' : 'Crear Actividad'}</button>
             </div>
         </form>`);
 
@@ -944,7 +941,7 @@ window.toggleActivity = async (actId, currentStatus) => {
     try {
         const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
         await DB.updateActivity(actId, { status: newStatus });
-        UI.notify(\`Actividad \${newStatus === 'active' ? 'activada' : 'desactivada'}.\`);
+        UI.notify(`Actividad ${newStatus === 'active' ? 'activada' : 'desactivada'}.`);
         renderView('activities');
     } catch (err) { UI.notify(err.message, 'error'); }
 };
@@ -953,8 +950,8 @@ window.deleteActivity = (actId) => {
     UI.showModal('Eliminar Actividad', `
         <div class="confirm-danger">
             <i data-lucide="alert-triangle" style="width:40px;height:40px;color:var(--overdue);margin-bottom:12px"></i>
-            <p>Â¿EstÃ¡s seguro de que querÃ©s <strong>eliminar</strong> esta actividad?</p>
-            <p class="text-sm text-muted" style="margin-top:8px">Esta acciÃ³n no se puede deshacer.</p>
+            <p>Ãƒâ€šÃ‚Â¿EstÃƒÆ’Ã‚Â¡s seguro de que querÃƒÆ’Ã‚Â©s <strong>eliminar</strong> esta actividad?</p>
+            <p class="text-sm text-muted" style="margin-top:8px">Esta acciÃƒÆ’Ã‚Â³n no se puede deshacer.</p>
         </div>
         <div class="modal-actions mt-4">
             <button class="btn btn-secondary" onclick="UI.hideModal()">Cancelar</button>
@@ -973,9 +970,9 @@ window.deleteActivity = (actId) => {
     };
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   TURNOS â€” Admin
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   TURNOS ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Admin
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderTurnos(container) {
     let [activities, turnos, countMap] = await Promise.all([
@@ -999,57 +996,57 @@ async function renderTurnos(container) {
 
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">GestiÃ³n de Turnos</h2>
+            <h2 class="view-title">GestiÃƒÆ’Ã‚Â³n de Turnos</h2>
             <button class="btn btn-primary" onclick="window.showTurnoModal()">
                 <i data-lucide="plus"></i> Nuevo Turno
             </button>
         </div>
-        \${activities.length === 0 ? \`<div class="empty-state">No hay actividades. CreÃ¡ una primero.</div>\` :
+        ${activities.length === 0 ? `<div class="empty-state">No hay actividades. CreÃƒÆ’Ã‚Â¡ una primero.</div>` :
             activities.map(act => {
                 const actTurnos = turnos.filter(t => t.activity_id === act.id);
-                return \`
+                return `
                 <div class="card mb-4">
                     <div class="row-between mb-4">
                         <div>
-                            <h3 class="row-title">\${act.name}</h3>
-                            <span class="row-sub">Prof. \${act.teacher}</span>
+                            <h3 class="row-title">${act.name}</h3>
+                            <span class="row-sub">Prof. ${act.teacher}</span>
                         </div>
-                        <button class="btn btn-secondary btn-sm" onclick="window.showTurnoModal(null,'\${act.id}')">
+                        <button class="btn btn-secondary btn-sm" onclick="window.showTurnoModal(null,'${act.id}')">
                             <i data-lucide="plus" style="width:13px;height:13px"></i> Turno
                         </button>
                     </div>
-                    \${actTurnos.length === 0 ? \`<div class="empty-inline">Sin turnos aÃºn.</div>\` : \`
+                    ${actTurnos.length === 0 ? `<div class="empty-inline">Sin turnos aÃƒÆ’Ã‚Âºn.</div>` : `
                         <div class="turnos-table-wrap">
                             <table class="turnos-table">
                                 <thead>
-                                    <tr><th>DÃ­as y Horarios</th><th>Cupo MÃ¡x.</th><th>Disponibles</th><th>Acciones</th></tr>
+                                    <tr><th>DÃƒÆ’Ã‚Â­as y Horarios</th><th>Cupo MÃƒÆ’Ã‚Â¡x.</th><th>Disponibles</th><th>Acciones</th></tr>
                                 </thead>
                                 <tbody>
-                                    \${actTurnos.map(t => {
+                                    ${actTurnos.map(t => {
                     const used = countMap[t.id] || 0;
                     const avail = Math.max(0, t.max_cupo - used);
-                    const slotsStr = t.slots ? t.slots.map(s => \`\${s.day} \${s.start}-\${s.end}\`).join('<br>') : \`\${t.day} \${t.start}-\${t.end}\`;
-                    return \`
+                    const slotsStr = t.slots ? t.slots.map(s => `${s.day} ${s.start}-${s.end}`).join('<br>') : `${t.day} ${t.start}-${t.end}`;
+                    return `
                                         <tr>
-                                            <td class="td-bold">\${slotsStr}</td>
-                                            <td>\${t.max_cupo}</td>
-                                            <td><span class="badge \${avail > 0 ? 'badge-active' : 'badge-moroso'}">\${avail} libres</span></td>
+                                            <td class="td-bold">${slotsStr}</td>
+                                            <td>${t.max_cupo}</td>
+                                            <td><span class="badge ${avail > 0 ? 'badge-active' : 'badge-moroso'}">${avail} libres</span></td>
                                             <td>
                                                 <div class="action-row">
-                                                    <button class="btn btn-secondary btn-xs" onclick="window.showTurnoModal('\${t.id}')">
+                                                    <button class="btn btn-secondary btn-xs" onclick="window.showTurnoModal('${t.id}')">
                                                         <i data-lucide="pencil" style="width:12px;height:12px"></i>
                                                     </button>
-                                                    <button class="btn btn-danger-ghost btn-xs" onclick="window.deleteTurno('\${t.id}')">
+                                                    <button class="btn btn-danger-ghost btn-xs" onclick="window.deleteTurno('${t.id}')">
                                                         <i data-lucide="trash-2" style="width:12px;height:12px"></i>
                                                     </button>
                                                 </div>
                                             </td>
-                                        </tr>\`;
+                                        </tr>`;
                 }).join('')}
                                 </tbody>
                             </table>
-                        </div>\`}
-                </div>\`;
+                        </div>`}
+                </div>`;
             }).join('')}`;
 }
 
@@ -1061,33 +1058,33 @@ window.showTurnoModal = async (turnoId = null, preselectedActId = null) => {
         turno = allTurnos.find(t => t.id === turnoId);
     }
 
-    const days = ['Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado', 'Domingo'];
+    const days = ['Lunes', 'Martes', 'MiÃƒÆ’Ã‚Â©rcoles', 'Jueves', 'Viernes', 'SÃƒÆ’Ã‚Â¡bado', 'Domingo'];
 
     UI.showModal(turno ? 'Editar Turno' : 'Nuevo Turno', `
         <form id="turno-form" class="form-stack">
             <div class="form-group">
                 <label class="label">Actividad</label>
                 <select id="t-activity" class="input" required>
-                    \${activities.map(a => \`
-                        <option value="\${a.id}" \${(turno?.activity_id === a.id || preselectedActId === a.id) ? 'selected' : ''}>
-                            \${a.name}
-                        </option>\`).join('')}
+                    ${activities.map(a => `
+                        <option value="${a.id}" ${(turno?.activity_id === a.id || preselectedActId === a.id) ? 'selected' : ''}>
+                            ${a.name}
+                        </option>`).join('')}
                 </select>
             </div>
             
             <div class="form-group">
-                <label class="label">DÃ­as y Horarios</label>
+                <label class="label">DÃƒÆ’Ã‚Â­as y Horarios</label>
                 <div id="slots-container" class="list-stack mb-2">
                     <!-- Slots dynamic -->
                 </div>
                 <button type="button" class="btn btn-secondary btn-sm" onclick="window.addSlotRow()">
-                    <i data-lucide="plus" style="width:12px;height:12px"></i> Agregar DÃ­a/Hora
+                    <i data-lucide="plus" style="width:12px;height:12px"></i> Agregar DÃƒÆ’Ã‚Â­a/Hora
                 </button>
             </div>
 
             <div class="form-group">
-                <label class="label">Cupo MÃ¡ximo</label>
-                <input type="number" id="t-cupo" class="input" min="1" max="200" value="\${turno?.max_cupo || 20}" required>
+                <label class="label">Cupo MÃƒÆ’Ã‚Â¡ximo</label>
+                <input type="number" id="t-cupo" class="input" min="1" max="200" value="${turno?.max_cupo || 20}" required>
             </div>
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="UI.hideModal()">Cancelar</button>
@@ -1103,14 +1100,14 @@ window.showTurnoModal = async (turnoId = null, preselectedActId = null) => {
         div.innerHTML = `
             <div style="flex:1">
                 <select class="input slot-day" required>
-                    \${days.map(d => \`<option value="\${d}" \${data?.day === d ? 'selected' : ''}>\${d}</option>\`).join('')}
+                    ${days.map(d => `<option value="${d}" ${data?.day === d ? 'selected' : ''}>${d}</option>`).join('')}
                 </select>
             </div>
             <div style="width:100px">
-                <input type="time" class="input slot-start" value="\${data?.start || '18:00'}" required>
+                <input type="time" class="input slot-start" value="${data?.start || '18:00'}" required>
             </div>
             <div style="width:100px">
-                <input type="time" class="input slot-end" value="\${data?.end || '19:00'}" required>
+                <input type="time" class="input slot-end" value="${data?.end || '19:00'}" required>
             </div>
             <button type="button" class="btn btn-danger-ghost btn-xs" onclick="this.parentElement.remove()">
                 <i data-lucide="trash-2" style="width:14px;height:14px"></i>
@@ -1139,7 +1136,7 @@ window.showTurnoModal = async (turnoId = null, preselectedActId = null) => {
         }));
 
         if (slots.length === 0) {
-            UI.notify('AgregÃ¡ al menos un horario.', 'error');
+            UI.notify('AgregÃƒÆ’Ã‚Â¡ al menos un horario.', 'error');
             return;
         }
 
@@ -1173,7 +1170,7 @@ window.deleteTurno = (turnoId) => {
     UI.showModal('Eliminar Turno', `
         <div class="confirm-danger">
             <i data-lucide="alert-triangle" style="width:40px;height:40px;color:var(--overdue);margin-bottom:12px"></i>
-            <p>Â¿EstÃ¡s seguro de que querÃ©s eliminar este turno?</p>
+            <p>Ãƒâ€šÃ‚Â¿EstÃƒÆ’Ã‚Â¡s seguro de que querÃƒÆ’Ã‚Â©s eliminar este turno?</p>
         </div>
         <div class="modal-actions mt-4">
             <button class="btn btn-secondary" onclick="UI.hideModal()">Cancelar</button>
@@ -1188,10 +1185,10 @@ window.deleteTurno = (turnoId) => {
     };
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   MIS ALUMNOS â€” Profesor
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   MIS ALUMNOS ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Profesor
    Vista para que el profesor vea solo sus alumnos inscriptos.
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+   ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 
 async function renderMisAlumnos(container) {
@@ -1224,7 +1221,7 @@ async function renderMisAlumnos(container) {
     container.innerHTML = `
         <div class="view-header">
             <h2 class="view-title">Mis Alumnos Inscriptos</h2>
-            <div class="badge badge-active" style="padding:6px 12px">\${myStudents.length} Alumno(s)</div>
+            <div class="badge badge-active" style="padding:6px 12px">${myStudents.length} Alumno(s)</div>
         </div>
         
         <div class="socios-table-wrap card" style="padding:0;overflow:hidden">
@@ -1233,9 +1230,9 @@ async function renderMisAlumnos(container) {
                     <tr><th>Alumno</th><th>Contacto</th><th>Actividad(es)</th><th>Estado</th><th>Acciones</th></tr>
                 </thead>
                 <tbody>
-                    \${myStudents.length === 0 ? `
+                    ${myStudents.length === 0 ? `
                         <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">
-                            No tenÃ©s alumnos inscriptos aÃºn en tus actividades.
+                            No tenÃƒÆ’Ã‚Â©s alumnos inscriptos aÃƒÆ’Ã‚Âºn en tus actividades.
                         </td></tr>` :
             myStudents.map(u => {
                 const userActStats = myStudentsStatuses.filter(st => st.user_id === u.id);
@@ -1245,8 +1242,8 @@ async function renderMisAlumnos(container) {
 
                 const nowStr = new Date().toISOString().split('T')[0];
                 // Es moroso si tiene estado 'moroso' en CUALQUIERA de mis actividades
-                // O si no tiene estado record para una actividad en la que estÃ¡ inscripto (pago inicial)
-                // O si estÃ¡ activo pero EXPIRÃ“
+                // O si no tiene estado record para una actividad en la que estÃƒÆ’Ã‚Â¡ inscripto (pago inicial)
+                // O si estÃƒÆ’Ã‚Â¡ activo pero EXPIRÃƒÆ’Ã¢â‚¬Å“
                 const isMoroso = uniqueInscActIds.some(aid => {
                     const st = userActStats.find(s => s.activity_id === aid);
                     if (!st) return true;
@@ -1266,31 +1263,31 @@ async function renderMisAlumnos(container) {
                             <tr>
                                 <td>
                                     <div class="socio-avatar-wrap">
-                                        <div class="socio-avatar">\${displayName.charAt(0).toUpperCase()}</div>
+                                        <div class="socio-avatar">${displayName.charAt(0).toUpperCase()}</div>
                                         <div>
-                                            <div class="td-bold">\${displayName}</div>
-                                            <div class="text-xs text-muted">@\${u.usuario || 'â€”'}</div>
+                                            <div class="td-bold">${displayName}</div>
+                                            <div class="text-xs text-muted">@${u.usuario || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="text-sm">\${u.phone || 'â€”'}</div>
-                                    <div class="text-xs text-muted">DNI: \${u.dni || 'â€”'}</div>
+                                    <div class="text-sm">${u.phone || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>
+                                    <div class="text-xs text-muted">DNI: ${u.dni || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>
                                 </td>
                                 <td>
-                                    <div class="text-xs" style="font-weight:600">\${studentActs}</div>
+                                    <div class="text-xs" style="font-weight:600">${studentActs}</div>
                                 </td>
                                 <td>
-                                    <span class="badge \${isMoroso ? 'badge-moroso' : 'badge-active'}">
-                                        \${isMoroso ? 'DEUDA / PEDN.' : 'AL DÃA'}
+                                    <span class="badge ${isMoroso ? 'badge-moroso' : 'badge-active'}">
+                                        ${isMoroso ? 'DEUDA / PEDN.' : 'AL DÃƒÆ’A'}
                                     </span>
                                 </td>
                                 <td>
                                     <div class="action-row" style="display:flex; gap:4px">
-                                        <button class="btn btn-secondary btn-xs" onclick="window.showUserFicha('\${u.id}')" title="Ver Ficha">
+                                        <button class="btn btn-secondary btn-xs" onclick="window.showUserFicha('${u.id}')" title="Ver Ficha">
                                             <i data-lucide="user" style="width:12px;height:12px"></i> Ficha
                                         </button>
-                                        <button class="btn btn-ghost btn-xs" onclick="window.showAlumnoHistory('\${u.id}')" title="Historial de Pagos">
+                                        <button class="btn btn-ghost btn-xs" onclick="window.showAlumnoHistory('${u.id}')" title="Historial de Pagos">
                                             <i data-lucide="history" style="width:12px;height:12px"></i> Pagos
                                         </button>
                                     </div>
@@ -1315,15 +1312,15 @@ window.showUserFicha = async (userId) => {
     const myActivities = activities.filter(a => a.profesor_id === State.user.id || a.teacher === State.user.name);
     const myActIds = myActivities.map(a => a.id);
 
-    // Actividades en las que estÃ¡ inscripto y son de este profesor
+    // Actividades en las que estÃƒÆ’Ã‚Â¡ inscripto y son de este profesor
     const studentActIds = [...new Set(inscriptions.map(i => i.activity_id))].filter(aid => myActIds.includes(aid));
 
     document.getElementById('modal-content').querySelector('.modal-body').innerHTML = `
         <div style="display:flex; align-items:center; gap:20px; margin-bottom:24px; padding-bottom:20px; border-bottom:1px solid var(--border)">
-            <div class="socio-avatar" style="width:64px; height:64px; font-size:24px">\${(user.name || 'A').charAt(0).toUpperCase()}</div>
+            <div class="socio-avatar" style="width:64px; height:64px; font-size:24px">${(user.name || 'A').charAt(0).toUpperCase()}</div>
             <div>
-                <h3 style="margin:0">\${user.name}</h3>
-                <p class="text-muted" style="margin:5px 0 0">@\${user.usuario}</p>
+                <h3 style="margin:0">${user.name}</h3>
+                <p class="text-muted" style="margin:5px 0 0">@${user.usuario}</p>
             </div>
         </div>
         
@@ -1331,40 +1328,40 @@ window.showUserFicha = async (userId) => {
             <div class="form-row-2">
                 <div>
                     <label class="label">DNI</label>
-                    <div class="input" style="background:#f8fafc">\${user.dni || 'â€”'}</div>
+                    <div class="input" style="background:#f8fafc">${user.dni || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>
                 </div>
                 <div>
-                    <label class="label">TelÃ©fono</label>
-                    <div class="input" style="background:#f8fafc">\${user.phone || 'â€”'}</div>
+                    <label class="label">TelÃƒÆ’Ã‚Â©fono</label>
+                    <div class="input" style="background:#f8fafc">${user.phone || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>
                 </div>
             </div>
             
             <div class="form-group">
                 <label class="label">Email Personal</label>
-                <div class="input" style="background:#f8fafc">\${user.personal_email || 'â€”'}</div>
+                <div class="input" style="background:#f8fafc">${user.personal_email || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>
             </div>
 
             <div class="form-group">
                 <label class="label">Contacto de Emergencia</label>
                 <div class="input" style="background:#f8fafc; display:flex; flex-direction:column; gap:4px; padding:12px">
-                    <div style="font-weight:700">\${user.emergency_name || 'â€”'} (\${user.emergency_relationship || 'Parentesco s/n'})</div>
-                    <div class="text-xs text-muted">Tel: \${user.emergency_phone || 'â€”'}</div>
+                    <div style="font-weight:700">${user.emergency_name || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'} (${user.emergency_relationship || 'Parentesco s/n'})</div>
+                    <div class="text-xs text-muted">Tel: ${user.emergency_phone || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>
                 </div>
             </div>
 
             <div class="form-group">
                 <label class="label">Estado en mis actividades</label>
                 <div class="list-stack mt-2">
-                    \${studentActIds.length === 0 ? '<p class="text-muted text-sm">No tiene inscripciones activas.</p>' :
+                    ${studentActIds.length === 0 ? '<p class="text-muted text-sm">No tiene inscripciones activas.</p>' :
             studentActIds.map(aid => {
                 const act = activities.find(a => a.id === aid);
                 const s = statuses.find(st => st.activity_id === aid);
                 const isMoroso = !s || s.status === 'moroso';
                 return `
                             <div class="row-between" style="padding:10px; background:#f8fafc; border-radius:10px; margin-bottom:8px">
-                                <span style="font-weight:600">\${act?.name || 'Actividad'}</span>
-                                <span class="badge \${isMoroso ? 'badge-moroso' : 'badge-active'}">
-                                    \${isMoroso ? (s ? 'MOROSO' : 'PAGO PEND.') : 'AL DÃA'}
+                                <span style="font-weight:600">${act?.name || 'Actividad'}</span>
+                                <span class="badge ${isMoroso ? 'badge-moroso' : 'badge-active'}">
+                                    ${isMoroso ? (s ? 'MOROSO' : 'PAGO PEND.') : 'AL DÃƒÆ’A'}
                                 </span>
                             </div>
                         `;
@@ -1372,10 +1369,10 @@ window.showUserFicha = async (userId) => {
                 </div>
             </div>
 
-            \${user.waiver_url ? `
+            ${user.waiver_url ? `
             <div class="form-group">
-                <label class="label">DocumentaciÃ³n</label>
-                <a href="\${user.waiver_url}" target="_blank" class="btn btn-secondary btn-sm w-full">
+                <label class="label">DocumentaciÃƒÆ’Ã‚Â³n</label>
+                <a href="${user.waiver_url}" target="_blank" class="btn btn-secondary btn-sm w-full">
                     <i data-lucide="file-text"></i> Ver Deslinde de Responsabilidad (PDF)
                 </a>
             </div>` : ''}
@@ -1388,9 +1385,9 @@ window.showUserFicha = async (userId) => {
     window.refreshIcons();
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   SOCIOS â€” Admin
-   â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   SOCIOS ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Admin
+   ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderUsers(container) {
     const [users, allStatuses] = await Promise.all([
@@ -1400,7 +1397,7 @@ async function renderUsers(container) {
 
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">GestiÃ³n de Usuarios</h2>
+            <h2 class="view-title">GestiÃƒÆ’Ã‚Â³n de Usuarios</h2>
             <div style="display:flex; gap:10px">
                 <button class="btn btn-secondary" onclick="window.showConfigDeslinde()">
                     <i data-lucide="upload"></i> Subir Deslinde General
@@ -1416,9 +1413,9 @@ async function renderUsers(container) {
                     <tr><th>Usuario</th><th>Contacto / DNI</th><th>Rol</th><th>Estado</th><th>Acciones</th></tr>
                 </thead>
                 <tbody>
-                    \${users.length === 0 ? `
+                    ${users.length === 0 ? `
                         <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">
-                            No hay usuarios registrados aÃºn.
+                            No hay usuarios registrados aÃƒÆ’Ã‚Âºn.
                         </td></tr>` :
             users.map(u => {
                 const userStats = allStatuses.filter(st => st.user_id === u.id);
@@ -1429,38 +1426,38 @@ async function renderUsers(container) {
                             <tr>
                                 <td>
                                     <div class="socio-avatar-wrap">
-                                        <div class="socio-avatar">\${displayName.charAt(0).toUpperCase()}</div>
+                                        <div class="socio-avatar">${displayName.charAt(0).toUpperCase()}</div>
                                         <div>
-                                            <div class="td-bold">\${displayName}</div>
-                                            <div class="text-xs text-muted">@\${u.usuario || 'â€”'}</div>
+                                            <div class="td-bold">${displayName}</div>
+                                            <div class="text-xs text-muted">@${u.usuario || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td>
-                                    <div class="text-sm">\${u.phone || 'â€”'}</div>
-                                    <div class="text-xs text-muted">DNI: \${u.dni || 'â€”'}</div>
+                                    <div class="text-sm">${u.phone || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>
+                                    <div class="text-xs text-muted">DNI: ${u.dni || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</div>
                                 </td>
                                 <td>
-                                    <span class="badge \${u.role === 'admin' ? 'badge-active' : u.role === 'profesor' ? 'badge-warning' : 'badge-secondary'}" style="background:var(--bg-muted); color:var(--text-main); border:1px solid var(--border)">
-                                        \${roles[u.role] || u.role}
+                                    <span class="badge ${u.role === 'admin' ? 'badge-active' : u.role === 'profesor' ? 'badge-warning' : 'badge-secondary'}" style="background:var(--bg-muted); color:var(--text-main); border:1px solid var(--border)">
+                                        ${roles[u.role] || u.role}
                                     </span>
                                 </td>
                                 <td>
-                                    \${u.role === 'alumno' || u.role === 'socio' ? `
-                                        <span class="badge \${isMoroso ? 'badge-moroso' : 'badge-active'}">
-                                            \${isMoroso ? 'MOROSO' : 'AL DÃA'}
-                                        </span>` : 'â€”'}
+                                    ${u.role === 'alumno' || u.role === 'socio' ? `
+                                        <span class="badge ${isMoroso ? 'badge-moroso' : 'badge-active'}">
+                                            ${isMoroso ? 'MOROSO' : 'AL DÃƒÆ’A'}
+                                        </span>` : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}
                                 </td>
                                 <td>
                                     <div class="action-row">
-                                        <button class="btn btn-secondary btn-xs" onclick="window.showUserModal('\${u.id}')" title="Editar">
+                                        <button class="btn btn-secondary btn-xs" onclick="window.showUserModal('${u.id}')" title="Editar">
                                             <i data-lucide="pencil" style="width:12px;height:12px"></i>
                                         </button>
-                                        \${u.role === 'alumno' || u.role === 'socio' ? `
-                                        <button class="btn btn-secondary btn-xs" onclick="window.showAlumnoHistory('\${u.id}')" title="Pagos">
+                                        ${u.role === 'alumno' || u.role === 'socio' ? `
+                                        <button class="btn btn-secondary btn-xs" onclick="window.showAlumnoHistory('${u.id}')" title="Pagos">
                                             <i data-lucide="history" style="width:12px;height:12px"></i>
                                         </button>` : ''}
-                                        <button class="btn btn-danger-ghost btn-xs" onclick="window.deleteUser('\${u.id}')" title="Eliminar">
+                                        <button class="btn btn-danger-ghost btn-xs" onclick="window.deleteUser('${u.id}')" title="Eliminar">
                                             <i data-lucide="trash-2" style="width:12px;height:12px"></i>
                                         </button>
                                     </div>
@@ -1481,14 +1478,14 @@ window.showUserModal = async (userId = null) => {
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="label">Nombre Completo</label>
-                    <input type="text" id="u-name" class="input" placeholder="Juan PÃ©rez" value="\${user?.name || ''}" required>
+                    <input type="text" id="u-name" class="input" placeholder="Juan PÃƒÆ’Ã‚Â©rez" value="${user?.name || ''}" required>
                 </div>
                 <div class="form-group">
                     <label class="label">Rol</label>
                     <select id="u-role" class="input" required>
-                        <option value="alumno" \${user?.role === 'alumno' || user?.role === 'socio' ? 'selected' : ''}>Alumno</option>
-                        <option value="profesor" \${user?.role === 'profesor' ? 'selected' : ''}>Profesor</option>
-                        <option value="admin" \${user?.role === 'admin' ? 'selected' : ''}>Administrador</option>
+                        <option value="alumno" ${user?.role === 'alumno' || user?.role === 'socio' ? 'selected' : ''}>Alumno</option>
+                        <option value="profesor" ${user?.role === 'profesor' ? 'selected' : ''}>Profesor</option>
+                        <option value="admin" ${user?.role === 'admin' ? 'selected' : ''}>Administrador</option>
                     </select>
                 </div>
             </div>
@@ -1496,44 +1493,44 @@ window.showUserModal = async (userId = null) => {
             <div class="form-group">
                 <label class="label">Nombre de Usuario (Login)</label>
                 <input type="text" id="u-usuario" class="input" placeholder="Ej: JuanP"
-                    value="\${user?.usuario || ''}" \${user ? 'readonly style="background:#f1f5f9;cursor:not-allowed"' : ''} required>
-                <span class="field-hint">Este serÃ¡ el identificador para entrar al sistema.</span>
+                    value="${user?.usuario || ''}" ${user ? 'readonly style="background:#f1f5f9;cursor:not-allowed"' : ''} required>
+                <span class="field-hint">Este serÃƒÆ’Ã‚Â¡ el identificador para entrar al sistema.</span>
             </div>
 
-            \${!user ? `
+            ${!user ? `
             <div class="form-group">
-                <label class="label">ContraseÃ±a Inicial</label>
-                <input type="password" id="u-password" class="input" placeholder="MÃ­nimo 6 caracteres" required minlength="6">
+                <label class="label">ContraseÃƒÆ’Ã‚Â±a Inicial</label>
+                <input type="password" id="u-password" class="input" placeholder="MÃƒÆ’Ã‚Â­nimo 6 caracteres" required minlength="6">
             </div>` : ''}
 
-            \${user ? `
+            ${user ? `
             <hr class="mt-4 mb-4">
             <p class="text-xs text-muted mb-4">Campos adicionales (Opcionales - Se completan en el onboarding):</p>
             <div class="form-row-2">
                 <div class="form-group">
                     <label class="label">DNI</label>
-                    <input type="text" id="u-dni" class="input" placeholder="DNI sin puntos" value="\${user?.dni || ''}">
+                    <input type="text" id="u-dni" class="input" placeholder="DNI sin puntos" value="${user?.dni || ''}">
                 </div>
                 <div class="form-group">
                     <label class="label">Email Personal</label>
-                    <input type="email" id="u-personal-email" class="input" placeholder="ejemplo@correo.com" value="\${user?.personal_email || ''}">
+                    <input type="email" id="u-personal-email" class="input" placeholder="ejemplo@correo.com" value="${user?.personal_email || ''}">
                 </div>
             </div>
             <div class="form-row-2">
                 <div class="form-group">
-                    <label class="label">TelÃ©fono</label>
-                    <input type="tel" id="u-phone" class="input" placeholder="+54 9 ..." value="\${user?.phone || ''}">
+                    <label class="label">TelÃƒÆ’Ã‚Â©fono</label>
+                    <input type="tel" id="u-phone" class="input" placeholder="+54 9 ..." value="${user?.phone || ''}">
                 </div>
                 <div class="form-group">
                     <label class="label">Tel. Emergencia</label>
-                    <input type="tel" id="u-emergency" class="input" placeholder="Contacto de emergencia" value="\${user?.emergency_phone || ''}">
+                    <input type="tel" id="u-emergency" class="input" placeholder="Contacto de emergencia" value="${user?.emergency_phone || ''}">
                 </div>
             </div>
             ` : ''}
 
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="UI.hideModal()">Cancelar</button>
-                <button type="submit" id="u-submit" class="btn btn-primary">\${user ? 'Guardar Cambios' : 'Crear Usuario'}</button>
+                <button type="submit" id="u-submit" class="btn btn-primary">${user ? 'Guardar Cambios' : 'Crear Usuario'}</button>
             </div>
         </form>`);
 
@@ -1571,7 +1568,7 @@ window.showUserModal = async (userId = null) => {
 
                     const ext = waiverFile.name.split('.').pop() || 'pdf';
                     const storageId = userId || data.usuario || Date.now();
-                    const storageRef = storage.ref(`deslindes/\${storageId}_deslinde.\${ext}`);
+                    const storageRef = storage.ref(`deslindes/${storageId}_deslinde.${ext}`);
 
                     const uploadTask = storageRef.put(waiverFile);
 
@@ -1579,7 +1576,7 @@ window.showUserModal = async (userId = null) => {
                         uploadTask.on('state_changed',
                             (snapshot) => {
                                 const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-                                btn.textContent = `Subiendo: \${Math.round(progress)}%`;
+                                btn.textContent = `Subiendo: ${Math.round(progress)}%`;
                                 console.log('Progreso de subida:', progress + '%');
                             },
                             (error) => {
@@ -1594,7 +1591,7 @@ window.showUserModal = async (userId = null) => {
                     });
 
                     // Timeout de 60 segundos
-                    await runWithTimeout(uploadPromise, 60000, "Tiempo de subida agotado (60s). El archivo es muy grande o la conexiÃ³n es inestable.");
+                    await runWithTimeout(uploadPromise, 60000, "Tiempo de subida agotado (60s). El archivo es muy grande o la conexiÃƒÆ’Ã‚Â³n es inestable.");
 
                     data.waiver_url = await storageRef.getDownloadURL();
                     console.log("URL de descarga obtenida:", data.waiver_url);
@@ -1651,26 +1648,26 @@ window.showAlumnoHistory = async (alumnoId) => {
     }
 
     document.getElementById('modal-content').querySelector('.modal-body').innerHTML = `
-        <h4 style="margin-bottom:12px">\${profile?.name}</h4>
+        <h4 style="margin-bottom:12px">${profile?.name}</h4>
         <div class="list-stack">
-            \${payments.length === 0 ? '<p class="text-muted">Sin pagos registrados.</p>' :
+            ${payments.length === 0 ? '<p class="text-muted">Sin pagos registrados.</p>' :
             payments.map(p => {
                 const act = activities.find(a => a.id === p.activity_id);
-                return \`
+                return `
                     <div class="list-row">
                         <div>
-                            <div class="row-title">\${act?.name || p.activity_id}</div>
-                            <div class="row-sub">\${p.date || 'â€”'} Â· \${p.method}</div>
+                            <div class="row-title">${act?.name || p.activity_id}</div>
+                            <div class="row-sub">${p.date || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'} Ãƒâ€šÃ‚Â· ${p.method}</div>
                         </div>
                         <div style="text-align:right">
-                            <div style="font-weight:700">$\${Number(p.amount).toLocaleString('es-AR')}</div>
-                            <span class="badge \${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
-                                \${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
+                            <div style="font-weight:700">$${Number(p.amount).toLocaleString('es-AR')}</div>
+                            <span class="badge ${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
+                                ${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
                             </span>
                         </div>
-                    </div>\`;
+                    </div>`;
             }).join('')}
-        </div>\`;
+        </div>`;
     window.refreshIcons();
 };
 
@@ -1678,9 +1675,9 @@ window.deleteUser = (userId) => {
     UI.showModal('Eliminar Usuario', `
         <div class="confirm-danger">
             <i data-lucide="alert-triangle" style="width:40px;height:40px;color:var(--overdue);margin-bottom:12px"></i>
-            <p>Â¿EstÃ¡s seguro de que querÃ©s eliminar este usuario?</p>
+            <p>Ãƒâ€šÃ‚Â¿EstÃƒÆ’Ã‚Â¡s seguro de que querÃƒÆ’Ã‚Â©s eliminar este usuario?</p>
             <p class="text-sm text-muted" style="margin-top:8px">
-                Se eliminarÃ¡ el perfil en Firestore. La cuenta de acceso debe eliminarse manualmente en Firebase Console.
+                Se eliminarÃƒÆ’Ã‚Â¡ el perfil en Firestore. La cuenta de acceso debe eliminarse manualmente en Firebase Console.
             </p>
         </div>
         <div class="modal-actions mt-4">
@@ -1696,9 +1693,9 @@ window.deleteUser = (userId) => {
     };
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   PAGOS â€” Admin
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   PAGOS ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Admin
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderPaymentsAdmin(container) {
     const isProfesor = State.user.role === 'profesor';
@@ -1720,10 +1717,10 @@ async function renderPaymentsAdmin(container) {
 
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">Pagos Pendientes de AprobaciÃ³n</h2>
-            <span class="badge badge-warning" style="font-size:13px;padding:6px 14px">\${payments.length} pendiente(s)</span>
+            <h2 class="view-title">Pagos Pendientes de AprobaciÃƒÆ’Ã‚Â³n</h2>
+            <span class="badge badge-warning" style="font-size:13px;padding:6px 14px">${payments.length} pendiente(s)</span>
         </div>
-        \${payments.length === 0 ? `
+        ${payments.length === 0 ? `
             <div class="empty-state">
                 <i data-lucide="check-circle" style="width:48px;height:48px;color:var(--success);margin-bottom:16px"></i>
                 <p>No hay pagos pendientes.</p>
@@ -1738,19 +1735,19 @@ async function renderPaymentsAdmin(container) {
                             <i data-lucide="file-text" style="width:20px;height:20px"></i>
                         </div>
                         <div>
-                            <div class="row-title">\${socio?.name || 'Alumno desconocido'}</div>
+                            <div class="row-title">${socio?.name || 'Alumno desconocido'}</div>
                             <div class="row-sub">
-                                \${act?.name || 'Actividad'} Â·
-                                $\${Number(p.amount).toLocaleString('es-AR')} Â·
-                                \${p.date || 'â€”'} Â· \${p.method}
+                                ${act?.name || 'Actividad'} Ãƒâ€šÃ‚Â·
+                                $${Number(p.amount).toLocaleString('es-AR')} Ãƒâ€šÃ‚Â·
+                                ${p.date || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'} Ãƒâ€šÃ‚Â· ${p.method}
                             </div>
                         </div>
                     </div>
                     <div class="action-row">
-                        <button class="btn btn-primary btn-sm" onclick="window.approvePay('\${p.id}')">
+                        <button class="btn btn-primary btn-sm" onclick="window.approvePay('${p.id}')">
                             <i data-lucide="check" style="width:13px;height:13px"></i> Aprobar
                         </button>
-                        <button class="btn btn-danger-ghost btn-sm" onclick="window.rejectPay('\${p.id}')">
+                        <button class="btn btn-danger-ghost btn-sm" onclick="window.rejectPay('${p.id}')">
                             <i data-lucide="x" style="width:13px;height:13px"></i> Rechazar
                         </button>
                     </div>
@@ -1761,7 +1758,7 @@ async function renderPaymentsAdmin(container) {
 window.approvePay = async (payId) => {
     try {
         await DB.approvePayment(payId);
-        UI.notify('Pago aprobado. SuscripciÃ³n renovada por 1 mes.');
+        UI.notify('Pago aprobado. SuscripciÃƒÆ’Ã‚Â³n renovada por 1 mes.');
         renderView('payments_admin');
     } catch (err) { UI.notify(err.message, 'error'); }
 };
@@ -1774,10 +1771,10 @@ window.rejectPay = async (payId) => {
     } catch (err) { UI.notify(err.message, 'error'); }
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   HISTORIAL DE PAGOS â€” Admin
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   HISTORIAL DE PAGOS ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Admin
    Identificando socios, pagos y periodos.
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderPaymentsHistory(container) {
     const isProfesor = State.user.role === 'profesor';
@@ -1813,30 +1810,30 @@ async function renderPaymentsHistory(container) {
                         <th>Actividad</th>
                         <th>Periodo</th>
                         <th>Monto</th>
-                        <th>MÃ©todo</th>
+                        <th>MÃƒÆ’Ã‚Â©todo</th>
                         <th>Estado</th>
                     </tr>
                 </thead>
                 <tbody>
-                    \${payments.length === 0 ? `
+                    ${payments.length === 0 ? `
                         <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">
-                            No hay registros de pagos aÃºn.
+                            No hay registros de pagos aÃƒÆ’Ã‚Âºn.
                         </td></tr>` :
             payments.map(p => {
                 const socio = users.find(s => s.id === (p.user_id || p.userId));
                 const act = activities.find(a => a.id === p.activity_id);
-                const dateStr = p.createdAt ? (p.createdAt.toDate ? p.createdAt.toDate().toISOString().split('T')[0] : 'â€”') : 'â€”';
+                const dateStr = p.createdAt ? (p.createdAt.toDate ? p.createdAt.toDate().toISOString().split('T')[0] : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â') : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â';
                 return `
                             <tr>
-                                <td>\${dateStr !== 'â€”' ? UI.formatDate(dateStr) : 'â€”'}</td>
-                                <td class="td-bold">\${socio?.name || 'Usuario Desconocido'}</td>
-                                <td>\${act?.name || 'Actividad'}</td>
-                                <td>\${p.month || p.Month || 'â€”'}</td>
-                                <td>$\${Number(p.amount || p.Amount || 0).toLocaleString('es-AR')}</td>
-                                <td>\${p.method === 'transfer' ? 'Transferencia' : p.method === 'digital' ? 'Mercado Pago' : 'Efectivo'}</td>
+                                <td>${dateStr !== 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â' ? UI.formatDate(dateStr) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                                <td class="td-bold">${socio?.name || 'Usuario Desconocido'}</td>
+                                <td>${act?.name || 'Actividad'}</td>
+                                <td>${p.month || p.Month || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                                <td>$${Number(p.amount || p.Amount || 0).toLocaleString('es-AR')}</td>
+                                <td>${p.method === 'transfer' ? 'Transferencia' : p.method === 'digital' ? 'Mercado Pago' : 'Efectivo'}</td>
                                 <td>
-                                    <span class="badge \${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
-                                        \${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
+                                    <span class="badge ${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
+                                        ${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
                                     </span>
                                 </td>
                             </tr>`;
@@ -1846,14 +1843,14 @@ async function renderPaymentsHistory(container) {
         </div>
         
         <script>
-            // Inyectamos esto para asegurarnos de que el botÃ³n de morosidad aparezca si se quiere
+            // Inyectamos esto para asegurarnos de que el botÃƒÆ’Ã‚Â³n de morosidad aparezca si se quiere
         </script>`;
     window.refreshIcons();
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   INSCRIPCIONES â€” Alumno
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   INSCRIPCIONES ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Alumno
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderInscripcionesAlumno(container) {
     const targetUserId = State.activeProfileId || State.user.id;
@@ -1866,14 +1863,14 @@ async function renderInscripcionesAlumno(container) {
     ]);
 
     const activeActs = activities.filter(a => a.status === 'active');
-    const dayOrder = ['Lunes', 'Martes', 'MiÃ©rcoles', 'Jueves', 'Viernes', 'SÃ¡bado', 'Domingo'];
+    const dayOrder = ['Lunes', 'Martes', 'MiÃƒÆ’Ã‚Â©rcoles', 'Jueves', 'Viernes', 'SÃƒÆ’Ã‚Â¡bado', 'Domingo'];
 
     container.innerHTML = `
-        <h2 class="view-title mb-6">InscripciÃ³n a Turnos</h2>
-        <p class="text-sm text-muted mb-6">PodÃ©s inscribirte a mÃºltiples turnos de la misma actividad.</p>
-        \${activeActs.length === 0 ? \`<div class="empty-state">No hay actividades disponibles.</div>\` : ''}
+        <h2 class="view-title mb-6">InscripciÃƒÆ’Ã‚Â³n a Turnos</h2>
+        <p class="text-sm text-muted mb-6">PodÃƒÆ’Ã‚Â©s inscribirte a mÃƒÆ’Ã‚Âºltiples turnos de la misma actividad.</p>
+        ${activeActs.length === 0 ? `<div class="empty-state">No hay actividades disponibles.</div>` : ''}
         <div class="list-stack">
-            \${activeActs.map(act => {
+            ${activeActs.map(act => {
         const actTurnos = turnos
             .filter(t => t.activity_id === act.id)
             .sort((a, b) => {
@@ -1885,54 +1882,54 @@ async function renderInscripcionesAlumno(container) {
                 return (s1.start || '').localeCompare(s2.start || '');
             });
 
-        return \`
+        return `
                     <div class="mb-6">
                         <h3 class="subsection-title">
                             <span class="act-indicator"></span>
-                            \${act.name}
+                            ${act.name}
                             <div class="price-stack">
-                                <span class="price-sup">Efectivo: $\${Number(act.price_cash || act.price || 0).toLocaleString('es-AR')}</span>
-                                <span class="price-sup">Transf: $\${Number(act.price_digital || act.price || 0).toLocaleString('es-AR')}</span>
+                                <span class="price-sup">Efectivo: $${Number(act.price_cash || act.price || 0).toLocaleString('es-AR')}</span>
+                                <span class="price-sup">Transf: $${Number(act.price_digital || act.price || 0).toLocaleString('es-AR')}</span>
                             </div>
                         </h3>
-                        \${actTurnos.length === 0 ? \`<div class="empty-inline">Sin turnos disponibles.</div>\` : \`
+                        ${actTurnos.length === 0 ? `<div class="empty-inline">Sin turnos disponibles.</div>` : `
                             <div class="cards-grid-sm">
-                                \${actTurnos.map(turno => {
+                                ${actTurnos.map(turno => {
             const used = countMap[turno.id] || 0;
             const avail = Math.max(0, turno.max_cupo - used);
             const myInsc = myInscs.find(i => i.turno_id === turno.id);
             const check = DB.canInscribe(targetUserId, turno, countMap, myInscs, myStatuses);
-            return \`
-                                        <div class="card turno-card \${myInsc ? 'turno-inscripto' : (!check.allowed ? 'turno-disabled' : '')}">
+            return `
+                                        <div class="card turno-card ${myInsc ? 'turno-inscripto' : (!check.allowed ? 'turno-disabled' : '')}">
                                             <div class="row-between mb-2">
                                                 <div class="td-bold" style="font-size:13px">
-                                                    \${turno.slots ? turno.slots.map(s => \`\${s.day} \${s.start}-\${s.end}\`).join('<br>') : \`\${turno.day} \${turno.start}-\${turno.end}\`}
+                                                    ${turno.slots ? turno.slots.map(s => `${s.day} ${s.start}-${s.end}`).join('<br>') : `${turno.day} ${turno.start}-${turno.end}`}
                                                 </div>
                                             </div>
-                                            <div class="cupo-info \${avail > 0 ? 'cupo-ok' : 'cupo-full'}">
-                                                <i data-lucide="\${avail > 0 ? 'users' : 'user-x'}" style="width:13px;height:13px"></i>
-                                                \${avail} / \${turno.max_cupo} libres
+                                            <div class="cupo-info ${avail > 0 ? 'cupo-ok' : 'cupo-full'}">
+                                                <i data-lucide="${avail > 0 ? 'users' : 'user-x'}" style="width:13px;height:13px"></i>
+                                                ${avail} / ${turno.max_cupo} libres
                                             </div>
-                                            \${myInsc ? \`
+                                            ${myInsc ? `
                                                 <div class="inscripto-badge mt-2">
                                                     <i data-lucide="check" style="width:12px;height:12px"></i> Inscripto
                                                 </div>
-                                                <button onclick="window.cancelInscripcion('\${myInsc.id}')"
+                                                <button onclick="window.cancelInscripcion('${myInsc.id}')"
                                                     class="btn btn-cancel w-full mt-3 btn-sm">
                                                     <i data-lucide="user-minus" style="width:13px;height:13px"></i> CANCELAR
-                                                </button>\` : \`
+                                                </button>` : `
                                                 <button
-                                                    onclick="window.inscribe('\${turno.id}','\${turno.activity_id}',\${turno.max_cupo})"
-                                                    \${!check.allowed ? 'disabled' : ''}
-                                                    class="btn \${check.allowed ? 'btn-primary' : 'btn-secondary'} w-full mt-3 btn-sm">
-                                                    \${check.allowed ? 'INSCRIBIRME' : check.reason}
-                                                </button>\`}
-                                        </div>\`;
+                                                    onclick="window.inscribe('${turno.id}','${turno.activity_id}',${turno.max_cupo})"
+                                                    ${!check.allowed ? 'disabled' : ''}
+                                                    class="btn ${check.allowed ? 'btn-primary' : 'btn-secondary'} w-full mt-3 btn-sm">
+                                                    ${check.allowed ? 'INSCRIBIRME' : check.reason}
+                                                </button>`}
+                                        </div>`;
         }).join('')}
-                            </div>\`}
-                    </div>\`;
+                            </div>`}
+                    </div>`;
     }).join('')}
-        </div>\`;
+        </div>`;
 }
 
 window.inscribe = async (turnoId, activityId, maxCupo) => {
@@ -1943,7 +1940,7 @@ window.inscribe = async (turnoId, activityId, maxCupo) => {
             turno_id: turnoId,
             activity_id: activityId,
         });
-        UI.notify('Â¡InscripciÃ³n exitosa!');
+        UI.notify('Ãƒâ€šÃ‚Â¡InscripciÃƒÆ’Ã‚Â³n exitosa!');
         renderView('inscripciones');
     } catch (err) { UI.notify(err.message, 'error'); }
 };
@@ -1952,11 +1949,11 @@ window.cancelInscripcion = (inscripcionId) => {
     UI.showModal('Solicitar Baja de Actividad', `
         <div class="confirm-danger">
             <i data-lucide="user-minus" style="width:40px;height:40px;color:var(--overdue);margin-bottom:12px"></i>
-            <p>Â¿EstÃ¡s seguro de que querÃ©s solicitar la <strong>baja</strong> de esta actividad?</p>
+            <p>Ãƒâ€šÃ‚Â¿EstÃƒÆ’Ã‚Â¡s seguro de que querÃƒÆ’Ã‚Â©s solicitar la <strong>baja</strong> de esta actividad?</p>
             <p class="text-sm text-muted" style="margin-top:8px">La baja debe ser aprobada por el administrador.</p>
             <div class="form-group mt-4" style="text-align:left">
                 <label class="label">Motivo (opcional)</label>
-                <textarea id="baja-reason" class="input" style="height:80px" placeholder="Contanos por quÃ© dejas la actividad..."></textarea>
+                <textarea id="baja-reason" class="input" style="height:80px" placeholder="Contanos por quÃƒÆ’Ã‚Â© dejas la actividad..."></textarea>
             </div>
         </div>
         <div class="modal-actions mt-4">
@@ -1976,9 +1973,9 @@ window.cancelInscripcion = (inscripcionId) => {
     };
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   REPORTE DE PAGO â€” Alumno
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   REPORTE DE PAGO ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Alumno
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderPagosAlumno(container) {
     const activities = await DB.getActivities();
@@ -1995,13 +1992,13 @@ async function renderPagosAlumno(container) {
                         <div class="form-group">
                             <label class="label">Actividad</label>
                             <select id="pay-activity" class="input" required>
-                                \${activities.map(a => `<option value="\${a.id}">\${a.name}</option>`).join('')}
+                                ${activities.map(a => `<option value="${a.id}">${a.name}</option>`).join('')}
                             </select>
                         </div>
                         <div class="form-group">
                             <label class="label">Mes a Pagar</label>
                             <select id="pay-month" class="input" required>
-                                \${months.map((m, i) => `<option value="\${m}" \${i === currentMonthIndex ? 'selected' : ''}>\${m}</option>`).join('')}
+                                ${months.map((m, i) => `<option value="${m}" ${i === currentMonthIndex ? 'selected' : ''}>${m}</option>`).join('')}
                             </select>
                         </div>
                     </div>
@@ -2011,7 +2008,7 @@ async function renderPagosAlumno(container) {
                             <input type="number" id="pay-amount" class="input" placeholder="0" required>
                         </div>
                         <div class="form-group">
-                            <label class="label">MÃ©todo</label>
+                            <label class="label">MÃƒÆ’Ã‚Â©todo</label>
                             <select id="pay-method" class="input" onchange="window.updatePayAmount()">
                                 <option value="transfer">Transferencia</option>
                                 <option value="digital">Mercado Pago</option>
@@ -2031,22 +2028,22 @@ async function renderPagosAlumno(container) {
                         <div id="file-name-display" class="file-name-display hidden"></div>
                     </div>
 
-                    \${State.family.length > 0 ? `
+                    ${State.family.length > 0 ? `
                     <div class="form-group mt-4">
-                        <label class="label">Â¿A quiÃ©nes corresponde este pago?</label>
+                        <label class="label">Ãƒâ€šÃ‚Â¿A quiÃƒÆ’Ã‚Â©nes corresponde este pago?</label>
                         <div style="display:flex; gap:15px; flex-wrap:wrap; background:rgba(0,0,0,0.02); padding:15px; border-radius:var(--radius-md); border:1px solid var(--border)">
                             <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
-                                <input type="checkbox" class="fam-pay-check" value="\${State.user.id}" checked> 
-                                <span>Yo (\${State.user.name.split(' ')[0]})</span>
+                                <input type="checkbox" class="fam-pay-check" value="${State.user.id}" checked> 
+                                <span>Yo (${State.user.name.split(' ')[0]})</span>
                             </label>
-                            \${State.family.map(f => `
+                            ${State.family.map(f => `
                                 <label style="display:flex; align-items:center; gap:8px; cursor:pointer">
-                                    <input type="checkbox" class="fam-pay-check" value="\${f.id}"> 
-                                    <span>\${f.name}</span>
+                                    <input type="checkbox" class="fam-pay-check" value="${f.id}"> 
+                                    <span>${f.name}</span>
                                 </label>
                             `).join('')}
                         </div>
-                        <span class="field-hint">MarcÃ¡ a todos los que cubre este Ãºnico comprobante.</span>
+                        <span class="field-hint">MarcÃƒÆ’Ã‚Â¡ a todos los que cubre este ÃƒÆ’Ã‚Âºnico comprobante.</span>
                     </div>
                     ` : ''}
                     <button type="submit" id="pay-submit" class="btn btn-primary w-full" style="padding:16px">
@@ -2066,7 +2063,7 @@ async function renderPagosAlumno(container) {
                             <th>Actividad</th>
                             <th>Periodo</th>
                             <th>Monto</th>
-                            <th>MÃ©todo</th>
+                            <th>MÃƒÆ’Ã‚Â©todo</th>
                             <th>Estado</th>
                         </tr>
                     </thead>
@@ -2099,20 +2096,20 @@ async function renderPagosAlumno(container) {
 
         const body = document.getElementById('member-payments-body');
         if (payments.length === 0) {
-            body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted)">No tenÃ©s pagos registrados.</td></tr>';
+            body.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:var(--text-muted)">No tenÃƒÆ’Ã‚Â©s pagos registrados.</td></tr>';
         } else {
             body.innerHTML = payments.map(p => {
                 const act = activitiesList.find(a => a.id === p.activity_id);
                 return `
                     <tr>
-                        <td>\${p.createdAt ? UI.formatDate(p.createdAt.toDate().toISOString().split('T')[0]) : 'â€”'}</td>
-                        <td class="td-bold">\${act?.name || 'Actividad'}</td>
-                        <td>\${p.month || 'â€”'}</td>
-                        <td>$\${Number(p.amount).toLocaleString('es-AR')}</td>
-                        <td>\${p.method === 'transfer' ? 'Transferencia' : p.method === 'digital' ? 'Mercado Pago' : 'Efectivo'}</td>
+                        <td>${p.createdAt ? UI.formatDate(p.createdAt.toDate().toISOString().split('T')[0]) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                        <td class="td-bold">${act?.name || 'Actividad'}</td>
+                        <td>${p.month || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                        <td>$${Number(p.amount).toLocaleString('es-AR')}</td>
+                        <td>${p.method === 'transfer' ? 'Transferencia' : p.method === 'digital' ? 'Mercado Pago' : 'Efectivo'}</td>
                         <td>
-                            <span class="badge \${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
-                                \${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
+                            <span class="badge ${p.status === 'approved' ? 'badge-active' : p.status === 'pending' ? 'badge-warning' : 'badge-moroso'}">
+                                ${p.status === 'approved' ? 'Aprobado' : p.status === 'pending' ? 'Pendiente' : 'Rechazado'}
                             </span>
                         </td>
                     </tr>`;
@@ -2140,7 +2137,7 @@ async function renderPagosAlumno(container) {
                 status: 'pending'
             };
             await DB.addPayment(data);
-            UI.notify('Pago reportado. Pendiente de aprobaciÃ³n por el administrador.');
+            UI.notify('Pago reportado. Pendiente de aprobaciÃƒÆ’Ã‚Â³n por el administrador.');
             navigateTo('dashboard');
         } catch (err) {
             UI.notify(err.message, 'error');
@@ -2152,14 +2149,14 @@ async function renderPagosAlumno(container) {
 window.showFileName = (input) => {
     const display = document.getElementById('file-name-display');
     if (input.files.length > 0) {
-        display.textContent = 'ðŸ“Ž ' + input.files[0].name;
+        display.textContent = 'ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…Â½ ' + input.files[0].name;
         display.classList.remove('hidden');
     }
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
    LOGIN
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 function showLogin() {
     const container = document.getElementById('auth-container');
@@ -2178,8 +2175,8 @@ function showLogin() {
                         autocomplete="username" required>
                 </div>
                 <div class="form-group">
-                    <label class="label">ContraseÃ±a</label>
-                    <input type="password" id="l-pass" class="input" placeholder="ContraseÃ±a"
+                    <label class="label">ContraseÃƒÆ’Ã‚Â±a</label>
+                    <input type="password" id="l-pass" class="input" placeholder="ContraseÃƒÆ’Ã‚Â±a"
                         autocomplete="current-password" required>
                 </div>
                 <div id="l-error" class="hidden" style="background:#fff1f2;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;font-size:13px;color:var(--overdue);font-weight:600"></div>
@@ -2200,19 +2197,19 @@ function showLogin() {
         errBox.classList.add('hidden');
 
         try {
-            const email = \`\${usuario}@espacioactivo.app\`;
+            const email = `${usuario}@espacioactivo.app`;
             await auth.signInWithEmailAndPassword(email, password);
-            // onAuthStateChanged se encargarÃ¡ del resto
+            // onAuthStateChanged se encargarÃƒÆ’Ã‚Â¡ del resto
         } catch (err) {
             const msgs = {
                 'auth/user-not-found': 'Usuario no encontrado.',
-                'auth/wrong-password': 'ContraseÃ±a incorrecta.',
-                'auth/invalid-credential': 'Usuario o contraseÃ±a incorrectos.',
-                'auth/too-many-requests': 'Demasiados intentos. EsperÃ¡ unos minutos.',
-                'auth/invalid-email': 'Formato de usuario invÃ¡lido.',
-                'auth/network-request-failed': 'Sin conexiÃ³n a internet.',
+                'auth/wrong-password': 'ContraseÃƒÆ’Ã‚Â±a incorrecta.',
+                'auth/invalid-credential': 'Usuario o contraseÃƒÆ’Ã‚Â±a incorrectos.',
+                'auth/too-many-requests': 'Demasiados intentos. EsperÃƒÆ’Ã‚Â¡ unos minutos.',
+                'auth/invalid-email': 'Formato de usuario invÃƒÆ’Ã‚Â¡lido.',
+                'auth/network-request-failed': 'Sin conexiÃƒÆ’Ã‚Â³n a internet.',
             };
-            errBox.textContent = msgs[err.code] || 'Error al iniciar sesiÃ³n.';
+            errBox.textContent = msgs[err.code] || 'Error al iniciar sesiÃƒÆ’Ã‚Â³n.';
             errBox.classList.remove('hidden');
             btn.disabled = false; btn.textContent = 'INGRESAR';
         }
@@ -2220,9 +2217,9 @@ function showLogin() {
     window.refreshIcons();
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   MI PERFIL â€” General
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   MI PERFIL ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â General
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 window.showMyProfile = async () => {
     const user = State.user;
@@ -2230,18 +2227,18 @@ window.showMyProfile = async () => {
         <form id="profile-form" class="form-stack">
             <div class="form-group">
                 <label class="label">Nombre para mostrar</label>
-                <input type="text" id="p-name" class="input" value="\${user.name || ''}" required>
+                <input type="text" id="p-name" class="input" value="${user.name || ''}" required>
                 <span class="field-hint">Este es el nombre que se ve en el tablero y reportes.</span>
             </div>
             
             <div class="form-group">
                 <label class="label">Nombre de Usuario (Login)</label>
-                <input type="text" id="p-usuario" class="input" value="\${user.usuario || ''}" required>
+                <input type="text" id="p-usuario" class="input" value="${user.usuario || ''}" required>
                 <span class="field-hint">Se usa para ingresar al sistema (junto a @espacioactivo.app).</span>
             </div>
 
             <div id="re-login-warn" class="hidden mt-4 badge badge-warning" style="display:block; white-space:normal; line-height:1.4">
-                âš ï¸ Si cambias tu Nombre de Usuario, deberÃ¡s usar el nuevo nombre la prÃ³xima vez que ingreses. TenÃ© en cuenta que para que funcione, el administrador tambiÃ©n debe actualizar tu email en la consola de Firebase.
+                ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸ Si cambias tu Nombre de Usuario, deberÃƒÆ’Ã‚Â¡s usar el nuevo nombre la prÃƒÆ’Ã‚Â³xima vez que ingreses. TenÃƒÆ’Ã‚Â© en cuenta que para que funcione, el administrador tambiÃƒÆ’Ã‚Â©n debe actualizar tu email en la consola de Firebase.
             </div>
 
             <div class="modal-actions">
@@ -2251,14 +2248,14 @@ window.showMyProfile = async () => {
         </form>
         <div class="mt-8 pt-6" style="border-top:1px solid var(--border)">
             <h3 class="section-title">Grupo Familiar</h3>
-            <p class="text-xs text-muted mb-4">AgregÃ¡ a tus hijos o familiares para gestionar sus actividades desde tu cuenta.</p>
+            <p class="text-xs text-muted mb-4">AgregÃƒÆ’Ã‚Â¡ a tus hijos o familiares para gestionar sus actividades desde tu cuenta.</p>
             
             <div id="family-list-container" class="list-stack mb-4">
-                \${State.family.length === 0 ? '<p class="text-sm text-muted">No tenÃ©s familiares vinculados.</p>' : 
+                ${State.family.length === 0 ? '<p class="text-sm text-muted">No tenÃƒÆ’Ã‚Â©s familiares vinculados.</p>' : 
                     State.family.map(f => `
                         <div class="list-row" style="background:var(--bg-app); border-radius:10px; padding:10px 15px">
                             <div>
-                                <div class="row-title" style="font-size:14px">\${f.name}</div>
+                                <div class="row-title" style="font-size:14px">${f.name}</div>
                                 <div class="text-xs text-muted">Familiar Directo</div>
                             </div>
                             <i data-lucide="user" style="width:16px; color:var(--text-muted)"></i>
@@ -2305,7 +2302,7 @@ window.showMyProfile = async () => {
             UI.hideModal();
 
             if (newUser !== origUser) {
-                UI.notify('CerrÃ¡ sesiÃ³n e ingresÃ¡ con tu nuevo usuario.', 'warning');
+                UI.notify('CerrÃƒÆ’Ã‚Â¡ sesiÃƒÆ’Ã‚Â³n e ingresÃƒÆ’Ã‚Â¡ con tu nuevo usuario.', 'warning');
             }
         } catch (err) {
             UI.notify(err.message, 'error');
@@ -2314,9 +2311,9 @@ window.showMyProfile = async () => {
     };
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
    REPORTES PDF
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 window.generatePDFReport = async () => {
     UI.notify('Generando reporte PDF...');
@@ -2353,7 +2350,7 @@ window.generatePDFReport = async () => {
     doc.setTextColor(100);
     doc.text('Reporte de Cobranzas y Morosidad', 14, 30);
     doc.setFontSize(10);
-    doc.text(\`Fecha de generaciÃ³n: \${new Date().toLocaleString()}\`, 14, 38);
+    doc.text(`Fecha de generaciÃƒÆ’Ã‚Â³n: ${new Date().toLocaleString()}`, 14, 38);
 
     let yPos = 50;
 
@@ -2362,7 +2359,7 @@ window.generatePDFReport = async () => {
 
         doc.setFontSize(16);
         doc.setTextColor(0);
-        doc.text(\`Actividad: \${act.name}\`, 14, yPos);
+        doc.text(`Actividad: ${act.name}`, 14, yPos);
         yPos += 10;
 
         // Cobranzas Table
@@ -2370,17 +2367,17 @@ window.generatePDFReport = async () => {
         const approvedData = actPayments.map(p => {
             const u = users.find(usr => usr.id === p.user_id);
             return [
-                p.date || 'â€”',
-                u?.name || 'â€”',
-                p.month || 'â€”',
-                \`$\${p.amount.toLocaleString('es-AR')}\`,
+                p.date || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â',
+                u?.name || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â',
+                p.month || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â',
+                `$${p.amount.toLocaleString('es-AR')}`,
                 p.method
             ];
         });
 
         doc.autoTable({
             startY: yPos,
-            head: [['Fecha', 'Alumno', 'Periodo', 'Monto', 'MÃ©todo']],
+            head: [['Fecha', 'Alumno', 'Periodo', 'Monto', 'MÃƒÆ’Ã‚Â©todo']],
             body: approvedData.length > 0 ? approvedData : [['No hay cobranzas aprobadas', '', '', '', '']],
             theme: 'striped',
             headStyles: { fillColor: [37, 99, 235] }
@@ -2393,21 +2390,21 @@ window.generatePDFReport = async () => {
         const morososData = actMorosos.map(st => {
             const u = users.find(usr => usr.id === st.user_id);
             return [
-                u?.name || 'â€”',
-                u?.phone || 'â€”',
-                st.expiration || 'â€”'
+                u?.name || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â',
+                u?.phone || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â',
+                st.expiration || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'
             ];
         });
 
         if (morososData.length > 0) {
             doc.setFontSize(12);
             doc.setTextColor(220, 38, 38); // Warning/Overdue color
-            doc.text(\`Alumnos Morosos - \${act.name}\`, 14, yPos);
+            doc.text(`Alumnos Morosos - ${act.name}`, 14, yPos);
             yPos += 5;
 
             doc.autoTable({
                 startY: yPos,
-                head: [['Alumno', 'TelÃ©fono', 'Vencimiento']],
+                head: [['Alumno', 'TelÃƒÆ’Ã‚Â©fono', 'Vencimiento']],
                 body: morososData,
                 theme: 'grid',
                 headStyles: { fillColor: [220, 38, 38] }
@@ -2416,7 +2413,7 @@ window.generatePDFReport = async () => {
         } else {
             doc.setFontSize(10);
             doc.setTextColor(22, 163, 74); // Success color
-            doc.text(\`Sin alumnos morosos en \${act.name}\`, 14, yPos);
+            doc.text(`Sin alumnos morosos en ${act.name}`, 14, yPos);
             yPos += 15;
         }
     });
@@ -2433,16 +2430,16 @@ window.generatePDFReport = async () => {
     doc.setTextColor(0);
     doc.text('RESUMEN GENERAL', 14, yPos + 10);
     doc.setFontSize(12);
-    doc.text(\`Total Recaudado (Aprobado): $\${totalIncome.toLocaleString('es-AR')}\`, 14, yPos + 20);
-    doc.text(\`Total Alumnos Morosos: \${totalMorosos}\`, 14, yPos + 30);
+    doc.text(`Total Recaudado (Aprobado): $${totalIncome.toLocaleString('es-AR')}`, 14, yPos + 20);
+    doc.text(`Total Alumnos Morosos: ${totalMorosos}`, 14, yPos + 30);
 
-    doc.save(\`Reporte_Punto_Activo_\${new Date().toISOString().split('T')[0]}.pdf\`);
+    doc.save(`Reporte_Punto_Activo_${new Date().toISOString().split('T')[0]}.pdf`);
     UI.notify('Reporte generado correctamente.');
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
    GLOBAL LISTENERS
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 function setupGlobalListeners() {
     document.getElementById('logout-btn').onclick = async () => {
@@ -2482,22 +2479,22 @@ function setupGlobalListeners() {
     };
 }
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   CONFIGURACIÃ“N DESLINDE GENERAL
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   CONFIGURACIÃƒÆ’Ã¢â‚¬Å“N DESLINDE GENERAL
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 window.showConfigDeslinde = async () => {
     const config = await DB.getGlobalConfig('deslinde');
     UI.showModal('Configurar Deslinde General', `
         <form id="config-deslinde-form" class="form-stack">
-            <p class="text-sm text-muted mb-4">Este es el PDF (Deslinde + Ficha MÃ©dica) que todos los alumnos podrÃ¡n descargar para completar.</p>
+            <p class="text-sm text-muted mb-4">Este es el PDF (Deslinde + Ficha MÃƒÆ’Ã‚Â©dica) que todos los alumnos podrÃƒÆ’Ã‚Â¡n descargar para completar.</p>
             
             <div class="form-group">
                 <label class="label">Archivo PDF</label>
-                <div class="\${config?.url ? 'row-between' : ''}" style="background:var(--bg-muted); padding:12px; border-radius:10px; border:1px dashed var(--border)">
+                <div class="${config?.url ? 'row-between' : ''}" style="background:var(--bg-muted); padding:12px; border-radius:10px; border:1px dashed var(--border)">
                     <input type="file" id="cfg-file" class="input" accept=".pdf" style="border:none; background:transparent; padding:0">
-                    \${config?.url ? `
-                        <a href="\${config.url}" target="_blank" class="badge badge-active" style="text-decoration:none">
+                    ${config?.url ? `
+                        <a href="${config.url}" target="_blank" class="badge badge-active" style="text-decoration:none">
                             <i data-lucide="eye" style="width:12px; height:12px"></i> Ver Actual
                         </a>
                     ` : ''}
@@ -2513,7 +2510,7 @@ window.showConfigDeslinde = async () => {
     document.getElementById('config-deslinde-form').onsubmit = async (e) => {
         e.preventDefault();
         const file = document.getElementById('cfg-file').files[0];
-        if (!file && !config?.url) return UI.notify('SeleccionÃ¡ un archivo.', 'error');
+        if (!file && !config?.url) return UI.notify('SeleccionÃƒÆ’Ã‚Â¡ un archivo.', 'error');
 
         const btn = document.getElementById('cfg-submit');
         btn.disabled = true; btn.textContent = 'Subiendo...';
@@ -2521,12 +2518,12 @@ window.showConfigDeslinde = async () => {
         try {
             let url = config?.url || '';
             if (file) {
-                const storageRef = storage.ref(\`config/deslinde_general_\${Date.now()}.pdf\`);
+                const storageRef = storage.ref(`config/deslinde_general_${Date.now()}.pdf`);
                 await storageRef.put(file);
                 url = await storageRef.getDownloadURL();
             }
             await DB.setGlobalConfig('deslinde', { url });
-            UI.notify('ConfiguraciÃ³n guardada.');
+            UI.notify('ConfiguraciÃƒÆ’Ã‚Â³n guardada.');
             UI.hideModal();
         } catch (err) {
             UI.notify(err.message, 'error');
@@ -2535,9 +2532,9 @@ window.showConfigDeslinde = async () => {
     };
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   GESTIÃ“N DE BAJAS â€” Admin
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   GESTIÃƒÆ’Ã¢â‚¬Å“N DE BAJAS ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Admin
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderBajasAdmin(container) {
     const isProfesor = State.user.role === 'profesor';
@@ -2558,9 +2555,9 @@ async function renderBajasAdmin(container) {
     container.innerHTML = `
         <div class="view-header">
             <h2 class="view-title">Solicitudes de Baja</h2>
-            <span class="badge \${bajas.length > 0 ? 'badge-warning' : 'badge-active'}">\${bajas.length} pendiente(s)</span>
+            <span class="badge ${bajas.length > 0 ? 'badge-warning' : 'badge-active'}">${bajas.length} pendiente(s)</span>
         </div>
-        \${bajas.length === 0 ? `
+        ${bajas.length === 0 ? `
             <div class="empty-state">
                 <i data-lucide="check-circle" style="width:48px;height:48px;color:var(--success);margin-bottom:16px"></i>
                 <p>No hay solicitudes de baja pendientes.</p>
@@ -2572,23 +2569,23 @@ async function renderBajasAdmin(container) {
                 <div class="card mb-4">
                     <div style="display:flex; justify-content:space-between; align-items:flex-start">
                         <div>
-                            <div class="row-title">\${socio?.name || 'Socio'} (@\${socio?.usuario || 'â€”'})</div>
-                            <div class="row-sub">Solicita baja de: <strong>\${act?.name || 'Actividad'}</strong></div>
-                            \${b.baja_reason ? `
+                            <div class="row-title">${socio?.name || 'Socio'} (@${socio?.usuario || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'})</div>
+                            <div class="row-sub">Solicita baja de: <strong>${act?.name || 'Actividad'}</strong></div>
+                            ${b.baja_reason ? `
                                 <div class="mt-4 p-3" style="background:var(--bg-muted); border-radius:8px; font-size:13px; border-left:4px solid var(--overdue)">
-                                    " \${b.baja_reason} "
+                                    " ${b.baja_reason} "
                                 </div>
                             ` : ''}
                         </div>
                         <div class="text-xs text-muted">
-                            \${b.baja_requested_at ? UI.formatDate(b.baja_requested_at.toDate().toISOString().split('T')[0]) : ''}
+                            ${b.baja_requested_at ? UI.formatDate(b.baja_requested_at.toDate().toISOString().split('T')[0]) : ''}
                         </div>
                     </div>
                     <div class="action-row mt-6">
-                        <button class="btn btn-primary btn-sm" onclick="window.approveBajaBtn('\${b.id}')">
+                        <button class="btn btn-primary btn-sm" onclick="window.approveBajaBtn('${b.id}')">
                             <i data-lucide="check"></i> Aprobar Baja
                         </button>
-                        <button class="btn btn-danger-ghost btn-sm" onclick="window.rejectBajaBtn('\${b.id}')">
+                        <button class="btn btn-danger-ghost btn-sm" onclick="window.rejectBajaBtn('${b.id}')">
                             <i data-lucide="x"></i> Rechazar
                         </button>
                     </div>
@@ -2598,7 +2595,7 @@ async function renderBajasAdmin(container) {
 }
 
 window.approveBajaBtn = async (id) => {
-    if (!confirm('Â¿Aprobar la baja? El alumno dejarÃ¡ de estar inscripto.')) return;
+    if (!confirm('Ãƒâ€šÃ‚Â¿Aprobar la baja? El alumno dejarÃƒÆ’Ã‚Â¡ de estar inscripto.')) return;
     try {
         await DB.approveBaja(id);
         UI.notify('Baja aprobada.');
@@ -2607,17 +2604,17 @@ window.approveBajaBtn = async (id) => {
 };
 
 window.rejectBajaBtn = async (id) => {
-    if (!confirm('Â¿Rechazar la solicitud de baja?')) return;
+    if (!confirm('Ãƒâ€šÃ‚Â¿Rechazar la solicitud de baja?')) return;
     try {
         await DB.rejectBaja(id);
-        UI.notify('Solicitud rechazada. La inscripciÃ³n sigue activa.');
+        UI.notify('Solicitud rechazada. La inscripciÃƒÆ’Ã‚Â³n sigue activa.');
         renderView('bajas_admin');
     } catch (err) { UI.notify(err.message, 'error'); }
 };
 
-/* â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-   MOROSIDADES â€” Admin
-â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
+/* ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢
+   MOROSIDADES ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Admin
+ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ÃƒÂ¢Ã¢â‚¬Â¢ */
 
 async function renderMorosidades(container) {
     const isProfesor = State.user.role === 'profesor';
@@ -2654,12 +2651,12 @@ async function renderMorosidades(container) {
                         <th>Socio</th>
                         <th>Actividad</th>
                         <th>Vencimiento</th>
-                        <th>TelÃ©fono</th>
+                        <th>TelÃƒÆ’Ã‚Â©fono</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
-                    \${morososList.length === 0 ? `
+                    ${morososList.length === 0 ? `
                         <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">
                             No hay socios morosos registrados.
                         </td></tr>` :
@@ -2668,12 +2665,12 @@ async function renderMorosidades(container) {
                 const act = activities.find(a => a.id === st.activity_id);
                 return `
                             <tr>
-                                <td class="td-bold">\${socio?.name || 'Desconocido'}</td>
-                                <td>\${act?.name || 'Actividad'}</td>
-                                <td style="color:var(--overdue); font-weight:700">\${st.expiration ? UI.formatDate(st.expiration) : 'â€”'}</td>
-                                <td>\${socio?.phone || 'â€”'}</td>
+                                <td class="td-bold">${socio?.name || 'Desconocido'}</td>
+                                <td>${act?.name || 'Actividad'}</td>
+                                <td style="color:var(--overdue); font-weight:700">${st.expiration ? UI.formatDate(st.expiration) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
+                                <td>${socio?.phone || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'}</td>
                                 <td>
-                                    <button class="btn btn-secondary btn-xs" onclick="window.showUserFicha('\${st.user_id}')">
+                                    <button class="btn btn-secondary btn-xs" onclick="window.showUserFicha('${st.user_id}')">
                                         <i data-lucide="eye" style="width:12px;height:12px"></i> Ver Ficha
                                     </button>
                                 </td>
@@ -2681,7 +2678,7 @@ async function renderMorosidades(container) {
             }).join('')}
                 </tbody>
             </table>
-        </div>\`;
+        </div>`;
     window.refreshIcons();
 }
 
@@ -2706,11 +2703,11 @@ window.generateMorososPDF = async () => {
     doc.text('REPORTE DE MOROSIDAD', 14, 20);
     doc.autoTable({
         startY: 50,
-        head: [['Alumno', 'TelÃ©fono', 'Vencimiento']],
+        head: [['Alumno', 'TelÃƒÆ’Ã‚Â©fono', 'Vencimiento']],
         body: morososList.map(m => [
-            users.find(u => u.id === m.user_id)?.name || 'â€”',
-            users.find(u => u.id === m.user_id)?.phone || 'â€”',
-            m.expiration ? UI.formatDate(m.expiration) : 'â€”'
+            users.find(u => u.id === m.user_id)?.name || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â',
+            users.find(u => u.id === m.user_id)?.phone || 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â',
+            m.expiration ? UI.formatDate(m.expiration) : 'ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â'
         ]),
         theme: 'grid',
         headStyles: { fillColor: [220, 38, 38] }
@@ -2723,30 +2720,30 @@ async function renderAnnouncementsAdmin(container) {
     const announcements = await DB.getAnnouncements().catch(() => []);
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">GestiÃ³n del TablÃ³n</h2>
+            <h2 class="view-title">GestiÃƒÆ’Ã‚Â³n del TablÃƒÆ’Ã‚Â³n</h2>
             <button class="btn btn-primary" onclick="showAnnouncementForm()">
                 <i data-lucide="plus"></i> Nuevo Anuncio
             </button>
         </div>
         <div class="card" style="padding:16px">
             <div class="list-stack">
-                \${announcements.length === 0 ? '<p class="text-muted p-4">No hay anuncios publicados.</p>' :
+                ${announcements.length === 0 ? '<p class="text-muted p-4">No hay anuncios publicados.</p>' :
             announcements.map(a => `
                     <div class="admin-announcement-card">
                         <div>
-                            <div class="row-title">\${a.title}</div>
+                            <div class="row-title">${a.title}</div>
                             <div class="announcement-meta">
-                                <span class="announcement-tag tag-\${a.role}">\${a.role === 'all' ? 'Todos' : a.role}</span>
-                                <span>Prioridad: \${a.priority === 'important' ? 'Alta' : 'Normal'}</span>
+                                <span class="announcement-tag tag-${a.role}">${a.role === 'all' ? 'Todos' : a.role}</span>
+                                <span>Prioridad: ${a.priority === 'important' ? 'Alta' : 'Normal'}</span>
                             </div>
                         </div>
                         <div class="action-row">
-                            <button class="btn btn-ghost btn-sm" onclick="showAnnouncementForm('\${a.id}')"><i data-lucide="edit-2"></i></button>
-                            <button class="btn btn-ghost btn-sm text-overdue" onclick="window.deleteAnnouncement('\${a.id}')"><i data-lucide="trash-2"></i></button>
+                            <button class="btn btn-ghost btn-sm" onclick="showAnnouncementForm('${a.id}')"><i data-lucide="edit-2"></i></button>
+                            <button class="btn btn-ghost btn-sm text-overdue" onclick="window.deleteAnnouncement('${a.id}')"><i data-lucide="trash-2"></i></button>
                         </div>
-                    </div>\`).join('')}
+                    </div>`).join('')}
             </div>
-        </div>\`;
+        </div>`;
     window.refreshIcons();
 }
 
@@ -2756,16 +2753,16 @@ window.showAnnouncementForm = async (id = null) => {
         const list = await DB.getAnnouncements();
         a = list.find(item => item.id === id);
     }
-    const html = \`
+    const html = `
         <form id="ann-form" class="form-stack">
-            <div class="form-group"><label>TÃ­tulo</label><input type="text" id="ann-title" value="\${a.title}" required></div>
-            <div class="form-group"><label>Contenido</label><textarea id="ann-content" rows="4" required>\${a.content}</textarea></div>
+            <div class="form-group"><label>TÃƒÆ’Ã‚Â­tulo</label><input type="text" id="ann-title" value="${a.title}" required></div>
+            <div class="form-group"><label>Contenido</label><textarea id="ann-content" rows="4" required>${a.content}</textarea></div>
             <div class="form-row-2">
                 <div class="form-group"><label>Rol</label><select id="ann-role"><option value="all">Todos</option><option value="alumno">Alumnos</option></select></div>
                 <div class="form-group"><label>Prioridad</label><select id="ann-priority"><option value="normal">Normal</option><option value="important">Alta</option></select></div>
             </div>
             <div class="modal-actions"><button type="submit" class="btn btn-primary">Publicar</button></div>
-        </form>\`;
+        </form>`;
     UI.showModal('Anuncio', html);
     document.getElementById('ann-form').onsubmit = async (e) => {
         e.preventDefault();
@@ -2775,7 +2772,7 @@ window.showAnnouncementForm = async (id = null) => {
     };
 };
 
-window.deleteAnnouncement = async (id) => { if (confirm('Â¿Eliminar?')) { await DB.deleteAnnouncement(id); renderView('announcements_admin'); } };
+window.deleteAnnouncement = async (id) => { if (confirm('Ãƒâ€šÃ‚Â¿Eliminar?')) { await DB.deleteAnnouncement(id); renderView('announcements_admin'); } };
 
 let currentAttendanceData = { turnoId: null, presents: new Set(), allStudents: [] };
 window.showAttendanceModal = async (turnoId) => {
@@ -2791,22 +2788,22 @@ window.showAttendanceModal = async (turnoId) => {
 
 function renderAttendanceModal() {
     const { allStudents, presents, date } = currentAttendanceData;
-    const html = \`
+    const html = `
         <div class="attendance-list-container">
-            <h3>Asistencia \${UI.formatDate(date)}</h3>
-            <div id="attendance-list">\${renderAttendanceItems(allStudents)}</div>
+            <h3>Asistencia ${UI.formatDate(date)}</h3>
+            <div id="attendance-list">${renderAttendanceItems(allStudents)}</div>
             <button class="btn btn-primary w-full mt-4" onclick="window.saveAttendanceData()">Guardar</button>
-        </div>\`;
+        </div>`;
     UI.showModal('Asistencia', html);
 }
 
 function renderAttendanceItems(students) {
     const { presents } = currentAttendanceData;
-    return students.map(s => \`
-        <div class="attendance-item \${presents.has(s.id) ? 'is-present' : ''}" onclick="window.toggleAttendance('\${s.id}')">
-            <span>\${s.name}</span>
-            <i data-lucide="\${presents.has(s.id) ? 'check-square' : 'square'}"></i>
-        </div>\`).join('');
+    return students.map(s => `
+        <div class="attendance-item ${presents.has(s.id) ? 'is-present' : ''}" onclick="window.toggleAttendance('${s.id}')">
+            <span>${s.name}</span>
+            <i data-lucide="${presents.has(s.id) ? 'check-square' : 'square'}"></i>
+        </div>`).join('');
 }
 
 window.toggleAttendance = (id) => {
@@ -2825,7 +2822,7 @@ document.addEventListener('DOMContentLoaded', initApp);
 
 window.fetchBackgroundStats = async (profesorId) => {
     try {
-        // Ejecutamos todo en paralelo para velocidad de "aviÃ³n"
+        // Ejecutamos todo en paralelo para velocidad de "aviÃƒÆ’Ã‚Â³n"
         const [allInscs, allPayments, activities, turnos, morosos] = await Promise.all([
             DB.getInscripciones(),
             db.collection('payments').where('status', '==', 'pending').get(),
@@ -2834,7 +2831,7 @@ window.fetchBackgroundStats = async (profesorId) => {
             DB.getMorososList(profesorId)
         ]);
 
-        // 1. Total Alumnos (Ãšnicos)
+        // 1. Total Alumnos (ÃƒÆ’Ã…Â¡nicos)
         const ids = profesorId ? allInscs.filter(i => i.profesor_id === profesorId).map(i => i.user_id) : allInscs.map(i => i.user_id);
         const uniqueCount = [...new Set(ids)].length;
         const elT = document.getElementById('stat-total-alumnos');
@@ -2865,20 +2862,20 @@ window.fetchBackgroundStats = async (profesorId) => {
         if (elM) elM.innerText = morosos.length + (morosos.length === 1 ? ' Moroso' : ' Morosos');
 
     } catch (err) {
-        console.error("Error al cargar estadÃ­sticas de fondo:", err);
+        console.error("Error al cargar estadÃƒÆ’Ã‚Â­sticas de fondo:", err);
     }
 }
 
 window.showAddFamilyModal = () => {
     UI.showModal('Agregar Familiar', `
         <form id="add-family-form" class="form-stack">
-            <p class="text-sm text-muted mb-4">IngresÃ¡ el nombre completo de tu familiar. No necesita email ni contraseÃ±a propia.</p>
+            <p class="text-sm text-muted mb-4">IngresÃƒÆ’Ã‚Â¡ el nombre completo de tu familiar. No necesita email ni contraseÃƒÆ’Ã‚Â±a propia.</p>
             <div class="form-group">
                 <label class="label">Nombre Completo</label>
                 <input type="text" id="fam-name" class="input" placeholder="Ej: Juan Perez" required>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="window.showMyProfile()">AtrÃ¡s</button>
+                <button type="button" class="btn btn-secondary" onclick="window.showMyProfile()">AtrÃƒÆ’Ã‚Â¡s</button>
                 <button type="submit" id="fam-submit" class="btn btn-primary">Vincular Familiar</button>
             </div>
         </form>
@@ -2893,7 +2890,7 @@ window.showAddFamilyModal = () => {
         try {
             await DB.addFamilyMember(State.user.id, { name });
             State.family = await DB.getFamilyMembers(State.user.id);
-            UI.notify(\`Â¡\${name} vinculado correctamente!\`);
+            UI.notify(`Ãƒâ€šÃ‚Â¡${name} vinculado correctamente!`);
             window.showMyProfile(); // Volver al perfil
         } catch (err) {
             UI.notify(err.message, 'error');
@@ -2921,7 +2918,7 @@ async function initNotifications() {
             });
             
             if (token) {
-                console.log("Token de notificaciÃ³n obtenido:", token);
+                console.log("Token de notificaciÃƒÆ’Ã‚Â³n obtenido:", token);
                 await DB.saveFCMToken(State.user.id, token);
             } else {
                 console.log("No se pudo obtener el token.");
