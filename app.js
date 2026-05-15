@@ -31,17 +31,26 @@ const Views = {
    INIT â€” Firebase Auth state listener
 â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â• */
 
+console.log("DEBUG: app.js cargado");
+
 function initApp() {
-    console.log("ðŸš€ PUNTO ACTIVO APP - v4.1 - CARGADA CORRECTAMENTE");
+    console.log("🚀 PUNTO ACTIVO APP - v4.2 - INICIALIZANDO");
     try {
-        if (typeof firebase === 'undefined' || !auth) {
-            throw new Error('Firebase no se pudo cargar correctamente. VerificÃ¡ tu conexiÃ³n a internet y el archivo firebase-config.js.');
+        if (typeof firebase === 'undefined') {
+            console.error("DEBUG: firebase is undefined");
+            throw new Error('Firebase no se pudo cargar. Verificá los enlaces en index.html');
+        }
+        if (typeof auth === 'undefined') {
+            console.error("DEBUG: auth is undefined");
+            throw new Error('Auth no inicializado. Verificá firebase-config.js');
         }
 
         auth.onAuthStateChanged(async (firebaseUser) => {
+            console.log("DEBUG: Auth State Changed. User:", firebaseUser ? firebaseUser.uid : "LOGOUT");
             if (firebaseUser) {
                 try {
                     showAppLoader();
+                    console.log("DEBUG: Obteniendo perfil...");
                     const profile = await DB.getUserProfile(firebaseUser.uid);
 
                     if (!profile) {

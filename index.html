@@ -31,27 +31,28 @@
     <!-- PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
-</head>
 
-<body>
     <script>
-        // Global error catcher for "Blank Page" debugging
+        // CAPTURADOR DE ERRORES DE EMERGENCIA (Debe estar al principio)
         window.onerror = function(msg, url, lineNo, columnNo, error) {
-            console.error('GLOBAL ERROR:', msg, url, lineNo);
-            const container = document.getElementById('main-content');
-            if (container) {
-                container.innerHTML = `
-                    <div style="padding:40px; text-align:center; color:var(--overdue)">
+            alert("ERROR CRÍTICO: " + msg + "\nArchivo: " + url + "\nLínea: " + lineNo);
+            const body = document.body;
+            if (body) {
+                body.innerHTML = `
+                    <div style="padding:40px; text-align:center; color:#dc2626; font-family:sans-serif">
                         <h2 style="margin-bottom:10px">Error de Carga</h2>
-                        <p style="font-size:14px; color:var(--text-secondary); margin-bottom:20px">${msg}</p>
-                        <p style="font-size:12px; color:var(--text-muted)">Línea: ${lineNo} en ${url.split('/').pop()}</p>
-                        <button class="btn btn-primary" onclick="location.reload()">Reintentar</button>
+                        <p style="font-size:14px; color:#475569; margin-bottom:20px">${msg}</p>
+                        <p style="font-size:12px; color:#94a3b8">Archivo: ${url.split('/').pop()} | Línea: ${lineNo}</p>
+                        <button onclick="location.reload()" style="padding:10px 20px; background:#2563eb; color:white; border:none; border-radius:8px; cursor:pointer">Reintentar</button>
                     </div>`;
             }
             return false;
         };
+        console.log("DEBUG: Capturador de errores activado");
     </script>
+</head>
 
+<body>
     <!-- AUTH SCREEN -->
     <div id="auth-container" class="hidden">
         <!-- Login inyectado por JS -->
@@ -127,7 +128,8 @@
     <script>
         window.refreshIcons = () => { lucide.createIcons(); };
     </script>
-    <!-- PWA Registration -->
+    <!-- PWA Registration (Desactivado temporalmente para debugging) -->
+    <!--
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -137,6 +139,7 @@
             });
         }
     </script>
+    -->
 </body>
 
 </html>
