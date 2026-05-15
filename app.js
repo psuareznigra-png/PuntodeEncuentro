@@ -8,7 +8,7 @@ const State = {
     currentView: 'dashboard',
     family: [], // Familiares vinculados
     activeProfileId: null, // ID del perfil que estamos viendo (null = el titular)
-    onboardingRequired: false // Bloqueo de navegaciÃƒÆ’Ã‚Â³n para ficha obligatoria
+    onboardingRequired: false // Bloqueo de navegación para ficha obligatoria
 };
 
 const Views = {
@@ -21,8 +21,8 @@ const Views = {
     payments_admin: { title: 'Pagos Pendientes', icon: 'credit-card', role: 'profesor' },
     payments_history: { title: 'Registro de Cobranzas', icon: 'history', role: 'profesor' },
     morosidades: { title: 'Morosidades', icon: 'alert-circle', role: 'profesor' },
-    occupancy: { title: 'OcupaciÃƒÆ’Ã‚Â³n', icon: 'calendar', role: 'profesor' },
-    announcements_admin: { title: 'TablÃƒÆ’Ã‚Â³n de Anuncios', icon: 'megaphone', role: 'admin' },
+    occupancy: { title: 'Ocupación', icon: 'calendar', role: 'profesor' },
+    announcements_admin: { title: 'Tablón de Anuncios', icon: 'megaphone', role: 'admin' },
     inscripciones: { title: 'Mis Actividades', icon: 'plus-circle', role: 'alumno' },
     pagos_socio: { title: 'Mis Pagos', icon: 'wallet', role: 'alumno' },
 };
@@ -34,15 +34,15 @@ const Views = {
 console.log("DEBUG: app.js cargado");
 
 function initApp() {
-    console.log("Ã°Å¸Å¡â‚¬ PUNTO ACTIVO APP - v4.2 - INICIALIZANDO");
+    console.log("🚀 PUNTO ACTIVO APP - v4.2 - INICIALIZANDO");
     try {
         if (typeof firebase === 'undefined') {
             console.error("DEBUG: firebase is undefined");
-            throw new Error('Firebase no se pudo cargar. VerificÃƒÂ¡ los enlaces en index.html');
+            throw new Error('Firebase no se pudo cargar. Verificá los enlaces en index.html');
         }
         if (typeof auth === 'undefined') {
             console.error("DEBUG: auth is undefined");
-            throw new Error('Auth no inicializado. VerificÃƒÂ¡ firebase-config.js');
+            throw new Error('Auth no inicializado. Verificá firebase-config.js');
         }
 
         auth.onAuthStateChanged(async (firebaseUser) => {
@@ -54,7 +54,7 @@ function initApp() {
                     const profile = await DB.getUserProfile(firebaseUser.uid);
 
                     if (!profile) {
-                        UI.notify('El usuario no tiene un perfil configurado en Firestore. VerificÃƒÆ’Ã‚Â¡ el "Paso 5" de la guÃƒÆ’Ã‚Â­a.', 'error');
+                        UI.notify('El usuario no tiene un perfil configurado en Firestore. Verificá el "Paso 5" de la guía.', 'error');
                         console.error('UID sin perfil en Firestore:', firebaseUser.uid);
                         await auth.signOut();
                         return;
@@ -62,7 +62,7 @@ function initApp() {
 
                     State.user = { ...profile, id: firebaseUser.uid };
 
-                    // Chequeo automÃƒÂ¡tico de morosidad y perfil en cada login del alumno
+                    // Chequeo automático de morosidad y perfil en cada login del alumno
                     if (State.user.role === 'alumno' || State.user.role === 'socio') {
                         await DB.checkAndUpdateMorosidad(State.user.id);
                         // Cargar familiares
@@ -155,7 +155,7 @@ function updateUserInfo() {
     document.getElementById('user-role').textContent = roles[State.user.role] || 'Usuario';
     document.getElementById('user-avatar').textContent = name.charAt(0).toUpperCase();
 
-    // Si hay familiares, mostrar botÃƒÂ³n de cambio de perfil
+    // Si hay familiares, mostrar botón de cambio de perfil
     const avatarEl = document.getElementById('user-avatar');
     if (State.family && State.family.length > 0) {
         avatarEl.style.cursor = 'pointer';
@@ -169,7 +169,7 @@ function showProfileSelector() {
     
     const html = `
         <div class="profile-selector-container">
-            <h2 class="profile-selector-title">Ã‚Â¿QuiÃƒÂ©n estÃƒÂ¡ entrenando?</h2>
+            <h2 class="profile-selector-title">¿Quién está entrenando?</h2>
             <div class="profile-grid">
                 ${profiles.map(p => `
                     <div class="profile-item ${State.activeProfileId === p.id || (!State.activeProfileId && p.id === State.user.id) ? 'active' : ''}" 
@@ -181,7 +181,7 @@ function showProfileSelector() {
                 `).join('')}
             </div>
             <div style="margin-top:30px; text-align:center">
-                <button class="btn btn-secondary" onclick="auth.signOut()">Cerrar SesiÃƒÂ³n</button>
+                <button class="btn btn-secondary" onclick="auth.signOut()">Cerrar Sesión</button>
             </div>
         </div>
     `;
@@ -216,12 +216,12 @@ function navigateTo(viewId) {
     const userRole = (State.user.role === 'socio' || State.user.role === 'alumno') ? 'alumno' : State.user.role;
     const viewRole = Views[viewId]?.role;
 
-    // LÃƒÆ’Ã‚Â³gica de acceso por roles:
+    // Lógica de acceso por roles:
     if (userRole === 'admin') {
         // El admin tiene acceso a vistas de admin y profesor, pero NO de alumno.
         if (viewRole === 'alumno') viewId = 'dashboard';
     } else if (userRole === 'profesor') {
-        // El profesor tiene acceso a sus vistas y a actividades/turnos (filtrados por lÃƒÆ’Ã‚Â³gica de vista)
+        // El profesor tiene acceso a sus vistas y a actividades/turnos (filtrados por lógica de vista)
         if (viewRole && viewRole !== 'profesor' && !['activities', 'turnos', 'payments_admin', 'payments_history', 'morosidades', 'bajas_admin'].includes(viewId)) {
             viewId = 'dashboard';
         }
@@ -248,12 +248,12 @@ function renderNav() {
     Object.entries(Views).forEach(([id, view]) => {
         const userRole = State.user.role === 'socio' ? 'alumno' : State.user.role;
 
-        // Filtrar navegaciÃƒÆ’Ã‚Â³n por rol:
+        // Filtrar navegación por rol:
         if (userRole === 'admin') {
             // Admin ve admin y profesor, pero no alumno
             if (view.role === 'alumno') return;
         } else if (userRole === 'profesor') {
-            // Profesor ve lo suyo (y admin podrÃƒÆ’Ã‚Â­a permitir actividades/turnos si se desea en nav)
+            // Profesor ve lo suyo (y admin podría permitir actividades/turnos si se desea en nav)
             if (view.role && view.role !== 'profesor') return;
         } else {
             // Alumno solo ve alumno
@@ -636,9 +636,9 @@ async function renderDashboard(container) {
                     </div>
                 </div>
                 <div class="card">
-                    <h3 class="section-title">OcupaciÃƒÆ’Ã‚Â³n</h3>
+                    <h3 class="section-title">Ocupación</h3>
                     <div class="list-stack">
-                        <button class="btn btn-ghost btn-sm w-full" onclick="navigateTo('occupancy')">Ver Panel Visual ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢</button>
+                        <button class="btn btn-ghost btn-sm w-full" onclick="navigateTo('occupancy')">Ver Panel Visual →</button>
                     </div>
                 </div>
             </div>`;
@@ -675,8 +675,8 @@ async function renderAlumnoDashboard(container) {
         <div class="welcome-banner">
             <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:15px">
                 <div>
-                    <h2 class="welcome-title">Ãƒâ€šÃ‚Â¡Hola, ${firstName}!</h2>
-                    <p class="welcome-sub">EstÃƒÆ’Ã‚Â¡s viendo el panel de: <strong>${viewingName}</strong></p>
+                    <h2 class="welcome-title">¡Hola, ${firstName}!</h2>
+                    <p class="welcome-sub">Estás viendo el panel de: <strong>${viewingName}</strong></p>
                 </div>
                 
                 ${State.family.length > 0 ? `
@@ -820,7 +820,7 @@ async function renderActivities(container) {
 
     container.innerHTML = `
         <div class="view-header">
-            <h2 class="view-title">GestiÃƒÆ’Ã‚Â³n de Actividades</h2>
+            <h2 class="view-title">Gestión de Actividades</h2>
             <button class="btn btn-primary" onclick="window.showActivityModal()">
                 <i data-lucide="plus"></i> Nueva Actividad
             </button>
@@ -828,7 +828,7 @@ async function renderActivities(container) {
         ${activities.length === 0 ? `
             <div class="empty-state">
                 <i data-lucide="zap" style="width:48px;height:48px;color:var(--text-muted);margin-bottom:16px"></i>
-                <p>No hay actividades. Ãƒâ€šÃ‚Â¡CreÃƒÆ’Ã‚Â¡ la primera!</p>
+                <p>No hay actividades. ¡Creá la primera!</p>
             </div>` : `
             <div class="cards-grid">
                 ${activities.map(a => `
@@ -2175,8 +2175,8 @@ function showLogin() {
                         autocomplete="username" required>
                 </div>
                 <div class="form-group">
-                    <label class="label">ContraseÃƒÆ’Ã‚Â±a</label>
-                    <input type="password" id="l-pass" class="input" placeholder="ContraseÃƒÆ’Ã‚Â±a"
+                    <label class="label">Contraseña</label>
+                    <input type="password" id="l-pass" class="input" placeholder="Contraseña"
                         autocomplete="current-password" required>
                 </div>
                 <div id="l-error" class="hidden" style="background:#fff1f2;border:1px solid #fecaca;border-radius:10px;padding:10px 14px;font-size:13px;color:var(--overdue);font-weight:600"></div>
@@ -2199,17 +2199,16 @@ function showLogin() {
         try {
             const email = `${usuario}@espacioactivo.app`;
             await auth.signInWithEmailAndPassword(email, password);
-            // onAuthStateChanged se encargarÃƒÆ’Ã‚Â¡ del resto
         } catch (err) {
             const msgs = {
                 'auth/user-not-found': 'Usuario no encontrado.',
-                'auth/wrong-password': 'ContraseÃƒÆ’Ã‚Â±a incorrecta.',
-                'auth/invalid-credential': 'Usuario o contraseÃƒÆ’Ã‚Â±a incorrectos.',
-                'auth/too-many-requests': 'Demasiados intentos. EsperÃƒÆ’Ã‚Â¡ unos minutos.',
-                'auth/invalid-email': 'Formato de usuario invÃƒÆ’Ã‚Â¡lido.',
-                'auth/network-request-failed': 'Sin conexiÃƒÆ’Ã‚Â³n a internet.',
+                'auth/wrong-password': 'Contraseña incorrecta.',
+                'auth/invalid-credential': 'Usuario o contraseña incorrectos.',
+                'auth/too-many-requests': 'Demasiados intentos. Esperá unos minutos.',
+                'auth/invalid-email': 'Formato de usuario inválido.',
+                'auth/network-request-failed': 'Sin conexión a internet.',
             };
-            errBox.textContent = msgs[err.code] || 'Error al iniciar sesiÃƒÆ’Ã‚Â³n.';
+            errBox.textContent = msgs[err.code] || 'Error al iniciar sesión.';
             errBox.classList.remove('hidden');
             btn.disabled = false; btn.textContent = 'INGRESAR';
         }
@@ -2238,7 +2237,7 @@ window.showMyProfile = async () => {
             </div>
 
             <div id="re-login-warn" class="hidden mt-4 badge badge-warning" style="display:block; white-space:normal; line-height:1.4">
-                ÃƒÂ¢Ã…Â¡Ã‚Â ÃƒÂ¯Ã‚Â¸ Si cambias tu Nombre de Usuario, deberÃƒÆ’Ã‚Â¡s usar el nuevo nombre la prÃƒÆ’Ã‚Â³xima vez que ingreses. TenÃƒÆ’Ã‚Â© en cuenta que para que funcione, el administrador tambiÃƒÆ’Ã‚Â©n debe actualizar tu email en la consola de Firebase.
+                ⚠️ Si cambias tu Nombre de Usuario, deberás usar el nuevo nombre la próxima vez que ingreses. Tené en cuenta que para que funcione, el administrador también debe actualizar tu email en la consola de Firebase.
             </div>
 
             <div class="modal-actions">
@@ -2248,10 +2247,10 @@ window.showMyProfile = async () => {
         </form>
         <div class="mt-8 pt-6" style="border-top:1px solid var(--border)">
             <h3 class="section-title">Grupo Familiar</h3>
-            <p class="text-xs text-muted mb-4">AgregÃƒÆ’Ã‚Â¡ a tus hijos o familiares para gestionar sus actividades desde tu cuenta.</p>
+            <p class="text-xs text-muted mb-4">Agregá a tus hijos o familiares para gestionar sus actividades desde tu cuenta.</p>
             
             <div id="family-list-container" class="list-stack mb-4">
-                ${State.family.length === 0 ? '<p class="text-sm text-muted">No tenÃƒÆ’Ã‚Â©s familiares vinculados.</p>' : 
+                ${State.family.length === 0 ? '<p class="text-sm text-muted">No tenés familiares vinculados.</p>' : 
                     State.family.map(f => `
                         <div class="list-row" style="background:var(--bg-app); border-radius:10px; padding:10px 15px">
                             <div>
