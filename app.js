@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Punto Activo "Centro de Entrenamiento"
  * AplicaciÃƒÆ’Ã‚Â³n principal ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â v3.0 Firebase
  */
@@ -388,7 +388,7 @@ async function renderOccupancy(container) {
                             if (pct > 50) statusClass = 'occ-med';
                             if (pct > 85) statusClass = 'occ-high';
 
-                            return \\`
+                            return `
                             <div class="shift-grid-card ${statusClass}" onclick="window.showTurnoModal('${s.turno.id}')">
                                 <div class="shift-time">${s.start} - ${s.end}</div>
                                 <div class="shift-act">${s.activity.name}</div>
@@ -403,7 +403,7 @@ async function renderOccupancy(container) {
                                 <button class="btn-asistencia" onclick="event.stopPropagation(); window.showAttendanceModal('${s.turno.id}')">
                                     <i data-lucide="check-square"></i> Pasar Lista
                                 </button>
-                            </div>\\`;
+                            </div>`;
                         }).join('')
                     }
                 </div>`;
